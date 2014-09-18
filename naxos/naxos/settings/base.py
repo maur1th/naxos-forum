@@ -23,9 +23,6 @@ root = lambda *dirs: join(abspath(BASE_DIR), *dirs)
 # Configuring directories
 MEDIA_ROOT = root('media')
 STATIC_ROOT = root('static')
-STATICFILES_DIRS = (
-    root('assets'),
-)
 TEMPLATE_DIRS = (
     root('templates'),
 )

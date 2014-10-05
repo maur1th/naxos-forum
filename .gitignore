@@ -13,6 +13,9 @@
 *.sublime-project
 *.sublime-workspace
 
+# secret key
+secret.txt
+
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files
 __pycache__/

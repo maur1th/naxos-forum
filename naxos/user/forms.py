@@ -13,7 +13,7 @@ class RegisterForm(UserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
 
     def clean_email(self):
-        "Ensures registered emails are unique."
+        "Ensure registered emails are unique."
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
         if email and User.objects.filter(email=email).exclude(

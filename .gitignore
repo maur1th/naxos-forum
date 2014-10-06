@@ -1,6 +1,7 @@
 # SQL Database
 *.db
 *.sqlite3
+*.sqlite3-journal
 
 ## generic files to ignore
 *~

@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
+from .models import UserSettings
+
 
 # TODO: add email confirmation
 
@@ -26,4 +28,6 @@ class RegisterForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
+            user_settings = UserSettings(user=user)  # init settings table
+            user_settings.save()                     # and save it
         return user

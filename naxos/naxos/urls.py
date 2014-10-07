@@ -5,5 +5,5 @@ urlpatterns = patterns('',
     url(r'^forum/', include('forum.urls', namespace='forum')),
     url(r'^user/', include('user.urls', namespace='user')),
     
-    url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(admin.site.urls)),
 )

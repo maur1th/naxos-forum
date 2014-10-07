@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h2>Liste des membres</h2>
+    <ul>
+        {% for user in user_list %}
+        <li>{{ user.username }}</a></li>
+        {% empty %}
+        <li>Aucun utilisateur !</li>
+        {% endfor %}
+    </ul>
+</body>

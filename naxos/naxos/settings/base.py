@@ -8,10 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-from os import environ
 from os.path import join, abspath, dirname
-
-from django.core.exceptions import ImproperlyConfigured
 
 
 # Snippet from Two Scoops of Django 1.6
@@ -29,22 +26,12 @@ TEMPLATE_DIRS = (
     root('templates'),
 )
 
-
-# # Snippet from Two Scoops of Django 1.6
-# def get_env_variable(var_name):
-#     """Get the environment variable or return exception."""
-#     try:
-#         return environ[var_name]
-#     except KeyError:
-#         error_msg = "Set the {:s} environment variable".format(var_name)
-#         raise ImproperlyConfigured(error_msg)
-# 
-# SECRET_KEY = get_env_variable(SECRET_KEY)
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
+
+SECRET_KEY = SECRET_KEY
 
 
 # Application definition
@@ -106,5 +93,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# LOGIN_REDIRECT_URL = '/forum/'

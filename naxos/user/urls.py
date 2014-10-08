@@ -21,9 +21,9 @@ urlpatterns = patterns('',
         kwargs={'next_page': reverse_lazy('user:login')},
         name='logout'
     ),
-    # url(
-    #     regex=r'^list/$',
-    #     view=views.UserListView.as_view(),
-    #     name='list'
-    # ),
+    url(
+        regex=r'^edit/$',
+        view=views.EditUser.as_view(),
+        name='edit'
+    ),
 )

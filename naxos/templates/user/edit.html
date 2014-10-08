@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Créer un compte</h1>
-<form method="post" action="{% url 'user:register' %}">
+<h1>Paramètres du profil :</h1>
+<form method="post" action="{% url 'user:edit' %}">
     {% csrf_token %}
     <table>
+        <tr>
+            <th>Nom d'utilisateur :</th>
+            <td>{{ user }}</td>
+        </tr>
         {{ form }}
     </table>
     

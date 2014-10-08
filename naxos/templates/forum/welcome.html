@@ -1,6 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-    <h1>Hello, world</h1>
+    <h1>Membres :</h1>
+    <table>
+        <tr>
+            <th>Pseudonyme</th>
+            <th>Enregistré le</th>
+            <th>E-mail</th>
+            <th>Site web</th>
+        </tr>
+        {% for user in object_list %}
+        {% if user.usersettings %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.date_joined }}</td>
+                {% if user.usersettings.emailVisible %}
+                    <td>{{ user.email }}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                <td>{{ user.usersettings.website }}</td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+</div>
+<div class="row">
+    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
 </div>
 {% endblock content %}

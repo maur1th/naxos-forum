@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
     <div class="col-md-8">
-        <h1>Merci de vous identifier</h1>
+        <h1>Merci de vous identifier :</h1>
 
         <form method="post" action="{% url 'user:login' %}">
             {% csrf_token %}
@@ -13,6 +13,8 @@
             <input type="submit" value="Connexion" />
             <input type="hidden" name="next" value="{% url 'forum:welcome' %}" />
         </form>
+        <br>
+        <p>Pas de compte ? <a href="{% url 'user:register' %}">S'enregistrer</a>.</p>
     </div>
 </div>
 {% endblock %}

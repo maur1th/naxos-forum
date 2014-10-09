@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class ForumUser(AbstractUser):
+    """Custom user model"""
     emailVisible = models.BooleanField(default=False)
     subscribeToEmails = models.BooleanField(default=True)
     mpPopupNotif = models.BooleanField(default=True)

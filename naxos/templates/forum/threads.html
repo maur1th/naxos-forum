@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <h1>Catégories :</h1>
+    <table>
+        {% for thread in object_list %}
+            <tr>
+                <td><a href="{% url 'forum:threads' %}{{ thread }}">{{ thread }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<hr>
+<div class="row">
+    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
+</div>
+{% endblock content %}

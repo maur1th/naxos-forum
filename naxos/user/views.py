@@ -18,7 +18,7 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
     fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpPopupNotif',
               'mpEmailNotif', 'logo', 'quote', 'website')
     template_name = 'user/edit.html'
-    success_url = reverse_lazy('forum:welcome')
+    success_url = reverse_lazy('forum:categories')
 
     def get_object(self):
         return ForumUser.objects.get(username=self.request.user)

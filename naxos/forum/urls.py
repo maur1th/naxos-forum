@@ -6,7 +6,12 @@ from . import views
 urlpatterns = patterns('',
     url(
         regex=r'^$',
-        view=views.Welcome.as_view(),
-        name='welcome'
+        view=views.CategoryView.as_view(),
+        name='categories'
+    ),
+    url(
+        regex=r'forum/(?P<slug>[\w|\-]+)/$',
+        view=views.ThreadView.as_view(),
+        name='threads'
     ),
 )

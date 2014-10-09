@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     ),
     url(
         regex=r'^edit/$',
-        view=views.EditUser.as_view(),
+        view=views.UpdateUser.as_view(),
         name='edit'
     ),
 )

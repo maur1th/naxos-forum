@@ -7,12 +7,7 @@ from .models import ForumUser
 # TODO
 # Add email confirmation
 
-class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = ForumUser
-        fields = ('username', 'email', 'password1', 'password2')
+class UniqueEmailMixin(object):
 
     def clean_email(self):
         "Ensure registered emails are unique."
@@ -22,6 +17,14 @@ class RegisterForm(UserCreationForm):
                 username=username).count():
             raise forms.ValidationError('Adresse déjà enregistrée.')
         return email
+
+
+class RegisterForm(UniqueEmailMixin, UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = ForumUser
+        fields = ('username', 'email', 'password1', 'password2')
 
     def clean_username(self):
         """
@@ -40,3 +43,15 @@ class RegisterForm(UserCreationForm):
             self.error_messages['duplicate_username'],
             code='duplicate_username',
         )
+
+
+class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateUserForm, self).__init__(*args, **kwargs)
+        self.fields['email'].required = True
+
+    class Meta:
+        model = ForumUser
+        fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpPopupNotif',
+                  'mpEmailNotif', 'logo', 'quote', 'website')

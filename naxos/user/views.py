@@ -16,7 +16,7 @@ class Register(CreateView):
 class EditUser(LoginRequiredMixin, UpdateView):
     model = ForumUser
     fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpPopupNotif',
-              'mpEmailNotif', 'avatar', 'quote', 'website')
+              'mpEmailNotif', 'logo', 'quote', 'website')
     template_name = 'user/edit.html'
     success_url = reverse_lazy('forum:welcome')
 

@@ -7,6 +7,7 @@ class ForumUser(AbstractUser):
     subscribeToEmails = models.BooleanField(default=True)
     mpPopupNotif = models.BooleanField(default=True)
     mpEmailNotif = models.BooleanField(default=False)
-    avatar = models.ImageField(blank=True)
+    logo = models.ImageField(upload_to="logo",
+                             blank=True)
     quote = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)

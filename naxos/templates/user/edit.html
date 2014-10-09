@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Paramètres du profil :</h1>
-<form method="post" action="{% url 'user:edit' %}">
+<form enctype="multipart/form-data" method="post" action="{% url 'user:edit' %}">
     {% csrf_token %}
     <table>
         <tr>

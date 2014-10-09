@@ -21,6 +21,7 @@ from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 
 # Configuring directories
 MEDIA_ROOT = root('media')
+MEDIA_URL = '/media/'
 STATIC_ROOT = root('static')
 TEMPLATE_DIRS = (
     root('templates'),

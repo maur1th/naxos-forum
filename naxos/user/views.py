@@ -3,9 +3,8 @@ from django.core.urlresolvers import reverse_lazy
 
 from braces.views import LoginRequiredMixin
 
-from django.contrib.auth.models import User
 from .models import UserSettings
-from .forms import RegisterForm
+from .forms import RegisterForm, UserEditForm
 
 
 class Register(CreateView):
@@ -15,13 +14,18 @@ class Register(CreateView):
 
 
 class EditUser(LoginRequiredMixin, UpdateView):
-    model = UserSettings
-    fields = ('emailVisible', 'subscribeToMails', 'mpPopupNotif',
+    form_class = UserEditForm
+    fields = ('email', 'emailVisible', 'subscribeToMails', 'mpPopupNotif',
               'mpEmailNotif', 'avatar', 'quote', 'website')
     template_name = 'user/edit.html'
 
     def get_object(self):
         return UserSettings.objects.get(user_id=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(EditUser, self).get_context_data(**kwargs)
+        context['email'] = self.request.user.email
+        return context
 
     def get_success_url(self):
         return reverse_lazy('user:edit')

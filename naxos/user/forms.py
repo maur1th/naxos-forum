@@ -31,3 +31,13 @@ class RegisterForm(UserCreationForm):
             user_settings = UserSettings(user=user)  # init settings table
             user_settings.save()                     # and save it
         return user
+
+
+class UserEditForm(forms.ModelForm):
+    email = forms.EmailField(required=True, label=('Adresse e-mail :'))
+
+    class Meta:
+        model = UserSettings
+        fields = ('email', 'emailVisible', 'subscribeToMails',
+                  'mpPopupNotif', 'mpEmailNotif', 'avatar', 'quote',
+                  'website')

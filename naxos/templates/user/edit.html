@@ -8,7 +8,19 @@
             <th>Nom d'utilisateur :</th>
             <td>{{ user }}</td>
         </tr>
-        {{ form }}
+        {% for field in form %}
+        <tr>
+            <th>{{ field.label_tag }}
+            </th>
+            <td>
+                {% if 'Logo' in field.label_tag and user.logo %}
+                    <img src="{{ media_path }}{{ user.logo }}">
+                    <br>
+                {% endif %}
+                {{ field }}
+            </td>
+        </tr>
+        {% endfor %}
     </table>
     
     <input type="submit" value="Enregistrer" />

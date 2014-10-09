@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -13,6 +15,7 @@
                         way to the bottom of the topbar */
                 }
         </style>
+        {% get_media_prefix as media_path%}
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">

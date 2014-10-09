@@ -1,43 +1,42 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import UserSettings
+from .models import ForumUser
 
 
-# TODO: add email confirmation
+# TODO
+# Add email confirmation
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
-        model = User
+        model = ForumUser
         fields = ('username', 'email', 'password1', 'password2')
 
     def clean_email(self):
         "Ensure registered emails are unique."
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
-        if email and User.objects.filter(email=email).exclude(
+        if email and ForumUser.objects.filter(email=email).exclude(
                 username=username).count():
             raise forms.ValidationError('Adresse déjà enregistrée.')
         return email
 
-    def save(self, commit=True):
-        user = super(RegisterForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
-        if commit:
-            user.save()
-            user_settings = UserSettings(user=user)  # init settings table
-            user_settings.save()                     # and save it
-        return user
-
-
-class UserEditForm(forms.ModelForm):
-    email = forms.EmailField(required=True, label=('Adresse e-mail :'))
-
-    class Meta:
-        model = UserSettings
-        fields = ('email', 'emailVisible', 'subscribeToMails',
-                  'mpPopupNotif', 'mpEmailNotif', 'avatar', 'quote',
-                  'website')
+    def clean_username(self):
+        """
+        UserCreationForm method where mentions of the User model are replaced
+        by the custom AbstractUser model (here, ForumUser).
+        https://code.djangoproject.com/ticket/19353#no1
+        and https://docs.djangoproject.com/en/1.7/_modules/django/contrib/
+        auth/forms/#UserCreationForm
+        """
+        username = self.cleaned_data["username"]
+        try:
+            ForumUser.objects.get(username=username)
+        except ForumUser.DoesNotExist:
+            return username
+        raise forms.ValidationError(
+            self.error_messages['duplicate_username'],
+            code='duplicate_username',
+        )

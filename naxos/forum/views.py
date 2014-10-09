@@ -1,9 +1,8 @@
 from django.views.generic import ListView
-from django.contrib.auth.models import User
-
+from user.models import ForumUser
 from braces.views import LoginRequiredMixin
 
 
 class Welcome(LoginRequiredMixin, ListView):
     template_name = "forum/welcome.html"
-    model = User
+    model = ForumUser

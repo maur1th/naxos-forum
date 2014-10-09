@@ -10,18 +10,16 @@
             <th>Site web</th>
         </tr>
         {% for user in object_list %}
-        {% if user.usersettings %}
             <tr>
                 <td>{{ user.username }}</td>
                 <td>{{ user.date_joined }}</td>
-                {% if user.usersettings.emailVisible %}
+                {% if user.emailVisible %}
                     <td>{{ user.email }}</td>
                 {% else %}
                     <td></td>
                 {% endif %}
-                <td>{{ user.usersettings.website }}</td>
+                <td>{{ user.website }}</td>
             </tr>
-        {% endif %}
         {% endfor %}
     </table>
 </div>

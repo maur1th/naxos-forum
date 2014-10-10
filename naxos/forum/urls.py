@@ -6,12 +6,22 @@ from . import views
 urlpatterns = patterns('',
     url(
         regex=r'^$',
-        view=views.CategoryView.as_view(),
-        name='categories'
+        view=views.TopView.as_view(),
+        name='top'
     ),
     url(
-        regex=r'(?P<slug>[\w|\-]+)/$',
+        regex=r'(?P<category_slug>[\w|\-]+)/$',
         view=views.ThreadView.as_view(),
-        name='threads'
+        name='category'
+    ),
+    url(
+        regex=r'(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
+        view=views.PostView.as_view(),
+        name='thread'
+    ),
+    url(
+        regex=r'(?P<category_slug>[\w|\-]+)/new_thread/$',
+        view=views.NewThread.as_view(),
+        name='new_thread'
     ),
 )

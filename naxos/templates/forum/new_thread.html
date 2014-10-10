@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <h1>Sujets : {{ category.slug }}</h1>
+    <a href="{% url 'forum:new_thread' %}">Nouveau sujet</a>
+    <table>
+    {{ form }}
+    </table>
+</div>
+<hr>
+<div class="row">
+    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
+</div>
+{% endblock content %}

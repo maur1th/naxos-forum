@@ -10,7 +10,7 @@ urlpatterns = patterns('',
         name='categories'
     ),
     url(
-        regex=r'forum/(?P<slug>[\w|\-]+)/$',
+        regex=r'(?P<slug>[\w|\-]+)/$',
         view=views.ThreadView.as_view(),
         name='threads'
     ),

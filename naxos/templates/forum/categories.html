@@ -5,7 +5,7 @@
     <table>
         {% for category in object_list %}
             <tr>
-                <td><a href="{% url 'forum:categories' %}{{ category }}">{{ category }}</a></td>
+                <td><a href="{% url 'forum:categories' %}{{ category }}/">{{ category }}</a></td>
             </tr>
         {% endfor %}
     </table>

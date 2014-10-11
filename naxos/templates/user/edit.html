@@ -14,7 +14,7 @@
             </th>
             <td>
                 {% if 'Logo' in field.label_tag and user.logo %}
-                    <img src="{{ media_path }}{{ user.logo }}">
+                    <img src="{{ media }}{{ user.logo }}">
                     <br>
                 {% endif %}
                 {{ field }}{{ field.errors }}

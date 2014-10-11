@@ -37,7 +37,7 @@ class PostView(LoginRequiredMixin, ListView):
 
 class NewThread(LoginRequiredMixin, CreateView):
     model = Thread
-    fields = ()
+    fields = ('title')
     template_name = 'forum/new_thread.html'
 
 

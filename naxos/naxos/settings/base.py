@@ -21,8 +21,9 @@ from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 
 # Configuring directories
 MEDIA_ROOT = root('media')
-MEDIA_URL = '/media/'
-STATIC_ROOT = root('static')
+# STATIC_ROOT = root('static')
+
+STATICFILES_DIRS = (root('static'),)
 TEMPLATE_DIRS = (
     root('templates'),
 )
@@ -99,6 +100,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'user.ForumUser'
 

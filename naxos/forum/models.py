@@ -35,8 +35,8 @@ class Thread(models.Model):
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
-    postCount = models.IntegerField()
-    viewCount = models.IntegerField()
+    postCount = models.IntegerField(default=0)
+    viewCount = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
@@ -47,7 +47,7 @@ class Thread(models.Model):
         ordering = ["-modified"]
 
     def __str__(self):
-        return self.title
+        return self.slug
 
 
 class Post(models.Model):

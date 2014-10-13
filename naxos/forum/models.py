@@ -28,9 +28,9 @@ class Thread(models.Model):
     """Contains posts."""
     slug = models.SlugField(max_length=50, unique=True)
     title = models.CharField(max_length=140)
-    author = models.ForeignKey(ForumUser)
+    author = models.ForeignKey(ForumUser, related_name='threads')
     modified = models.DateTimeField(default=datetime.datetime.now)
-    category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category, related_name='threads')
     icon = models.ImageField()
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
@@ -52,17 +52,18 @@ class Thread(models.Model):
 
 class Post(models.Model):
     """A post."""
-    created = models.DateTimeField(default=datetime.datetime.now(),
+    created = models.DateTimeField(default=datetime.datetime.now,
                                    editable=False)
-    modified = models.DateTimeField(default=None)
+    modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField()
     content_html = models.TextField()
-    author = models.ForeignKey(ForumUser)
-    thread = models.ForeignKey(Thread)
+    author = models.ForeignKey(ForumUser, related_name='posts')
+    thread = models.ForeignKey(Thread, related_name='posts')
 
     def __str__(self):
         end = len(self.content_plain) > 40 and "..." or ""
-        return "{:s}: {:s}".format(self.author, self.content_plain[:40], end)
+        return "{:s}: {:s}{:s}".format(self.author.username,
+                                       self.content_plain[:40], end)
 
     class Meta:
         ordering = ["created"]

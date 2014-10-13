@@ -35,14 +35,24 @@ class ThreadView(LoginRequiredMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    template_name = "forum/threads.html"
+    template_name = "forum/posts.html"
     model = Post
+
+    def get_queryset(self):
+        return Post.objects.filter(thread=Thread.objects.get(
+            slug=self.kwargs['thread_slug']))
 
 
 class NewThread(LoginRequiredMixin, CreateView):
     form_class = NewThreadForm
     fields = ('title')
-    template_name = 'forum/new_thread.html'
+    template_name = 'forum/new.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(NewThread, self).get_form_kwargs()
+        kwargs.update({'author': self.request.user,
+                       'category_slug': self.kwargs['category_slug']})
+        return kwargs
 
 
 class NewPost(LoginRequiredMixin, CreateView):

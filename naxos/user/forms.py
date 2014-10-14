@@ -10,13 +10,11 @@ from .models import ForumUser
 class UniqueEmailMixin(object):
 
     def clean_email(self):
-        "Ensure registered emails are unique."
+        """Ensure provided email addresses are unique in the db."""
         email = self.cleaned_data.get('email')
-        username = self.cleaned_data.get('username')  # For logged out forms
-        try:                                          # For logged in forms
-            username = self.user
-        except:
-            pass
+        username = self.cleaned_data.get('username')  # For registration form
+        if not username:                              # For other forms
+            username = self.request.user
         if email and ForumUser.objects.filter(email=email).exclude(
                 username=username).count():
             raise forms.ValidationError('Adresse déjà enregistrée.')
@@ -68,10 +66,10 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
 class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
+        request = kwargs.pop('request')
         super(UpdateUserForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
-        self.user = user
+        self.request = request
 
     class Meta:
         model = ForumUser

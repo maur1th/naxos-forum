@@ -15,15 +15,14 @@ class Register(CreateView):
 
 class UpdateUser(LoginRequiredMixin, UpdateView):
     form_class = UpdateUserForm
-    fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpPopupNotif',
-              'mpEmailNotif', 'logo', 'quote', 'website')
     template_name = 'user/edit.html'
-    success_url = reverse_lazy('forum:categories')
+    success_url = reverse_lazy('forum:top')
 
     def get_object(self):
         return ForumUser.objects.get(username=self.request.user)
 
     def get_form_kwargs(self):
+        """Pass request to form."""
         kwargs = super(UpdateUser, self).get_form_kwargs()
-        kwargs.update({'user': self.request.user})
+        kwargs.update({'request': self.request})
         return kwargs

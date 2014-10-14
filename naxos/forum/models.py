@@ -8,6 +8,7 @@ from user.models import ForumUser
 
 # TODO
 # Improve TZ support
+# Add forbidden Thread.slugs (for 'new')
 
 
 class Category(models.Model):

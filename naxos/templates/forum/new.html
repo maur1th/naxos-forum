@@ -1,23 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-    <h1>Paramètres du profil :</h1>
-    <form enctype="multipart/form-data" method="post" action="{% url 'user:edit' %}">
+    <h1>Nouveau sujet :</h1>
+    <form enctype="multipart/form-data" method="post" action="{% url 'forum:new_thread' category.slug %}">
         {% csrf_token %}
         <table>
-            <tr>
-                <th>Nom d'utilisateur :</th>
-                <td>{{ user }}</td>
-            </tr>
             {% for field in form %}
             <tr>
                 <th>{{ field.label_tag }}
                 </th>
                 <td>
-                    {% if 'Logo' in field.label_tag and user.logo %}
-                        <img src="{{ media }}{{ user.logo }}">
-                        <br>
-                    {% endif %}
                     {{ field }}{{ field.errors }}
                 </td>
             </tr>
@@ -27,4 +19,8 @@
         <button type="submit" class="btn btn-primary">Enregistrer</button>
     </form>
 </div>
-{% endblock %}
+<hr>
+<div class="row">
+    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
+</div>
+{% endblock content %}

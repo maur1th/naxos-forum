@@ -3,7 +3,7 @@ from django.views.generic import ListView, CreateView
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
-from .forms import NewThreadForm
+from .forms import ThreadFormSet
 from user.models import ForumUser
 
 
@@ -44,15 +44,23 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 class NewThread(LoginRequiredMixin, CreateView):
-    form_class = NewThreadForm
-    fields = ('title')
+    form_class = ThreadFormSet
+    # fields = ('title',)
     template_name = 'forum/new.html'
 
-    def get_form_kwargs(self):
-        kwargs = super(NewThread, self).get_form_kwargs()
-        kwargs.update({'author': self.request.user,
-                       'category_slug': self.kwargs['category_slug']})
-        return kwargs
+    # def get_form_kwargs(self):
+    #     kwargs = super(NewThread, self).get_form_kwargs()
+    #     kwargs.update({'author': self.request.user,
+    #                    'category_slug': self.kwargs['category_slug']})
+    #     return kwargs
+
+    def get_context_data(self, **kwargs):
+        "Pass Category from url to context"
+        context = super(NewThread, self).get_context_data(**kwargs)
+        context['author'] = ForumUser.objects.get(username=self.request.user)
+        context['category'] = Category.objects.get(
+            slug=self.kwargs['category_slug'])
+        return context
 
 
 class NewPost(LoginRequiredMixin, CreateView):

@@ -8,7 +8,7 @@
     <table>
         {% for thread in object_list %}
             <tr>
-                <td><a href="{% url 'forum:thread' category.slug thread.slug %}">{{ thread.title }}</a> - Auteur : {{ thread.author }} - Posts : {{ thread.posts.all }}</td>
+                <td><a href="{% url 'forum:thread' category.slug thread.slug %}">{{ thread.title }}</a> - Auteur : {{ thread.author }}</td>
             </tr>
         {% endfor %}
     </table>

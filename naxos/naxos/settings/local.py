@@ -8,4 +8,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # DATABASES = {}
 
-INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)
+# INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)

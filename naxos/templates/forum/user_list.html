@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
 <div class="row">
     <h1>Membres :</h1>
     <table>
@@ -23,7 +23,4 @@
         {% endfor %}
     </table>
 </div>
-<div class="row">
-    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
-</div>
-{% endblock content %}
+{% endblock %}

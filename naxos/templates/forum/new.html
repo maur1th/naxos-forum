@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
 <div class="row">
     <h1>Nouveau sujet :</h1>
     <form enctype="multipart/form-data" method="post" action="{% url 'forum:new_thread' category.slug %}">
@@ -19,8 +19,4 @@
         <button type="submit" class="btn btn-primary">Enregistrer</button>
     </form>
 </div>
-<hr>
-<div class="row">
-    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
-</div>
-{% endblock content %}
+{% endblock %}

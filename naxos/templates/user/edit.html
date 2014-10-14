@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
 <div class="row">
     <h1>Paramètres du profil :</h1>
     <form enctype="multipart/form-data" method="post" action="{% url 'user:edit' %}">

@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; {{ category.title }}</h6>
     <h2>Posts :</h2>
@@ -12,8 +12,4 @@
         {% endfor %}
     </table>
 </div>
-<hr>
-<div class="row">
-    <a href="{% url 'user:edit' %}">Modifier votre profil</a>
-</div>
-{% endblock content %}
+{% endblock %}

@@ -1,6 +1,6 @@
-import datetime
 from django.db import models
 
+import datetime
 from uuslug import uuslug
 
 from user.models import ForumUser
@@ -9,6 +9,8 @@ from user.models import ForumUser
 # TODO
 # Improve TZ support
 # Add forbidden Thread.slugs (for 'new')
+# Add get_absolute_url
+# Make thread slugs only unique per category
 
 
 class Category(models.Model):
@@ -32,7 +34,7 @@ class Thread(models.Model):
     author = models.ForeignKey(ForumUser, related_name='threads')
     modified = models.DateTimeField(default=datetime.datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
-    icon = models.ImageField()
+    icon = models.ImageField(blank=True)
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)

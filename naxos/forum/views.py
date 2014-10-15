@@ -1,9 +1,11 @@
 from django.views.generic import ListView, CreateView
+from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
-from .forms import ThreadFormSet
+from .forms import NewThreadForm
 from user.models import ForumUser
 
 
@@ -44,23 +46,30 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 class NewThread(LoginRequiredMixin, CreateView):
-    form_class = ThreadFormSet
-    # fields = ('title',)
+    form_class = NewThreadForm
     template_name = 'forum/new.html'
 
-    # def get_form_kwargs(self):
-    #     kwargs = super(NewThread, self).get_form_kwargs()
-    #     kwargs.update({'author': self.request.user,
-    #                    'category_slug': self.kwargs['category_slug']})
-    #     return kwargs
+    def form_valid(self, form):
+        thread = Thread()  # Create the Thread
+        thread.title = self.request.POST['title']
+        thread.author = self.request.user
+        thread.category = Category.objects.get(
+            slug=self.kwargs['category_slug'])
+        thread.save()
+        form.instance.thread = thread  # Complete the post
+        form.instance.author = self.request.user
+        form.instance.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         "Pass Category from url to context"
         context = super(NewThread, self).get_context_data(**kwargs)
-        context['author'] = ForumUser.objects.get(username=self.request.user)
         context['category'] = Category.objects.get(
             slug=self.kwargs['category_slug'])
         return context
+
+    def get_success_url(self):
+        return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
 class NewPost(LoginRequiredMixin, CreateView):

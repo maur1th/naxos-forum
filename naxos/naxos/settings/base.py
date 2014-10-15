@@ -49,8 +49,8 @@ INSTALLED_APPS = (
 
     # Third-party Apps
     'braces',
-    'crispy_forms',
-    'floppyforms',
+    # 'crispy_forms',
+    # 'floppyforms',
 
     # Project Apps
     'forum',

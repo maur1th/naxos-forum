@@ -15,7 +15,7 @@ urlpatterns = patterns('',
         name='category'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/new/$',
+        regex=r'^(?P<category_slug>[\w|\-]+)/\+$',
         view=views.NewThread.as_view(),
         name='new_thread'
     ),

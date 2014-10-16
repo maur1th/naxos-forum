@@ -8,7 +8,6 @@ from user.models import ForumUser
 
 # TODO
 # Improve TZ support
-# Add forbidden Thread.slugs (for 'new')
 # Add get_absolute_url
 # Make thread slugs only unique per category
 

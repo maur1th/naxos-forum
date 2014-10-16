@@ -29,7 +29,7 @@ class ThreadView(LoginRequiredMixin, ListView):
             slug=self.kwargs['category_slug']))
 
     def get_context_data(self, **kwargs):
-        "Pass Category from url to context"
+        "Pass category from url to context"
         context = super(ThreadView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.get(
             slug=self.kwargs['category_slug'])
@@ -43,6 +43,15 @@ class PostView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Post.objects.filter(thread=Thread.objects.get(
             slug=self.kwargs['thread_slug']))
+
+    def get_context_data(self, **kwargs):
+        "Pass category and thread from url to context"
+        context = super(PostView, self).get_context_data(**kwargs)
+        context['category'] = Category.objects.get(
+            slug=self.kwargs['category_slug'])
+        context['thread'] = Thread.objects.get(
+            slug=self.kwargs['thread_slug'])
+        return context
 
 
 class NewThread(LoginRequiredMixin, CreateView):

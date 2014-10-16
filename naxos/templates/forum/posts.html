@@ -1,15 +1,30 @@
 {% extends "logged_in.html" %}
 {% block logged_in_content %}
 <div class="row">
-    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; {{ category.title }}</h6>
+    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a> &gt; {{ thread.title }}</h6>
+
     <h2>Posts :</h2>
     <hr>
-    <table>
-        {% for post in object_list %}
-            <tr>
-                <td>{{ post }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% for post in object_list %}
+        <div class="row">
+            <div class="col-md-2 text-center">
+                        <p style="word-wrap: break-word">
+                            <strong>{{ post.author }}</strong>
+                            {% if post.author.quote %}
+                                <br>
+                                <small>{{ post.author.quote }}</small>
+                            {% endif %}
+                        </p>
+                    {% if post.author.logo %}
+                        <img src="{{ media }}{{ post.author.logo }}" alt="">
+                    {% endif %}
+            </div>
+            <div class="col-md-10">
+                <small>Posté le : {{ post.created }}</small>
+                <hr>
+                {{ post.content_plain }}
+            </div>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

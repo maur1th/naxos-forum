@@ -1,10 +1,12 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 import datetime
 from uuslug import uuslug
 
 from user.models import ForumUser
 
+SLUG_LENGTH = 50
 
 # TODO
 # Improve TZ support
@@ -28,8 +30,8 @@ class Category(models.Model):
 
 class Thread(models.Model):
     """Contains posts."""
-    slug = models.SlugField(max_length=50, unique=True)
-    title = models.CharField(max_length=140)
+    slug = models.SlugField(max_length=SLUG_LENGTH, unique=True)
+    title = models.CharField(max_length=80)
     author = models.ForeignKey(ForumUser, related_name='threads')
     modified = models.DateTimeField(default=datetime.datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
@@ -42,7 +44,9 @@ class Thread(models.Model):
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
-        self.slug = uuslug(self.title, instance=self, max_length=50)
+        self.slug = uuslug(self.title, instance=self, max_length=SLUG_LENGTH)
+        if not self.slug:
+            self.slug = uuslug('empty', instance=self, max_length=SLUG_LENGTH)
         super(Thread, self).save(*args, **kwargs)
 
     class Meta:

@@ -6,12 +6,6 @@ from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
 from .forms import NewThreadForm
-from user.models import ForumUser
-
-
-class Welcome(LoginRequiredMixin, ListView):
-    template_name = "forum/welcome.html"
-    model = ForumUser
 
 
 class TopView(LoginRequiredMixin, ListView):
@@ -56,7 +50,7 @@ class PostView(LoginRequiredMixin, ListView):
 
 class NewThread(LoginRequiredMixin, CreateView):
     form_class = NewThreadForm
-    template_name = 'forum/new.html'
+    template_name = 'forum/new_thread.html'
 
     def form_valid(self, form):
         thread = Thread()  # Create the Thread
@@ -83,5 +77,5 @@ class NewThread(LoginRequiredMixin, CreateView):
 
 class NewPost(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ()
+    fields = ('content_plain',)
     template_name = 'forum/new_post.html'

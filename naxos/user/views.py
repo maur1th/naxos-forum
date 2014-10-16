@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView
 from django.core.urlresolvers import reverse_lazy
 
 from braces.views import LoginRequiredMixin
@@ -26,3 +26,8 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         kwargs = super(UpdateUser, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
+
+
+class MemberList(LoginRequiredMixin, ListView):
+    template_name = "user/members.html"
+    model = ForumUser

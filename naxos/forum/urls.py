@@ -15,13 +15,18 @@ urlpatterns = patterns('',
         name='category'
     ),
     url(
+        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
+        view=views.PostView.as_view(),
+        name='thread'
+    ),
+    url(
         regex=r'^(?P<category_slug>[\w|\-]+)/\+$',
         view=views.NewThread.as_view(),
         name='new_thread'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
-        view=views.PostView.as_view(),
-        name='thread'
+        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/\+$',
+        view=views.NewPost.as_view(),
+        name='new_post'
     ),
 )

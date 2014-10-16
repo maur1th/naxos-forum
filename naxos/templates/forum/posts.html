@@ -25,6 +25,12 @@
                 {{ post.content_plain }}
             </div>
         </div>
+    <hr>
     {% endfor %}
+    <div class="row">
+        <div class="col-md-1">
+            <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
+        </div>
+    </div>
 </div>
 {% endblock %}

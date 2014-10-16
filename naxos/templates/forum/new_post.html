@@ -1,0 +1,22 @@
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
+<div class="row">
+    <h1>Réponse :</h1>
+    <form enctype="multipart/form-data" method="post" action="{% url 'forum:new_post' category.slug thread.slug %}">
+        {% csrf_token %}
+        <table>
+            {% for field in form %}
+            <tr>
+                <th>{{ field.label_tag }}
+                </th>
+                <td>
+                    {{ field }}{{ field.errors }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+</div>
+{% endblock %}

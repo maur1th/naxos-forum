@@ -18,9 +18,9 @@ class ThreadView(LoginRequiredMixin, ListView):
     model = Thread
 
     def get_queryset(self):
-        "Return only threads of the current category"
+        "Return threads of the current category ordered by latest post"
         return Thread.objects.filter(category=Category.objects.get(
-            slug=self.kwargs['category_slug']))
+            slug=self.kwargs['category_slug'])).order_by('-posts__created')
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"

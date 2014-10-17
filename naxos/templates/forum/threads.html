@@ -4,13 +4,36 @@
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; {{ category.title }}</h6>
     <h2>Sujets :</h2>
     <a href="{% url 'forum:new_thread' category.slug %}">Nouveau sujet</a>
-    <hr>
-    <table>
-        {% for thread in object_list %}
-            <tr>
-                <td><a href="{% url 'forum:thread' category.slug thread.slug %}">{{ thread.title }}</a> - Auteur : {{ thread.author }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <hr style="margin:5px 0 5px 0">
+    <strong>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-7">Message</div>
+            <div class="col-md-1 text-center">Auteur</div>
+            <div class="col-md-1 text-center">Rép./Vues</div>
+            <div class="col-md-2 text-center">Date du dernier message</div>
+        </div>
+    </strong>
+    <hr style="margin:5px 0 5px 0">
+    {% for thread in object_list %}
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-7">
+                <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+            </div>
+            <div class="col-md-1 text-center">
+                {{ thread.author }}
+            </div>
+            <div class="col-md-1 text-center">
+            </div>
+            <div class="col-md-2 text-center">
+                {{ thread.posts.latest.created }}
+                <br><strong>{{ thread.posts.latest.author }}</strong>
+            </div>
+        </div>
+        <hr style="margin:5px 0 5px 0">
+    {% endfor %}
 </div>
 {% endblock %}

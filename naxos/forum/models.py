@@ -7,11 +7,6 @@ from user.models import ForumUser
 
 SLUG_LENGTH = 50
 
-# TODO
-# Improve TZ support
-# Add get_absolute_url
-# Make thread slugs only unique per category
-
 
 class Category(models.Model):
     """Contains threads."""
@@ -48,9 +43,6 @@ class Thread(models.Model):
             self.slug = uuslug('empty', instance=self, max_length=SLUG_LENGTH)
         super(Thread, self).save(*args, **kwargs)
 
-    class Meta:
-        ordering = ["-modified"]
-
     def __str__(self):
         return self.slug
 
@@ -65,14 +57,16 @@ class Post(models.Model):
     author = models.ForeignKey(ForumUser, related_name='posts')
     thread = models.ForeignKey(Thread, related_name='posts')
 
+    def save(self, *args, **kwargs):
+        self.content_html = self.content_plain
+        super(Post, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["created"]
+        # Permit thread.posts.latest.created in template
+        get_latest_by = "created"
+
     def __str__(self):
         end = len(self.content_plain) > 40 and "..." or ""
         return "{:s}: {:s}{:s}".format(self.author.username,
                                        self.content_plain[:40], end)
-
-    class Meta:
-        ordering = ["created"]
-
-    def save(self, *args, **kwargs):
-        self.content_html = self.content_plain
-        super(Post, self).save(*args, **kwargs)

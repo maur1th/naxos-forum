@@ -2,6 +2,7 @@ from django.views.generic import ListView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 
+import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
@@ -20,7 +21,7 @@ class ThreadView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
         return Thread.objects.filter(category=Category.objects.get(
-            slug=self.kwargs['category_slug'])).order_by('-posts__created')
+            slug=self.kwargs['category_slug']))
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"
@@ -96,6 +97,9 @@ class NewPost(LoginRequiredMixin, CreateView):
             slug=self.kwargs['thread_slug'])
         form.instance.author = self.request.user
         form.instance.save()
+        thread = Thread.objects.get(category=self.kwargs['category_slug'], slug=self.kwargs['thread_slug'])
+        thread.modified = form.instance.created
+        thread.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

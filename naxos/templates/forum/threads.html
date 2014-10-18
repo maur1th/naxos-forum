@@ -22,6 +22,7 @@
             </div>
             <div class="col-md-7">
                 <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+                - {{ thread.modified }}
             </div>
             <div class="col-md-1 text-center">
                 {{ thread.author }}

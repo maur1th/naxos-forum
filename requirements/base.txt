@@ -1,5 +1,5 @@
 Django==1.7
+Pillow==2.6.0
 django-braces==1.4.0
 django-uuslug==1.0.2
-Pillow==2.6.0
-sqlparse==0.1.12
+psycopg2==2.5.4

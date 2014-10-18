@@ -9,6 +9,7 @@ SLUG_LENGTH = 50
 
 
 class Category(models.Model):
+
     """Contains threads."""
     slug = models.SlugField(blank=False)
     title = models.CharField(max_length=50, blank=False)
@@ -23,8 +24,9 @@ class Category(models.Model):
 
 
 class Thread(models.Model):
+
     """Contains posts."""
-    slug = models.SlugField(max_length=SLUG_LENGTH, unique=True)
+    slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80)
     author = models.ForeignKey(ForumUser, related_name='threads')
     modified = models.DateTimeField(default=datetime.datetime.now)
@@ -38,16 +40,26 @@ class Thread(models.Model):
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
-        self.slug = uuslug(self.title, instance=self, max_length=SLUG_LENGTH)
+        self.slug = uuslug(self.title,
+                           filter_dict={'category': self.category},
+                           instance=self,
+                           max_length=SLUG_LENGTH)
         if not self.slug:
-            self.slug = uuslug('empty', instance=self, max_length=SLUG_LENGTH)
+            self.slug = uuslug('sans titre',
+                               filter_dict={'category': self.category},
+                               instance=self,
+                               max_length=SLUG_LENGTH)
         super(Thread, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["-modified"]
 
     def __str__(self):
         return self.slug
 
 
 class Post(models.Model):
+
     """A post."""
     created = models.DateTimeField(default=datetime.datetime.now,
                                    editable=False)

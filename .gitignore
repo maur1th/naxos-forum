@@ -9,6 +9,7 @@
 *.DS_Store
 *.swp
 *.out
+*.venv
 
 ## sublime-text
 *.sublime-project

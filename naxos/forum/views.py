@@ -65,13 +65,13 @@ class NewThread(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """ Handle thread and 1st post creation in the db"""
-        thread = Thread()  # Create the Thread
-        thread.title = self.request.POST['title']
-        thread.author = self.request.user
-        thread.category = Category.objects.get(
-            slug=self.kwargs['category_slug'])
-        thread.save()
-        form.instance.thread = thread  # Complete the post
+        # Create the thread
+        t = Thread.objects.create(
+            title=self.request.POST['title'],
+            author=self.request.user,
+            category=Category.objects.get(slug=self.kwargs['category_slug']))
+        # Complete the post and save it
+        form.instance.thread = t
         form.instance.author = self.request.user
         form.instance.save()
         return HttpResponseRedirect(self.get_success_url())
@@ -98,13 +98,13 @@ class NewPost(LoginRequiredMixin, CreateView):
         """ Handle post creation in the db"""
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
-        thread = Thread.objects.get(slug=t_slug,
-                                    category__slug=c_slug)
-        form.instance.thread = thread
+        t = Thread.objects.get(slug=t_slug,
+                               category__slug=c_slug)
+        form.instance.thread = t
         form.instance.author = self.request.user
         form.instance.save()
-        thread.modified = form.instance.created
-        thread.save()
+        t.modified = form.instance.created
+        t.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

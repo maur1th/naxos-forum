@@ -2,7 +2,6 @@ from django.views.generic import ListView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 
-import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
@@ -20,8 +19,8 @@ class ThreadView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        return Thread.objects.filter(category=Category.objects.get(
-            slug=self.kwargs['category_slug']))
+        cat = self.kwargs['category_slug']
+        return Thread.objects.filter(category__slug=cat)
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"
@@ -36,16 +35,20 @@ class PostView(LoginRequiredMixin, ListView):
     model = Post
 
     def get_queryset(self):
-        return Post.objects.filter(thread=Thread.objects.get(
-            slug=self.kwargs['thread_slug']))
+        "Return list of posts given thread and category slugs"
+        c_slug = self.kwargs['category_slug']
+        t_slug = self.kwargs['thread_slug']
+        return Post.objects.filter(thread__slug=t_slug,
+                                   thread__category__slug=c_slug)
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(PostView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.get(
-            slug=self.kwargs['category_slug'])
-        context['thread'] = Thread.objects.get(
-            slug=self.kwargs['thread_slug'])
+        c_slug = self.kwargs['category_slug']
+        t_slug = self.kwargs['thread_slug']
+        context['category'] = Category.objects.get(slug=c_slug)
+        context['thread'] = Thread.objects.get(slug=t_slug,
+                                               category__slug=c_slug)
         return context
 
 
@@ -93,11 +96,13 @@ class NewPost(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """ Handle post creation in the db"""
-        form.instance.thread = Thread.objects.get(
-            slug=self.kwargs['thread_slug'])
+        c_slug = self.kwargs['category_slug']
+        t_slug = self.kwargs['thread_slug']
+        thread = Thread.objects.get(slug=t_slug,
+                                    category__slug=c_slug)
+        form.instance.thread = thread
         form.instance.author = self.request.user
         form.instance.save()
-        thread = Thread.objects.get(category=self.kwargs['category_slug'], slug=self.kwargs['thread_slug'])
         thread.modified = form.instance.created
         thread.save()
         return HttpResponseRedirect(self.get_success_url())

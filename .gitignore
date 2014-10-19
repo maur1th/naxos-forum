@@ -11,9 +11,10 @@
 *.out
 *.venv
 
-## sublime-text
+## project specific
 *.sublime-project
 *.sublime-workspace
+initial_data.json
 
 # secret key
 secret.txt

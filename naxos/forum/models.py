@@ -11,7 +11,7 @@ SLUG_LENGTH = 50
 class Category(models.Model):
 
     """Contains threads."""
-    slug = models.SlugField(blank=False)
+    slug = models.SlugField(blank=False, unique=True)
     title = models.CharField(max_length=50, blank=False)
     subtitle = models.CharField(max_length=200)
     threadCount = models.IntegerField(default=0)

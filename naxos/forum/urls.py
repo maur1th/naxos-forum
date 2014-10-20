@@ -29,4 +29,9 @@ urlpatterns = patterns('',
         view=views.NewPost.as_view(),
         name='new_post'
     ),
+    url(
+        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/edit=(?P<pk>\d+)$',
+        view=views.EditPost.as_view(),
+        name='edit'
+    ),
 )

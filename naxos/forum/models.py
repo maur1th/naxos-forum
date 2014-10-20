@@ -28,7 +28,7 @@ class Thread(models.Model):
 
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
-    title = models.CharField(max_length=80)
+    title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='threads')
     modified = models.DateTimeField(default=datetime.datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
@@ -66,7 +66,7 @@ class Post(models.Model):
     created = models.DateTimeField(default=datetime.datetime.now,
                                    editable=False)
     modified = models.DateTimeField(blank=True, null=True)
-    content_plain = models.TextField()
+    content_plain = models.TextField(verbose_name='Message')
     content_html = models.TextField()
     markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='posts')

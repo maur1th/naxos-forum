@@ -2,8 +2,18 @@
 {% block logged_in_content %}
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a> &gt; {{ thread.title }}</h6>
-
-    <h2>Posts :</h2>
+    <br>
+    <hr style="margin:10px 0 10px 0">
+    <div class="row">
+        <strong>
+            <div class="col-md-2 text-left">
+                Auteur
+            </div>
+            <div class="col-md-10">
+                Sujet : {{ thread.title }}
+            </div>
+        </strong>
+    </div>
     <hr style="margin:10px 0 10px 0">
     {% for post in object_list %}
         <a name="{{ post.pk }}"></a>
@@ -21,10 +31,13 @@
                 {% endif %}
             </div>
             <div class="col-md-10">
-                <small>Posté le : {{ post.created }}</small>
-                {% ifequal post.author user %}
-                    Placeholder
-                {% endifequal %}
+                <small>
+                    Posté le {{ post.created|date:"j F Y à H:i:s" }}
+                    {% ifequal post.author user %}
+                         | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
+                    {% endifequal %}
+                    | <a href="">Citer</a>
+                </small>
                 <hr style="margin:10px 0 10px 0">
                 {{ post.content_html|safe }}
             </div>

@@ -3,8 +3,8 @@ from django import forms
 from .models import Post
 
 
-class NewThreadForm(forms.ModelForm):
-    title = forms.CharField(max_length=140)
+class ThreadForm(forms.ModelForm):
+    title = forms.CharField(max_length=140, label='Titre')
     # icon = forms.ImageField(required=False)
 
     class Meta:

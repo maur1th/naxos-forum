@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
-from .forms import NewThreadForm
+from .forms import ThreadForm
 
 
 class TopView(LoginRequiredMixin, ListView):
@@ -53,7 +53,7 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 class NewThread(LoginRequiredMixin, CreateView):
-    form_class = NewThreadForm
+    form_class = ThreadForm
     template_name = 'forum/new_thread.html'
 
     def get_context_data(self, **kwargs):
@@ -88,10 +88,8 @@ class NewPost(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(NewPost, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.get(
-            slug=self.kwargs['category_slug'])
-        context['thread'] = Thread.objects.get(
-            slug=self.kwargs['thread_slug'])
+        context['category'] = self.kwargs['category_slug']
+        context['thread'] = self.kwargs['thread_slug']
         return context
 
     def form_valid(self, form):
@@ -111,16 +109,44 @@ class NewPost(LoginRequiredMixin, CreateView):
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '#' + str(self.post_pk))
 
-# class UpdatePost(LoginRequiredMixin, UpdateView):
-#     form_class = UpdateUserForm
-#     template_name = 'forum/edit.html'
-#     success_url = reverse_lazy('forum:thread', kwargs=self.kwargs)
 
-#     def get_object(self):
-#         return ForumUser.objects.get(username=self.request.user)
+class EditPost(LoginRequiredMixin, UpdateView):
+    form_class = ThreadForm
+    model = Post
+    template_name = 'forum/edit.html'
 
-#     def get_form_kwargs(self):
-#         """Pass request to form."""
-#         kwargs = super(UpdateUser, self).get_form_kwargs()
-#         kwargs.update({'request': self.request})
-#         return kwargs
+    def dispatch(self, request, *args, **kwargs):
+        # Get the right post and thread
+        self.p = Post.objects.get(pk=self.kwargs['pk'])
+        self.t = self.p.thread
+        return super(EditPost, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        "Pass title initial data to form"
+        # Update the initial data dict
+        initial = super(EditPost, self).get_initial()
+        initial['title'] = self.t.title
+        return initial
+
+    def get_context_data(self, **kwargs):
+        "Pass category and thread from url to context"
+        context = super(EditPost, self).get_context_data(**kwargs)
+        context['category_slug'] = self.kwargs['category_slug']
+        context['thread'], context['post'] = self.t, self.p
+        return context
+
+    def form_valid(self, form):
+        """Handle thread and 1st post creation in the db"""
+        # Edit the thread
+        if self.p == self.t.posts.first():
+            self.t.title = self.request.POST['title']
+        self.t.save()
+        # Save the post
+        form.instance.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        pk = str(self.kwargs.pop('pk'))
+        self.kwargs['thread_slug'] = self.t
+        return (reverse_lazy('forum:thread', kwargs=self.kwargs)
+                + '#' + pk)

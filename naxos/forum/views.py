@@ -2,6 +2,7 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 
+import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
@@ -98,12 +99,21 @@ class NewPost(LoginRequiredMixin, CreateView):
         t_slug = self.kwargs['thread_slug']
         t = Thread.objects.get(slug=t_slug,
                                category__slug=c_slug)
-        form.instance.thread = t
-        form.instance.author = self.request.user
-        form.instance.save()
-        t.modified, self.post_pk = form.instance.created, form.instance.pk
-        t.save()
-        return HttpResponseRedirect(self.get_success_url())
+        # Merge with previous thread if same author
+        p = t.posts.latest()  # Get the latest post
+        if p.author == self.request.user:
+            p.content_plain += "\n\n{:s}".format(form.instance.content_plain)
+            p.modified = datetime.datetime.now()
+            p.save()
+            t.modified, self.post_pk = p.modified, form.instance.pk
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            form.instance.thread = t
+            form.instance.author = self.request.user
+            form.instance.save()
+            t.modified, self.post_pk = form.instance.created, form.instance.pk
+            t.save()
+            return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
@@ -152,6 +162,9 @@ class EditPost(LoginRequiredMixin, UpdateView):
         if self.p == self.t.posts.first():
             self.t.title = self.request.POST['title']
         self.t.save()
+        # Add modified datetime tag if needed
+        if form.instance.content_plain != self.p.content_plain:
+            form.instance.modified = datetime.datetime.now()
         # Save the post
         form.instance.save()
         return HttpResponseRedirect(self.get_success_url())

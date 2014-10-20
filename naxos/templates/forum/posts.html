@@ -40,6 +40,10 @@
                 </small>
                 <hr style="margin:10px 0 10px 0">
                 {{ post.content_html|safe }}
+                {% if post.modified %}
+                    <br><br>
+                    <small>— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</small>
+                {% endif %}
             </div>
         </div>
     <hr style="margin:10px 0 10px 0">

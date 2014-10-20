@@ -10,46 +10,55 @@ from .forms import ThreadForm
 
 
 class TopView(LoginRequiredMixin, ListView):
+
+    """Top view with all categories"""
     template_name = "forum/top.html"
     model = Category
 
 
 class ThreadView(LoginRequiredMixin, ListView):
+
+    """Display category list of threads"""
     template_name = "forum/threads.html"
     model = Thread
 
+    def dispatch(self, request, *args, **kwargs):
+        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        return super(ThreadView, self).dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        c_slug = self.kwargs['category_slug']
-        return Thread.objects.filter(category__slug=c_slug)
+        return self.c.threads.all()
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"
         context = super(ThreadView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.get(
-            slug=self.kwargs['category_slug'])
+        context['category'] = self.c
         return context
 
 
 class PostView(LoginRequiredMixin, ListView):
+
+    """Display thread list of posts"""
     template_name = "forum/posts.html"
     model = Post
 
-    def get_queryset(self):
-        "Return list of posts given thread and category slugs"
+    def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
-        return Post.objects.filter(thread__slug=t_slug,
-                                   thread__category__slug=c_slug)
+        self.t = Thread.objects.get(slug=t_slug,
+                                    category__slug=c_slug)
+        return super(PostView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        "Return list of posts given thread and category slugs"
+        return self.t.posts.all()
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(PostView, self).get_context_data(**kwargs)
-        c_slug = self.kwargs['category_slug']
-        t_slug = self.kwargs['thread_slug']
-        context['category'] = Category.objects.get(slug=c_slug)
-        context['thread'] = Thread.objects.get(slug=t_slug,
-                                               category__slug=c_slug)
+        context['category'] = self.t.category
+        context['thread'] = self.t
         return context
 
 
@@ -57,11 +66,14 @@ class NewThread(LoginRequiredMixin, CreateView):
     form_class = ThreadForm
     template_name = 'forum/new_thread.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        return super(NewThread, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         "Pass Category from url to context"
         context = super(NewThread, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.get(
-            slug=self.kwargs['category_slug'])
+        context['category'] = self.c
         return context
 
     def form_valid(self, form):
@@ -70,7 +82,7 @@ class NewThread(LoginRequiredMixin, CreateView):
         t = Thread.objects.create(
             title=self.request.POST['title'],
             author=self.request.user,
-            category=Category.objects.get(slug=self.kwargs['category_slug']))
+            category=self.c)
         # Complete the post and save it
         form.instance.thread = t
         form.instance.author = self.request.user
@@ -86,6 +98,13 @@ class NewPost(LoginRequiredMixin, CreateView):
     fields = ('content_plain',)
     template_name = 'forum/new_post.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        c_slug = self.kwargs['category_slug']
+        t_slug = self.kwargs['thread_slug']
+        self.t = Thread.objects.get(slug=t_slug,
+                                    category__slug=c_slug)
+        return super(NewPost, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(NewPost, self).get_context_data(**kwargs)
@@ -95,24 +114,21 @@ class NewPost(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """ Handle post creation in the db"""
-        c_slug = self.kwargs['category_slug']
-        t_slug = self.kwargs['thread_slug']
-        t = Thread.objects.get(slug=t_slug,
-                               category__slug=c_slug)
         # Merge with previous thread if same author
-        p = t.posts.latest()  # Get the latest post
+        p = self.t.posts.latest()  # Get the latest post
         if p.author == self.request.user:
             p.content_plain += "\n\n{:s}".format(form.instance.content_plain)
             p.modified = datetime.datetime.now()
             p.save()
-            t.modified, self.post_pk = p.modified, form.instance.pk
+            self.t.modified, self.post_pk = p.modified, form.instance.pk
             return HttpResponseRedirect(self.get_success_url())
         else:
-            form.instance.thread = t
+            form.instance.thread = self.t
             form.instance.author = self.request.user
             form.instance.save()
-            t.modified, self.post_pk = form.instance.created, form.instance.pk
-            t.save()
+            self.t.modified = form.instance.created
+            self.t.save()
+            self.post_pk = form.instance.pk  # Store post pk for success url
             return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -122,12 +138,17 @@ class NewPost(LoginRequiredMixin, CreateView):
 
 class QuotePost(NewPost):
 
+    """Quote the content of another post"""
+
+    def dispatch(self, request, *args, **kwargs):
+        self.p = Post.objects.get(pk=self.kwargs['pk'])
+        return super(NewPost, self).dispatch(request, *args, **kwargs)
+
     def get_initial(self):
         "Pass quoted post content as initial data for form"
         initial = super(QuotePost, self).get_initial()
-        p = Post.objects.get(pk=self.kwargs['pk'])
         text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
-            p.author.username, p.content_plain)
+            self.p.author.username, self.p.content_plain)
         initial['content_plain'] = text
         return initial
 

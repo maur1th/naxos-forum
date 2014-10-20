@@ -36,7 +36,7 @@
                     {% ifequal post.author user %}
                          | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
                     {% endifequal %}
-                    | <a href="">Citer</a>
+                    | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
                 </small>
                 <hr style="margin:10px 0 10px 0">
                 {{ post.content_html|safe }}

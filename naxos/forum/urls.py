@@ -34,4 +34,9 @@ urlpatterns = patterns('',
         view=views.EditPost.as_view(),
         name='edit'
     ),
+    url(
+        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/quote=(?P<pk>\d+)$',
+        view=views.QuotePost.as_view(),
+        name='quote'
+    ),
 )

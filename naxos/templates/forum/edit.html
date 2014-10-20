@@ -18,8 +18,7 @@
                         {% ifequal thread.posts.first post %} 
                             {{ field }}{{ field.errors }}
                         {% else %}
-                            {{ thread.title }}
-                            {{ field.as_hidden }}
+                            {{ thread.title }}{{ field.as_hidden }}
                         {% endifequal %}
                     {% else %}
                         {{ field }}{{ field.errors }}

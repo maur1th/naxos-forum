@@ -64,7 +64,7 @@ class NewThread(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        """ Handle thread and 1st post creation in the db"""
+        "Handle thread and 1st post creation in the db"
         # Create the thread
         t = Thread.objects.create(
             title=self.request.POST['title'],
@@ -110,6 +110,18 @@ class NewPost(LoginRequiredMixin, CreateView):
                 + '#' + str(self.post_pk))
 
 
+class QuotePost(NewPost):
+
+    def get_initial(self):
+        "Pass quoted post content as initial data for form"
+        initial = super(QuotePost, self).get_initial()
+        p = Post.objects.get(pk=self.kwargs['pk'])
+        text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
+            p.author.username, p.content_plain)
+        initial['content_plain'] = text
+        return initial
+
+
 class EditPost(LoginRequiredMixin, UpdateView):
     form_class = ThreadForm
     model = Post
@@ -122,8 +134,7 @@ class EditPost(LoginRequiredMixin, UpdateView):
         return super(EditPost, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        "Pass title initial data to form"
-        # Update the initial data dict
+        "Pass thread title as initial data for form"
         initial = super(EditPost, self).get_initial()
         initial['title'] = self.t.title
         return initial
@@ -136,8 +147,8 @@ class EditPost(LoginRequiredMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        """Handle thread and 1st post creation in the db"""
-        # Edit the thread
+        "Handle thread and 1st post creation in the db"
+        # Edit thread title if indeed the first post
         if self.p == self.t.posts.first():
             self.t.title = self.request.POST['title']
         self.t.save()

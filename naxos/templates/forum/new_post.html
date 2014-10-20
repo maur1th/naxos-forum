@@ -2,7 +2,7 @@
 {% block logged_in_content %}
 <div class="row">
     <h1>Réponse :</h1>
-    <form enctype="multipart/form-data" method="post" action="{% url 'forum:new_post' category thread %}">
+    <form method="post" action="{% url 'forum:new_post' category thread %}">
         {% csrf_token %}
         <table>
             {% for field in form %}

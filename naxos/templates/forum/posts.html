@@ -1,7 +1,7 @@
 {% extends "logged_in.html" %}
 {% block logged_in_content %}
 <div class="row">
-    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a> &gt; {{ thread.title }}</h6>
+    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a> &gt; {{ thread.title }}</h6>
     <br>
     <hr style="margin:10px 0 10px 0">
     <div class="row">
@@ -34,9 +34,9 @@
                 <small>
                     Posté le {{ post.created|date:"j F Y à H:i:s" }}
                     {% ifequal post.author user %}
-                         | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
+                         | <a href="{% url 'forum:edit' category thread post.pk %}">Modifier</a>
                     {% endifequal %}
-                    | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
+                    | <a href="{% url 'forum:quote' category thread post.pk %}">Citer</a>
                 </small>
                 <hr style="margin:10px 0 10px 0">
                 {{ post.content_html|safe }}
@@ -50,7 +50,21 @@
     {% endfor %}
     <div class="row">
         <div class="col-md-1">
-            <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
+            <a href="{% url 'forum:new_post' category thread %}"><button class="btn btn-primary">Répondre</button></a>
+        </div>
+    </div>
+    {# Quick reply #}
+    <br>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form method="post" action="{% url 'forum:new_post' category thread %}">
+            {% csrf_token %}
+                <strong>Réponse rapide :</strong>
+                <br>
+                <textarea cols="80" id="id_content_plain" name="content_plain" rows="5"></textarea>
+                <br>
+                <button type="submit" class="btn btn-default btn-sm">Enregistrer</button>
+            </form>
         </div>
     </div>
 </div>

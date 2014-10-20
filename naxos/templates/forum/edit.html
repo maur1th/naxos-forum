@@ -6,7 +6,7 @@
         <a href="{% url 'forum:thread' category_slug thread %}">Retour</a>
     {% else %}
         <h1>Modifier :</h1>
-        <form enctype="multipart/form-data" method="post" action="{% url 'forum:edit' category_slug thread post.pk %}">
+        <form method="post" action="{% url 'forum:edit' category_slug thread post.pk %}">
             {% csrf_token %}
             <table>
                 {% for field in form %}

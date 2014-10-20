@@ -103,12 +103,13 @@ class NewPost(LoginRequiredMixin, CreateView):
         form.instance.thread = t
         form.instance.author = self.request.user
         form.instance.save()
-        t.modified = form.instance.created
+        t.modified, self.post_pk = form.instance.created, form.instance.pk
         t.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy('forum:thread', kwargs=self.kwargs)
+        return (reverse_lazy('forum:thread', kwargs=self.kwargs)
+                + '#' + str(self.post_pk))
 
 # class UpdatePost(LoginRequiredMixin, UpdateView):
 #     form_class = UpdateUserForm

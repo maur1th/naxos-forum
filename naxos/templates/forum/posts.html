@@ -6,6 +6,7 @@
     <h2>Posts :</h2>
     <hr style="margin:10px 0 10px 0">
     {% for post in object_list %}
+        <a name="{{ post.pk }}"></a>
         <div class="row">
             <div class="col-md-2 text-center">
                 <p style="word-wrap: break-word">
@@ -22,7 +23,7 @@
             <div class="col-md-10">
                 <small>Posté le : {{ post.created }}</small>
                 {% ifequal post.author user %}
-                    Equal
+                    Placeholder
                 {% endifequal %}
                 <hr style="margin:10px 0 10px 0">
                 {{ post.content_html|safe }}

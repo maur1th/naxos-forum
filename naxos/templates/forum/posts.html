@@ -21,8 +21,11 @@
             </div>
             <div class="col-md-10">
                 <small>Posté le : {{ post.created }}</small>
+                {% ifequal post.author user %}
+                    Equal
+                {% endifequal %}
                 <hr style="margin:10px 0 10px 0">
-                {{ post.content_plain }}
+                {{ post.content_html|safe }}
             </div>
         </div>
     <hr style="margin:10px 0 10px 0">

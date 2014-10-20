@@ -3,6 +3,7 @@ from django.db import models
 import datetime
 from uuslug import uuslug
 
+from .util import convert_text_to_html
 from user.models import ForumUser
 
 SLUG_LENGTH = 50
@@ -53,6 +54,7 @@ class Thread(models.Model):
 
     class Meta:
         ordering = ["-modified"]
+        index_together = ['category', 'slug']
 
     def __str__(self):
         return self.slug
@@ -66,11 +68,12 @@ class Post(models.Model):
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField()
     content_html = models.TextField()
+    markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='posts')
     thread = models.ForeignKey(Thread, related_name='posts')
 
     def save(self, *args, **kwargs):
-        self.content_html = self.content_plain
+        self.content_html = convert_text_to_html(self.content_plain)
         super(Post, self).save(*args, **kwargs)
 
     class Meta:

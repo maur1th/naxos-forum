@@ -1,4 +1,4 @@
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 
@@ -19,8 +19,8 @@ class ThreadView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        cat = self.kwargs['category_slug']
-        return Thread.objects.filter(category__slug=cat)
+        c_slug = self.kwargs['category_slug']
+        return Thread.objects.filter(category__slug=c_slug)
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"
@@ -109,3 +109,17 @@ class NewPost(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('forum:thread', kwargs=self.kwargs)
+
+# class UpdatePost(LoginRequiredMixin, UpdateView):
+#     form_class = UpdateUserForm
+#     template_name = 'forum/edit.html'
+#     success_url = reverse_lazy('forum:thread', kwargs=self.kwargs)
+
+#     def get_object(self):
+#         return ForumUser.objects.get(username=self.request.user)
+
+#     def get_form_kwargs(self):
+#         """Pass request to form."""
+#         kwargs = super(UpdateUser, self).get_form_kwargs()
+#         kwargs.update({'request': self.request})
+#         return kwargs

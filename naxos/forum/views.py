@@ -50,6 +50,8 @@ class PostView(LoginRequiredMixin, ListView):
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
+        self.t.viewCount += 1
+        self.t.save()
         return super(PostView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -84,7 +86,8 @@ class NewThread(LoginRequiredMixin, CreateView):
         t = Thread.objects.create(
             title=self.request.POST['title'],
             author=self.request.user,
-            category=self.c)
+            category=self.c,
+            postCount=1)
         # Complete the post and save it
         form.instance.thread = t
         form.instance.author = self.request.user
@@ -121,14 +124,17 @@ class NewPost(LoginRequiredMixin, CreateView):
         if p.author == self.request.user:
             p.content_plain += "\n\n{:s}".format(form.instance.content_plain)
             p.modified = datetime.datetime.now()
+            self.post_pk = p.pk  # Pass to success url
             p.save()
-            self.t.modified, self.post_pk = p.modified, form.instance.pk
+            self.t.modified = p.modified
+            self.t.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
             form.instance.thread = self.t
             form.instance.author = self.request.user
             form.instance.save()
             self.t.modified = form.instance.created
+            self.t.postCount += 1
             self.t.save()
             self.post_pk = form.instance.pk  # Store post pk for success url
             return HttpResponseRedirect(self.get_success_url())
@@ -181,12 +187,16 @@ class EditPost(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         "Handle thread and 1st post creation in the db"
+        modified = False  # Handle modified datetime tag update
         # Edit thread title if indeed the first post
-        if self.p == self.t.posts.first():
+        if (self.p == self.t.posts.first()
+                and self.request.POST['title'] != self.t.title):
             self.t.title = self.request.POST['title']
+            modified = True
         self.t.save()
-        # Add modified datetime tag if needed
         if form.instance.content_plain != self.p.content_plain:
+            modified = True
+        if modified:
             form.instance.modified = datetime.datetime.now()
         # Save the post
         form.instance.save()

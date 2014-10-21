@@ -9,9 +9,10 @@
         <div class="row">
             <div class="col-md-1">
             </div>
-            <div class="col-md-7">Message</div>
+            <div class="col-md-6">Message</div>
             <div class="col-md-1 text-center">Auteur</div>
-            <div class="col-md-1 text-center">Rép./Vues</div>
+            <div class="col-md-1 text-center">Rép.</div>
+            <div class="col-md-1 text-center">Vues</div>
             <div class="col-md-2 text-center">Date du dernier message</div>
         </div>
     </strong>
@@ -20,17 +21,19 @@
         <div class="row">
             <div class="col-md-1">
             </div>
-            <div class="col-md-7">
+            <div class="col-md-6">
                 <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
             </div>
             <div class="col-md-1 text-center">
                 {{ thread.author }}
             </div>
             <div class="col-md-1 text-center">
-            </div>
+            {{ thread.postCount }}</div>
+            <div class="col-md-1 text-center">
+            {{ thread.viewCount }}</div>
             <div class="col-md-2 text-center">
                 <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
-                    {{ thread.posts.latest.created|date:'d/m/Y H:i' }}
+                    {{ thread.modified|date:'d/m/Y H:i' }}
                     <br><strong>{{ thread.posts.latest.author }}</strong>
                 </a>
             </div>

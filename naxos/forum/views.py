@@ -21,6 +21,7 @@ class ThreadView(LoginRequiredMixin, ListView):
     """Display category list of threads"""
     template_name = "forum/threads.html"
     model = Thread
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
@@ -42,6 +43,7 @@ class PostView(LoginRequiredMixin, ListView):
     """Display thread list of posts"""
     template_name = "forum/posts.html"
     model = Post
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']

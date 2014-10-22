@@ -1,64 +1,71 @@
 {% extends "logged_in.html" %}
 {% block logged_in_content %}
+{# Path #}
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; {{ category.title }}</h6>
-    <h2>Sujets :</h2>
+</div>
+{# Buttons #}
+<div class="row">
     <a href="{% url 'forum:new_thread' category.slug %}">Nouveau sujet</a>
+</div>
+{# Header #}
+<div class="row">
     <hr style="margin:5px 0 5px 0">
     <strong>
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-6">Message</div>
-            <div class="col-md-1 text-center">Auteur</div>
-            <div class="col-md-1 text-center">Rép.</div>
-            <div class="col-md-1 text-center">Vues</div>
-            <div class="col-md-2 text-center">Date du dernier message</div>
+    <small>
+        <div class="col-md-1">
         </div>
+        <div class="col-md-6">Message</div>
+        <div class="col-md-1 text-center">Auteur</div>
+        <div class="col-md-1 text-center">Rép.</div>
+        <div class="col-md-1 text-center">Vues</div>
+        <div class="col-md-2 text-center">Dernier message</div>
+    </small>
     </strong>
-    <hr style="margin:5px 0 5px 0">
-    {% for thread in object_list %}
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-6">
-                <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
-            </div>
-            <div class="col-md-1 text-center">
-                {{ thread.author }}
-            </div>
-            <div class="col-md-1 text-center">
-            {{ thread.postCount }}</div>
-            <div class="col-md-1 text-center">
-            {{ thread.viewCount }}</div>
-            <div class="col-md-2 text-center">
-                <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
-                    {{ thread.modified|date:'d/m/Y H:i' }}
-                    <br><strong>{{ thread.posts.latest.author }}</strong>
-                </a>
-            </div>
-        </div>
-        <hr style="margin:5px 0 5px 0">
-    {% endfor %}
 </div>
+<hr style="margin:5px 0 5px 0">
+{# Threads #}
+{% for thread in object_list %}
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-6">
+        <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+    </div>
+    <small>
+    <div class="col-md-1 text-center">
+        <strong>{{ thread.author }}</strong>
+    </div>
+    <div class="col-md-1 text-center">{{ thread.postCount }}</div>
+    <div class="col-md-1 text-center">{{ thread.viewCount }}</div>
+    <div class="col-md-2 text-center">
+        <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
+            {{ thread.modified|date:'d/m/Y H:i' }}
+            <br><strong>{{ thread.posts.latest.author }}</strong>
+        </a>
+    </div>
+    </small>
+</div>
+<hr style="margin:5px 0 5px 0">
+{% endfor %}
 {# Pagination #}
 <div class="col-md-12 text-center">
 {% if is_paginated %}
-    <div class="pagination">
-        <span class="page-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&lt;&lt; </a>
-                <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-            {% endif %}
-            <span class="page-current">
-                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-            </span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
-                <a href="?page=last">&gt;&gt;</a>
-            {% endif %}
+<div class="pagination">
+    <span class="page-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&lt;&lt; </a>
+            <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
         </span>
-    </div>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
+            <a href="?page=last">&gt;&gt;</a>
+        {% endif %}
+    </span>
+</div>
 {% endif %}
 </div>
 {% endblock %}

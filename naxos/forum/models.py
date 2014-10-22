@@ -85,3 +85,20 @@ class Post(models.Model):
         end = len(self.content_plain) > 40 and "..." or ""
         return "{:s}: {:s}{:s}".format(self.author.username,
                                        self.content_plain[:40], end)
+
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=50)
+    thread = models.OneToOneField(Thread, related_name='question')
+
+    def __str__(self):
+        return self.question_text
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question)
+    choice_text = models.CharField(max_length=50)
+    votes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.choice_text

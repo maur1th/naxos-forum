@@ -98,6 +98,10 @@ class NewThread(LoginRequiredMixin, CreateView):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
+class NewPoll(NewThread):
+    pass
+
+
 class NewPost(LoginRequiredMixin, CreateView):
     model = Post
     fields = ('content_plain',)

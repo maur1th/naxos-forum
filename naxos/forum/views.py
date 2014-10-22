@@ -99,7 +99,8 @@ class NewThread(LoginRequiredMixin, CreateView):
 
 
 class NewPoll(NewThread):
-    pass
+    def form_valid(self, form):
+        super(NewPoll, self).form_valid(form)
 
 
 class NewPost(LoginRequiredMixin, CreateView):

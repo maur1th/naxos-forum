@@ -24,9 +24,8 @@
     <a name="{{ post.pk }}"></a>
     <div class="col-md-2 text-center">
         <p style="word-wrap: break-word">
-            <strong>{{ post.author }}</strong>
+            <strong>{{ post.author }}</strong><br>
             {% if post.author.quote %}
-                <br>
                 <small>{{ post.author.quote }}</small>
             {% endif %}
         </p>

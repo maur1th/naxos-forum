@@ -1,12 +1,7 @@
-Django==1.7
-Pillow==2.6.0
-Unidecode==0.04.16
-coverage==3.7.1
+Django==1.7.1
+Pillow==2.6.1
 django-braces==1.4.0
-django-debug-toolbar==1.2.1
-django-uuslug==1.0.2
+django-crispy-forms==1.4.0
+django-uuslug==1.0.3
 postmarkup==1.2.1
 psycopg2==2.5.4
-python-slugify==0.1.0
-six==1.8.0
-sqlparse==0.1.13

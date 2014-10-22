@@ -88,7 +88,7 @@ class Post(models.Model):
 
 
 class Question(models.Model):
-    question_text = models.CharField(max_length=50)
+    question_text = models.CharField(max_length=80)
     thread = models.OneToOneField(Thread, related_name='question')
 
     def __str__(self):
@@ -97,7 +97,7 @@ class Question(models.Model):
 
 class Choice(models.Model):
     question = models.ForeignKey(Question)
-    choice_text = models.CharField(max_length=50)
+    choice_text = models.CharField(max_length=80)
     votes = models.IntegerField(default=0)
 
     def __str__(self):

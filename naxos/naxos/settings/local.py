@@ -17,4 +17,4 @@ DATABASES = {
     }
 }
 
-INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)
+# INSTALLED_APPS += ('debug_toolbar.apps.DebugToolbarConfig',)

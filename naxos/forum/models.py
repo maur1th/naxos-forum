@@ -53,7 +53,7 @@ class Thread(models.Model):
         super(Thread, self).save(*args, **kwargs)
 
     class Meta:
-        ordering = ["-modified"]
+        ordering = ["-isSticky", "-modified"]
         index_together = ['category', 'slug']
 
     def __str__(self):

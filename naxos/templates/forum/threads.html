@@ -30,6 +30,9 @@
     <div class="col-md-1">
     </div>
     <div class="col-md-6">
+        {% if thread.isSticky %}
+            Annonce : 
+        {% endif %}
         <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
     </div>
     <small>

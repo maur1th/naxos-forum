@@ -6,7 +6,7 @@ import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post
-from .forms import ThreadForm
+from .forms import ThreadForm, PostForm
 
 
 class TopView(LoginRequiredMixin, ListView):
@@ -80,6 +80,11 @@ class NewThread(LoginRequiredMixin, CreateView):
         context['category'] = self.c
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super(NewThread, self).get_form_kwargs()
+        kwargs.update({'category_slug': self.kwargs['category_slug']})
+        return kwargs
+
     def form_valid(self, form):
         "Handle thread and 1st post creation in the db"
         # Create the thread
@@ -104,8 +109,7 @@ class NewPoll(NewThread):
 
 
 class NewPost(LoginRequiredMixin, CreateView):
-    model = Post
-    fields = ('content_plain',)
+    form_class = PostForm
     template_name = 'forum/new_post.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -121,6 +125,12 @@ class NewPost(LoginRequiredMixin, CreateView):
         context['category'] = self.kwargs['category_slug']
         context['thread'] = self.kwargs['thread_slug']
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super(NewPost, self).get_form_kwargs()
+        kwargs.update({'category_slug': self.kwargs['category_slug'],
+                       'thread_slug': self.kwargs['thread_slug']})
+        return kwargs
 
     def form_valid(self, form):
         """ Handle post creation in the db"""

@@ -18,7 +18,7 @@ class UniqueEmailMixin(object):
         if not username:                              # For other forms
             try:
                 username = self.request.user
-            except:
+            except:  # Handle when Registration username is incorrect
                 return email
         if email and ForumUser.objects.filter(email=email).exclude(
                 username=username).count():

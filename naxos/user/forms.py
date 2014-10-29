@@ -3,9 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 
 from .models import ForumUser
 
+MAX_USERNAME_LENGTH = 20
 
 # TODO
 # Add email confirmation
+
 
 class UniqueEmailMixin(object):
 
@@ -56,15 +58,15 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
         auth/forms/#UserCreationForm
         """
         username = self.cleaned_data["username"]
-        if len(username) > 20:  # Additional check for max_length
-            raise forms.ValidationError('20 caractères maximum.')
+        if len(username) > MAX_USERNAME_LENGTH:  # Additional check
+            raise forms.ValidationError(
+                str(MAX_USERNAME_LENGTH)+' caractères maximum.')
         try:
             ForumUser.objects.get(username=username)
         except ForumUser.DoesNotExist:
             return username
         raise forms.ValidationError(
-            self.error_messages['duplicate_username'],
-            code='duplicate_username',
+            self.error_messages['duplicate_username']
         )
 
 

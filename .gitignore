@@ -15,6 +15,7 @@
 *.sublime-project
 *.sublime-workspace
 initial_data.json
+migration.txt
 
 # secret key
 secret.txt

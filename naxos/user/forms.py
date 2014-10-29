@@ -14,7 +14,10 @@ class UniqueEmailMixin(object):
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')  # For registration form
         if not username:                              # For other forms
-            username = self.request.user
+            try:
+                username = self.request.user
+            except:
+                return email
         if email and ForumUser.objects.filter(email=email).exclude(
                 username=username).count():
             raise forms.ValidationError('Adresse déjà enregistrée.')
@@ -48,11 +51,13 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
         """
         UserCreationForm method where mentions of the User model are replaced
         by the custom AbstractUser model (here, ForumUser).
-        https://code.djangoproject.com/ticket/19353#no1
+        https://code.djangoproject.com/ticket/19353
         and https://docs.djangoproject.com/en/1.7/_modules/django/contrib/
         auth/forms/#UserCreationForm
         """
         username = self.cleaned_data["username"]
+        if len(username) > 20:  # Additional check for max_length
+            raise forms.ValidationError('20 caractères maximum.')
         try:
             ForumUser.objects.get(username=username)
         except ForumUser.DoesNotExist:

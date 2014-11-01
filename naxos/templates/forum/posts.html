@@ -1,11 +1,52 @@
 {% extends "logged_in.html" %}
 {% block logged_in_content %}
+{% with thread.category as category %}
+{% with thread.question as question %}
 {# Path #}
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a></h6>
 </div>
+{% if question %}
+    <h2>Sondage : {{ thread.title }}</h2>
+{% else %}
+    <h2>Sujet : {{ thread.title }}</h2>
+{% endif %}
+{# Poll results #}
+{% if question %}
+    {% if user not in question.voters.all %}
+        <hr style="margin:10px 0 10px 0">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>{{ question }}</h5>
+                <form method="post" action="{% url 'forum:vote' category.slug thread.slug %}">
+                {% csrf_token %}
+                    {% for choice in question.choices.all %}
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="choice_text" value="{{ choice }}">
+                            {{ choice }}: {{ choice.votes }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-default btn-xs">Voter</button>
+                </form>
+            </div>
+        </div>
+        <br>
+    {% else %}
+        <hr style="margin:10px 0 10px 0">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>{{ question }}</h5>
+                {% for choice in question.choices.all %}
+                    <p>{{ choice }}: {{ choice.votes }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+{% endif %}
 {# Header #}
-<h1>{{ thread.title }}</h1>
 <div class="row">
     <hr style="margin:10px 0 10px 0">
     <strong>
@@ -13,7 +54,11 @@
             Auteur
         </div>
         <div class="col-md-10">
-            Sujet : {{ thread.title }}
+            {% if question %}
+                Sondage : {{ thread.title }}
+            {% else %}
+                Sujet : {{ thread.title }} 
+            {% endif %}
         </div>
     </strong>
 </div>
@@ -33,19 +78,19 @@
             <img src="{{ media }}{{ post.author.logo }}" alt="">
         {% endif %}
     </div>
-    <div class="col-md-10">
+    <div class="col-md-10 post">
         <small>
             Posté le {{ post.created|date:"j F Y à H:i:s" }}
             {% ifequal post.author user %}
-                 | <a href="{% url 'forum:edit' category thread post.pk %}">Modifier</a>
+                 | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
             {% endifequal %}
-            | <a href="{% url 'forum:quote' category thread post.pk %}">Citer</a>
+            | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
         </small>
         <hr style="margin:10px 0 10px 0">
         {{ post.content_html|safe }}
         {% if post.modified %}
             <br><br>
-            <small>— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</small>
+            <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
         {% endif %}
     </div>
 </div>
@@ -53,18 +98,18 @@
 {% endfor %}
 <div class="row">
     <div class="col-md-1">
-        <a href="{% url 'forum:new_post' category thread %}"><button class="btn btn-primary">Répondre</button></a>
+        <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
     </div>
 </div>
 {# Quick reply #}
 <br>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
-        <form method="post" action="{% url 'forum:new_post' category thread %}">
+        <form method="post" action="{% url 'forum:new_post' category.slug thread.slug %}">
         {% csrf_token %}
             <strong>Réponse rapide :</strong>
             <br>
-            <textarea cols="80" id="id_content_plain" name="content_plain" rows="5"></textarea>
+            <textarea cols="80" id="id_content_plain" class="textarea form-control" name="content_plain" rows="5"></textarea>
             <br>
             <button type="submit" class="btn btn-default btn-sm">Enregistrer</button>
         </form>
@@ -91,8 +136,10 @@
 </div>
 {% endif %}
 {# Path #}
-<br>
+<br><br>
 <div class="row">
-    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a> &gt; {{ thread.title }}</h6>
+    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a></h6>
 </div>
+{% endwith %}
+{% endwith %}
 {% endblock %}

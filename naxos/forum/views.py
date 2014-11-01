@@ -1,12 +1,14 @@
 from django.views.generic import ListView, CreateView, UpdateView
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 import datetime
 from braces.views import LoginRequiredMixin
 
-from .models import Category, Thread, Post
-from .forms import ThreadForm, PostForm
+from .models import Category, Thread, Post, PollQuestion
+from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
+    ChoicesFormSet, FormSetHelper
 
 
 class TopView(LoginRequiredMixin, ListView):
@@ -59,9 +61,8 @@ class PostView(LoginRequiredMixin, ListView):
         return self.t.posts.all()
 
     def get_context_data(self, **kwargs):
-        "Pass category and thread from url to context"
+        "Pass thread from url to context"
         context = super(PostView, self).get_context_data(**kwargs)
-        context['category'] = self.t.category
         context['thread'] = self.t
         return context
 
@@ -91,21 +92,70 @@ class NewThread(LoginRequiredMixin, CreateView):
         t = Thread.objects.create(
             title=self.request.POST['title'],
             author=self.request.user,
-            category=self.c,
-            postCount=1)
+            category=self.c)
         # Complete the post and save it
         form.instance.thread = t
         form.instance.author = self.request.user
-        form.instance.save()
+        form.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
-class NewPoll(NewThread):
-    def form_valid(self, form):
-        super(NewPoll, self).form_valid(form)
+def NewPoll(request, category_slug):
+    thread_form = PollThreadForm(prefix="thread")
+    question_form = QuestionForm(prefix="question")
+    choices_formset = ChoicesFormSet(instance=PollQuestion())
+    formset_helper = FormSetHelper()
+
+    if request.method == 'POST':
+        c = Category.objects.get(slug=category_slug)
+        thread_form = PollThreadForm(request.POST, prefix="thread")
+        question_form = QuestionForm(request.POST, prefix="question")
+        if thread_form.is_valid() and question_form.is_valid():
+            # Create the thread
+            t = Thread.objects.create(
+                title=request.POST['thread-title'],
+                author=request.user,
+                category=c)
+            # Complete the post and save it
+            thread_form.instance.thread = t
+            thread_form.instance.author = request.user
+            thread_form.save()
+            # Complete the poll and save it
+            question_form.instance.thread = t
+            question = question_form.save()
+            choices_formset = ChoicesFormSet(request.POST, instance=question)
+            if choices_formset.is_valid():
+                choices_formset.save()
+                return HttpResponseRedirect(reverse(
+                    'forum:category', kwargs={'category_slug': category_slug}))
+
+    return render(request, 'forum/new_poll.html', {
+        'question_form': question_form,
+        'thread_form': thread_form,
+        'choices_formset': choices_formset,
+        'formset_helper': formset_helper
+    })
+
+
+def VotePoll(request, category_slug, thread_slug):
+    thread = Thread.objects.get(slug=thread_slug,
+                                category__slug=category_slug)
+    question = thread.question
+
+    if request.method == 'POST':
+        if request.user not in question.voters.all():
+            choice = question.choices.get(
+                choice_text=request.POST['choice_text'])
+            choice.votes += 1
+            question.voters.add(request.user)
+            choice.save()
+            question.save()
+        return HttpResponseRedirect(reverse(
+            'forum:thread', kwargs={'category_slug': category_slug,
+                                    'thread_slug': thread_slug}))
 
 
 class NewPost(LoginRequiredMixin, CreateView):
@@ -133,7 +183,7 @@ class NewPost(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        """ Handle post creation in the db"""
+        "Handle post creation in the db"
         # Merge with previous thread if same author
         p = self.t.posts.latest()  # Get the latest post
         if p.author == self.request.user:
@@ -149,7 +199,6 @@ class NewPost(LoginRequiredMixin, CreateView):
             form.instance.author = self.request.user
             form.instance.save()
             self.t.modified = form.instance.created
-            self.t.postCount += 1
             self.t.save()
             self.post_pk = form.instance.pk  # Store post pk for success url
             return HttpResponseRedirect(self.get_success_url())
@@ -185,6 +234,7 @@ class EditPost(LoginRequiredMixin, UpdateView):
         # Get the right post and thread
         self.p = Post.objects.get(pk=self.kwargs['pk'])
         self.t = self.p.thread
+        self.c = self.t.category
         return super(EditPost, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -196,9 +246,17 @@ class EditPost(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(EditPost, self).get_context_data(**kwargs)
-        context['category_slug'] = self.kwargs['category_slug']
-        context['thread'], context['post'] = self.t, self.p
+        context['category'] = self.c
+        context['thread'] = self.t
+        context['post'] = self.p
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super(EditPost, self).get_form_kwargs()
+        kwargs.update({'category_slug': self.kwargs['category_slug'],
+                       'thread': self.t,
+                       'post': self.p})
+        return kwargs
 
     def form_valid(self, form):
         "Handle thread and 1st post creation in the db"
@@ -219,6 +277,6 @@ class EditPost(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         pk = str(self.kwargs.pop('pk'))
-        self.kwargs['thread_slug'] = self.t
+        self.kwargs['thread_slug'] = self.t.slug
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '#' + pk)

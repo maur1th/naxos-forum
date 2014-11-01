@@ -25,6 +25,16 @@ urlpatterns = patterns('',
         name='new_thread'
     ),
     url(
+        regex=r'^(?P<category_slug>[\w|\-]+)/\+poll$',
+        view=views.NewPoll,
+        name='new_poll'
+    ),
+    url(
+        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/vote/$',
+        view=views.VotePoll,
+        name='vote'
+    ),
+    url(
         regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/\+$',
         view=views.NewPost.as_view(),
         name='new_post'

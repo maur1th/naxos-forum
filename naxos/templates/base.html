@@ -7,18 +7,23 @@
         <title>Project Naxos</title>
         <meta name="description" content="" />
         <meta name="author" content="Thomas Maurin" />
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
         <style type="text/css">
             body {
                 padding-top: 60px; /* 60px to make the container go all the
                     way to the bottom of the topbar */
-                font-size: 13px;
             }
             .table tbody>tr>td.vert-align{
                 vertical-align: middle;
             }
+            .asteriskField { /* django-crispy-forms customization */
+                display: none;
+            }
+            .post blockquote {
+                font-size: 14px;
+            }
         </style>
-        <script type="text/javascript" href="{% get_static_prefix %}js/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="{% static 'js/jquery-2.1.1.js' %}"></script>
         {% get_media_prefix as media %}
     </head>
     <body>
@@ -31,7 +36,7 @@
                         <span cass="icon-bar"></span>
                         <span cass="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{% url 'forum:top' %}">Forum</a>
+                    <a class="navbar-brand" href="{% url 'forum:top' %}">FoRuM</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">

@@ -1,35 +1,13 @@
 {% extends "logged_in.html" %}
 {% block logged_in_content %}
+{% load crispy_forms_tags %}
 <div class="row">
     {% ifnotequal post.author user %}
         <h3>Vous ne pouvez pas modifier ce post.</h3>
-        <a href="{% url 'forum:thread' category_slug thread %}">Retour</a>
+        <a href="{% url 'forum:thread' category.slug thread.slug %}">Retour</a>
     {% else %}
         <h1>Modifier :</h1>
-        <form method="post" action="{% url 'forum:edit' category_slug thread post.pk %}">
-            {% csrf_token %}
-            <table>
-                {% for field in form %}
-                <tr>
-                    <th>{{ field.label_tag }}
-                    </th>
-                    <td>
-                    {% if 'Titre' in field.label_tag %}
-                        {% ifequal thread.posts.first post %} 
-                            {{ field }}{{ field.errors }}
-                        {% else %}
-                            {{ thread.title }}{{ field.as_hidden }}
-                        {% endifequal %}
-                    {% else %}
-                        {{ field }}{{ field.errors }}
-                    {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
-        </form>
+        {% crispy form form.helper %}
     {% endifnotequal %}
 </div>
 {% endblock %}

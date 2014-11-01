@@ -1,0 +1,73 @@
+{% extends "logged_in.html" %}
+{% block logged_in_content %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <h1>Nouveau sondage :</h1>
+    <form method="post">
+        {% crispy thread_form %}
+        {% crispy question_form %}
+        <div id="form_set">
+            {% crispy choices_formset formset_helper %}
+        </div>
+        <input type="button" value="+" id="more" class="btn btn-default" />
+        <input type="button" value="-" id="less" class="btn btn-default" />
+        <input type="submit" name="submit" value="Enregistrer" class="btn btn-primary" id="submit-id-submit" />
+    </form>
+</div>
+
+
+<script>
+    jQuery.expr[':'].regex = function(elem, index, match) {
+    var matchParams = match[3].split(','),
+        validLabels = /^(data|css):/,
+        attr = {
+            method: matchParams[0].match(validLabels) ? 
+                        matchParams[0].split(':')[0] : 'attr',
+            property: matchParams.shift().replace(validLabels,'')
+        },
+        regexFlags = 'ig',
+        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+    return regex.test(jQuery(elem)[attr.method](attr.property));
+    };
+
+    $(document).ready(function() {
+        $('div:regex(id,^div_id_choices-[2-9])').hide();
+        $('label:regex(for,^id_choices)').text(function(index) {
+            return "Choix " + (index + 1);
+        });
+        $('#less').attr("disabled", "disabled");
+    });
+
+    $('#more').click(function() {
+        var $firstHiddenChoice = $("div[id^='div_id_choices']:hidden:first");
+        $firstHiddenChoice.attr("data-hidden", true);
+        $firstHiddenChoice.show();
+        $firstHiddenChoice = $("div[id^='div_id_choices']:hidden");
+        if (!$firstHiddenChoice.length) {
+            $('#more').attr("disabled", "disabled");
+        };
+        if ($('#less').attr("disabled")) {
+            $('#less').removeAttr("disabled");
+        };
+        $('html, body').animate({
+            scrollTop: $("#more").offset().top
+        }, 0);
+    });
+
+    $('#less').click(function() {
+        var $lastUnhiddenChoice = $("div[data-hidden=true]:last");
+        $lastUnhiddenChoice.hide();
+        $lastUnhiddenChoice.attr("data-hidden", false);
+        $lastUnhiddenChoice = $("div[data-hidden=true]");
+        if (!$lastUnhiddenChoice.length) {
+            $('#less').attr("disabled", "disabled");
+        };
+        if ($('#more').attr("disabled")) {
+            $('#more').removeAttr("disabled");
+        };
+        $('html, body').animate({
+            scrollTop: $("#less").offset().top
+        }, 0);
+    });
+</script>
+{% endblock %}

@@ -36,7 +36,6 @@ class Thread(models.Model):
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
-    postCount = models.IntegerField(default=0)
     viewCount = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
@@ -57,7 +56,7 @@ class Thread(models.Model):
         index_together = ['category', 'slug']
 
     def __str__(self):
-        return self.slug
+        return "{:s}/{:s}".format(self.category.slug, self.slug)
 
 
 class Post(models.Model):
@@ -78,27 +77,29 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["created"]
-        # Permit thread.posts.latest.created in template
+        # Permit thread.posts.latest in template
         get_latest_by = "created"
 
     def __str__(self):
-        end = len(self.content_plain) > 40 and "..." or ""
-        return "{:s}: {:s}{:s}".format(self.author.username,
-                                       self.content_plain[:40], end)
+        return "{:s}: {:d}".format(self.author.username, self.pk)
 
 
-class Question(models.Model):
+class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
     thread = models.OneToOneField(Thread, related_name='question')
+    voters = models.ManyToManyField(ForumUser, blank=True)
 
     def __str__(self):
         return self.question_text
 
 
-class Choice(models.Model):
-    question = models.ForeignKey(Question)
+class PollChoice(models.Model):
+    question = models.ForeignKey(PollQuestion, related_name='choices')
     choice_text = models.CharField(max_length=80)
     votes = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["choice_text"]
 
     def __str__(self):
         return self.choice_text

@@ -99,7 +99,7 @@ class PollChoice(models.Model):
     votes = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ["choice_text"]
+        ordering = ["pk"]
 
     def __str__(self):
         return self.choice_text

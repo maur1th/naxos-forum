@@ -1,6 +1,6 @@
-{% extends "logged_in.html" %}
+{% extends "base.html" %}
 {% load static %}
-{% block logged_in_content %}
+{% block content %}
 {# Path #}
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; {{ category.title }}</h6>

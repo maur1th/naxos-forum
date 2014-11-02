@@ -1,6 +1,7 @@
 from django.views.generic import ListView, CreateView, UpdateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 import datetime
@@ -103,6 +104,7 @@ class NewThread(LoginRequiredMixin, CreateView):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
+@login_required
 def NewPoll(request, category_slug):
     thread_form = PollThreadForm(prefix="thread")
     question_form = QuestionForm(prefix="question")
@@ -140,6 +142,7 @@ def NewPoll(request, category_slug):
     })
 
 
+@login_required
 def VotePoll(request, category_slug, thread_slug):
     thread = Thread.objects.get(slug=thread_slug,
                                 category__slug=category_slug)

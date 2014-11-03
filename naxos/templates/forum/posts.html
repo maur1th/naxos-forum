@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
 {% with thread.category as category %}
 {% with thread.question as question %}
 {# Path #}
@@ -47,13 +48,13 @@
     {% endif %}
 {% endif %}
 {# Header #}
-<div class="row">
+<div class="row hidden-xs hidden-sm">
     <hr style="margin:10px 0 10px 0">
     <strong>
-        <div class="col-md-2 text-left">
+        <div class="col-md-2 text-left post-header" style="border-right:1px solid #f9f9f9">
             Auteur
         </div>
-        <div class="col-md-10">
+        <div class="col-md-10 post-header">
             {% if question %}
                 Sondage : {{ thread.title }}
             {% else %}
@@ -62,12 +63,12 @@
         </div>
     </strong>
 </div>
-<hr style="margin:10px 0 10px 0">
+<hr style="margin:1px; border-top:0">
 {# Posts #}
 {% for post in object_list %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
-    <div class="col-md-2 text-center">
+    <div class="col-md-2 text-center hidden-xs hidden-sm post-author large-post" style="padding: 10px 0px; border-right:1px solid #f9f9f9">
         <p style="word-wrap: break-word">
             <strong>{{ post.author }}</strong><br>
             {% if post.author.quote %}
@@ -78,7 +79,13 @@
             <img src="{{ media }}{{ post.author.logo }}" alt="">
         {% endif %}
     </div>
-    <div class="col-md-10 post">
+    <div class="col-md-2 hidden-md hidden-lg post-author">
+            <strong>{{ post.author }}</strong>
+            {% if post.author.quote %}
+                 | <small>{{ post.author.quote }}</small>
+            {% endif %}
+    </div>
+    <div class="col-md-10 post large-post">
         <small>
             Posté le {{ post.created|date:"j F Y à H:i:s" }}
             {% ifequal post.author user %}
@@ -86,7 +93,7 @@
             {% endifequal %}
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
         </small>
-        <hr style="margin:10px 0 10px 0">
+        <hr style="margin:5px; border-top: 1px solid #ccc">
         {{ post.content_html|safe }}
         {% if post.modified %}
             <br><br>
@@ -94,13 +101,28 @@
         {% endif %}
     </div>
 </div>
-<hr style="margin:5px 0 5px 0">
+<hr style="margin:8px; border-top:0">
 {% endfor %}
 <div class="row">
     <div class="col-md-1">
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
     </div>
 </div>
+<script>
+/**
+ * Javascript-Equal-Height-Responsive-Rows
+ * https://github.com/Sam152/Javascript-Equal-Height-Responsive-Rows
+ */
+(function($){$.fn.equalHeight=function(){var heights=[];$.each(this,function(i,element){$element=$(element);var element_height;var includePadding=($element.css('box-sizing')=='border-box')||($element.css('-moz-box-sizing')=='border-box');if(includePadding){element_height=$element.innerHeight();}else{element_height=$element.height();}
+heights.push(element_height);});this.css('height',Math.max.apply(window,heights)+'px');return this;};$.fn.equalHeightGrid=function(columns){var $tiles=this;$tiles.css('height','auto');for(var i=0;i<$tiles.length;i++){if(i%columns===0){var row=$($tiles[i]);for(var n=1;n<columns;n++){row=row.add($tiles[i+n]);}
+row.equalHeight();}}
+return this;};$.fn.detectGridColumns=function(){var offset=0,cols=0;this.each(function(i,elem){var elem_offset=$(elem).offset().top;if(offset===0||elem_offset==offset){cols++;offset=elem_offset;}else{return false;}});return cols;};$.fn.responsiveEqualHeightGrid=function(){var _this=this;function syncHeights(){var cols=_this.detectGridColumns();_this.equalHeightGrid(cols);}
+$(window).bind('resize load',syncHeights);syncHeights();return this;};})(jQuery);
+$('.element').responsiveEqualHeightGrid();
+jQuery(function($) {
+    $('.large-post').responsiveEqualHeightGrid();  
+});
+</script>
 {# Quick reply #}
 <br>
 <div class="row">

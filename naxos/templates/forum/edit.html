@@ -2,12 +2,19 @@
 {% block content %}
 {% load crispy_forms_tags %}
 <div class="row">
-    {% ifnotequal post.author user %}
-        <h3>Vous ne pouvez pas modifier ce post.</h3>
-        <a href="{% url 'forum:thread' category.slug thread.slug %}">Retour</a>
-    {% else %}
-        <h1>Modifier :</h1>
-        {% crispy form form.helper %}
-    {% endifnotequal %}
+    <div class="col-md-12">
+        {% ifnotequal post.author user %}
+            <h3>Vous ne pouvez pas modifier ce post.</h3>
+            <a href="{% url 'forum:thread' category.slug thread.slug %}">Retour</a>
+        {% else %}
+            <h1>Modifier :</h1>
+            {% crispy form form.helper %}
+        {% endifnotequal %}
+    </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $("textarea[id$='content_plain']").focus();
+    });
+</script>
 {% endblock %}

@@ -182,7 +182,7 @@ class NewPost(LoginRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(NewPost, self).get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
-                       'thread_slug': self.kwargs['thread_slug']})
+                       'thread': self.t})
         return kwargs
 
     def form_valid(self, form):

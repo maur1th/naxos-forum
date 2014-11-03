@@ -29,7 +29,7 @@
         {% for thread in object_list %}
         <tr>
             <td class="vert-align">
-                <img src="{% get_static_prefix %}img/icon1.gif">
+                <img src="{% static 'img/icon1.gif' %}">
                 {% if thread.isSticky and thread.question %}
                     Annonce/Sondage : 
                 {% elif thread.isSticky %}

@@ -2,21 +2,30 @@
 {% block content %}
 {% load crispy_forms_tags %}
 <div class="row">
-    <h1>Nouveau sondage :</h1>
-    <form method="post">
-        {% crispy thread_form %}
-        {% crispy question_form %}
-        <div id="form_set">
-            {% crispy choices_formset formset_helper %}
-        </div>
-        <input type="button" value="+" id="more" class="btn btn-default" />
-        <input type="button" value="-" id="less" class="btn btn-default" />
-        <input type="submit" name="submit" value="Enregistrer" class="btn btn-primary" id="submit-id-submit" />
-    </form>
+    <div class="col-md-12">
+        <h1>Nouveau sondage :</h1>
+        <form method="post">
+            {% crispy thread_form %}
+            {% crispy question_form %}
+            <div id="form_set">
+                {% crispy choices_formset formset_helper %}
+            </div>
+            <div class="btn-group">
+                <button type="button" id="more" class="btn btn-default">
+                    <span style="font-weight:bold">+</span>
+                </button>
+                <button type="button" id="less" class="btn btn-default">
+                    <span style="font-weight:bold">-</span>
+                </button>
+            </div>
+            <input type="submit" name="submit" value="Enregistrer" class="btn btn-primary" id="submit-id-submit" />
+        </form>
+    </div>
 </div>
-
-
 <script>
+    $(document).ready(function() {
+        $("input[id$='title']").focus();
+    });
     jQuery.expr[':'].regex = function(elem, index, match) {
     var matchParams = match[3].split(','),
         validLabels = /^(data|css):/,

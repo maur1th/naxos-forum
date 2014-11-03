@@ -116,10 +116,209 @@ def convert_text_to_html(text, markup='bbcode'):
     return text
 
 
+toolbar = """
+<div class="btn-toolbar" role="toolbar">
+    <div class="btn-group">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-text-height"></span>
+                <span class="caret"></span>
+                <span style="font-family:serif"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#" id="toolbar-size" data-alt="10">10</a></li>
+                <li><a href="#" id="toolbar-size" data-alt="12">12</a></li>
+                <li><a href="#" id="toolbar-size" data-alt="16">16</a></li>
+                <li><a href="#" id="toolbar-size" data-alt="18">18</a></li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-default" id="toolbar-center">
+            <span class="glyphicon glyphicon-align-center"></span>
+            <span style="font-family:serif"></span>
+        </button>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" id="toolbar-list">
+            <span class="glyphicon glyphicon-list"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#" id="toolbar-ordered">1. 2. 3.</a></li>
+            <li><a href="#" id="toolbar-unordered">&bull; ...</a></li>
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" id="colorpicker" value="">
+            <span class="glyphicon glyphicon-tint"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default" id="colorpicker-apply" value="" disabled>
+            <span class="glyphicon glyphicon-ok"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#" id="toolbar-color" data-alt="dodgerblue">Bleu</a></li>
+            <li><a href="#" id="toolbar-color" data-alt="crimson">Rouge</a></li>
+            <li><a href="#" id="toolbar-color" data-alt="forestgreen">Vert</a></li>
+            <li><a href="#" id="toolbar-color" data-alt="blueviolet">Violet</a></li>
+            <li><a href="#" id="toolbar-color" data-alt="white">Blanc</a></li>
+            <li><a href="#" id="toolbar-color" data-alt="gray">Gris</a></li>
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" id="toolbar-bold">
+            <span style="font-weight:bold;font-family:serif">G</span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-italic">
+            <span style="font-style:italic;font-family:serif">I</span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-underline">
+            <span style="text-decoration:underline;font-family:serif">S</span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-strike">
+            <span style="text-decoration:line-through;font-family:serif">ABC</span>
+        </button>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" id="toolbar-quote">
+            <span class="glyphicon glyphicon-comment"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-link">
+            <span class="glyphicon glyphicon-link"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-img">
+            <span class="glyphicon glyphicon-picture"></span>
+            <span style="font-family:serif"></span>
+        </button>
+        <button type="button" class="btn btn-default" id="toolbar-code">
+            <span style="font-family:monospace">Code</span>
+            <span style="font-family:serif"></span>
+        </button>
+    </div>
+    <button type="button" class="btn btn-success">
+        <span>Smileys</span>
+        <span style="font-family:serif"></span>
+    </button>
+</div>
+<br>
+<script>
+    function wrapText($textArea, openTag, closeTag, custCursor) {
+        var len = $textArea.val().length;
+        var start = $textArea[0].selectionStart;
+        var end = $textArea[0].selectionEnd;
+        var selectedText = $textArea.val().substring(start, end);
+        var replacement = openTag + selectedText + closeTag;
+        $textArea.val($textArea.val().substring(0, start) + replacement + $textArea.val().substring(end, len));
+        if(!selectedText || custCursor){
+            return start + openTag.length;
+        };
+    };
+    $('#colorpicker').colorpicker().on('changeColor', function(ev) {
+        var color = ev.color.toHex();
+        $('#colorpicker-apply').data("color", color);
+        $('#colorpicker-apply').removeAttr("disabled");
+    });
+    $('#colorpicker-apply').click(function() {
+        var color = $(this).data("color");
+        var $text = $("textarea[id$='content_plain']");
+        var caret = wrapText($text, "[color="+color+"]", "[/color]");
+        $text.focus();
+        if(caret) {
+            $text[0].setSelectionRange(caret, caret);
+        };
+    });
+    $('*[id^="toolbar-"').click(function() {
+        var tags = {
+            "center": "center",
+            "bold": "b",
+            "italic": "i",
+            "underline": "u",
+            "strike": "s",
+            "code": "code",
+            "img": "img",
+            "list": "li",
+        };
+        var equalTags = {
+            "quote": "quote",
+            "link": "url",
+        };
+        var listTags = {
+            "ordered": ["[ol]\\n[li]", "[/li]\\n[/ol]"],
+            "unordered": ["[ul]\\n[li]", "[/li]\\n[/ul]"],
+        };
+        var fontTags = {
+            "size": "size",
+            "color": "color",
+        };
+        var m = this.id.match(/toolbar-([\w|-]+)/)[1];
+        var $text = $("textarea[id$='content_plain']");
+        if(m in tags) {
+            var caret = wrapText($text, "["+tags[m]+"]", "[/"+tags[m]+"]");
+        } else if(m in equalTags) {
+            tags = equalTags;
+            var caret = wrapText($text, "["+tags[m]+"=]", "[/"+tags[m]+"]", true) - 1;
+        } else if(m in listTags) {
+            tags = listTags;
+            var caret = wrapText($text, tags[m][0], tags[m][1]);
+        } else if(m in fontTags) {
+            tags = fontTags;
+            var attr = $(this).data("alt");
+            var caret = wrapText($text, "["+tags[m]+"="+attr+"]", "[/"+tags[m]+"]");
+        } else if(m === "colorpicker") {
+            var ev;
+            $(this).colorpicker().on('hidePicker', function(ev) {
+                var color = ev.color.toHex();
+                var caret = wrapText($text, "[color="+color+"]", "[/color]");
+                $text.focus();
+                if(caret) {
+                    $text[0].setSelectionRange(caret, caret);
+                };
+                return;
+            });
+        } else {
+            return;
+        };
+        $text.focus();
+        if(caret) {
+            $text[0].setSelectionRange(caret, caret);
+        };
+    });
+
+</script>
+"""
 
 
+def get_title(value):
+    title = """
+    <div id="div_id_title" class="form-group">
+        <label for="id_title" class="control-label  requiredField">
+            Titre<span class="asteriskField">*</span>
+        </label>
+        <div class="controls ">
+            <input class="textinput textInput form-control" id="id_title" maxlength="140" name="title" type="text" value="{:s}" disabled/>
+        </div>
+    </div>
+    """.format(value)
+    return title
 
 
+def rm_trailing_spaces(s):
+    "Helper function, removes trailing spaces in a string"
+
+    if s[-1] != ' ':
+        return s
+    else:
+        return rm_trailing_spaces(s[:-1])
 
 # def paged(paged_list_name, per_page):
 #     """

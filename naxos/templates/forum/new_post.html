@@ -9,7 +9,10 @@
 </div>
 <script>
     $(document).ready(function() {
-        $("textarea[id$='content_plain']").focus();
+        $textArea = $("textarea[id$='content_plain']")
+        $textArea.focus();
+        var length = $textArea.val().length;
+        $textArea[0].setSelectionRange(length, length);
     });
 </script>
 {% endblock %}

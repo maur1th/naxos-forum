@@ -217,6 +217,7 @@ class QuotePost(NewPost):
 
     def dispatch(self, request, *args, **kwargs):
         self.p = Post.objects.get(pk=self.kwargs['pk'])
+        self.t = self.p.thread
         return super(NewPost, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):

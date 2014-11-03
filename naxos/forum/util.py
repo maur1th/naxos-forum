@@ -237,7 +237,7 @@ toolbar = """
             $text[0].setSelectionRange(caret, caret);
         };
     });
-    $('*[id^="toolbar-"').click(function() {
+    $('*:regex(id,^toolbar-)').click(function() {
         var tags = {
             "center": "center",
             "bold": "b",
@@ -247,9 +247,9 @@ toolbar = """
             "code": "code",
             "img": "img",
             "list": "li",
+            "quote": "quote",
         };
         var equalTags = {
-            "quote": "quote",
             "link": "url",
         };
         var listTags = {
@@ -264,6 +264,7 @@ toolbar = """
         var $text = $("textarea[id$='content_plain']");
         if(m in tags) {
             var caret = wrapText($text, "["+tags[m]+"]", "[/"+tags[m]+"]");
+            console.log(caret);
         } else if(m in equalTags) {
             tags = equalTags;
             var caret = wrapText($text, "["+tags[m]+"=]", "[/"+tags[m]+"]", true) - 1;
@@ -290,10 +291,13 @@ toolbar = """
         };
         $text.focus();
         if(caret) {
+            console.log(caret);
             $text[0].setSelectionRange(caret, caret);
+        } else {
+            var length = $text.val().length;
+            $text[0].setSelectionRange(length, length);
         };
     });
-
 </script>
 """
 

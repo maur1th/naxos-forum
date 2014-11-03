@@ -7,11 +7,6 @@
 <div class="row">
     <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a></h6>
 </div>
-{% if question %}
-    <h2>Sondage : {{ thread.title }}</h2>
-{% else %}
-    <h2>Sujet : {{ thread.title }}</h2>
-{% endif %}
 {# Poll results #}
 {% if question %}
     {% if user not in question.voters.all %}
@@ -46,12 +41,19 @@
         </div>
         <br>
     {% endif %}
+    {% else %}
+    <br>
 {% endif %}
 {# Header #}
-<div class="row hidden-xs hidden-sm">
-    <hr style="margin:10px 0 10px 0">
+<div class="row">
+    <div class="col-md-1 text-left">
+        <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
+    </div>
+</div>
+<hr style="margin:8px; border-top:0">
+<div class="row">
     <strong>
-        <div class="col-md-2 text-left post-header" style="border-right:1px solid #f9f9f9">
+        <div class="col-md-2 hidden-xs hidden-sm text-left post-header" style="border-right:1px solid #f9f9f9">
             Auteur
         </div>
         <div class="col-md-10 post-header">
@@ -68,7 +70,9 @@
 {% for post in object_list %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
-    <div class="col-md-2 text-center hidden-xs hidden-sm post-author large-post" style="padding: 10px 0px; border-right:1px solid #f9f9f9">
+    {# Post author #}
+    {# Large display #}
+    <div class="col-md-2 text-center hidden-xs hidden-sm equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
         <p style="word-wrap: break-word">
             <strong>{{ post.author }}</strong><br>
             {% if post.author.quote %}
@@ -79,14 +83,20 @@
             <img src="{{ media }}{{ post.author.logo }}" alt="">
         {% endif %}
     </div>
-    <div class="col-md-2 hidden-md hidden-lg post-author">
-            <strong>{{ post.author }}</strong>
-            {% if post.author.quote %}
-                 | <small>{{ post.author.quote }}</small>
-            {% endif %}
-    </div>
-    <div class="col-md-10 post large-post">
+    {# Small display #}
+    <div class="col-md-2 hidden-md hidden-lg post-author" style="padding-top: 5px;">
+        <strong>{{ post.author }}</strong>
         <small>
+            | Posté le {{ post.created|date:"j F Y à H:i:s" }}
+            {% ifequal post.author user %}
+                 | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
+            {% endifequal %}
+            | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
+        </small>
+    </div>
+    {# Post content #}
+    <div class="col-md-10 post equal-divs">
+        <small class="hidden-xs hidden-sm">
             Posté le {{ post.created|date:"j F Y à H:i:s" }}
             {% ifequal post.author user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
@@ -103,11 +113,6 @@
 </div>
 <hr style="margin:8px; border-top:0">
 {% endfor %}
-<div class="row">
-    <div class="col-md-1">
-        <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
-    </div>
-</div>
 <script>
 /**
  * Javascript-Equal-Height-Responsive-Rows
@@ -120,13 +125,19 @@ return this;};$.fn.detectGridColumns=function(){var offset=0,cols=0;this.each(fu
 $(window).bind('resize load',syncHeights);syncHeights();return this;};})(jQuery);
 $('.element').responsiveEqualHeightGrid();
 jQuery(function($) {
-    $('.large-post').responsiveEqualHeightGrid();  
+    $('.equal-divs').responsiveEqualHeightGrid();  
 });
 </script>
-{# Quick reply #}
-<br>
+{# Posts footer #}
 <div class="row">
-    <div class="col-md-6 col-md-offset-3">
+    <div class="col-md-1 text-left">
+        <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary">Répondre</button></a>
+    </div>
+</div>
+{# Quick reply #}
+<hr style="margin:20px; border-top: 1px solid #ccc">
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
         <form method="post" action="{% url 'forum:new_post' category.slug thread.slug %}">
         {% csrf_token %}
             <strong>Réponse rapide :</strong>

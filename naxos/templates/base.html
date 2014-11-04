@@ -36,15 +36,16 @@
                 background-color: #ececec;
                 height: 100%;
                 padding-top: 5px;
+                padding-bottom: 10px;
             }
             .post-author {
                 background-color: #f2f2f2;
             }
         </style>
-        <script type="text/javascript" src="{% static 'js/jquery-2.1.1.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/bootstrap-colorpicker.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/naxos.js' %}"></script>
+        <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap-colorpicker.min.js' %}"></script>  {# http://mjolnic.github.io/bootstrap-colorpicker/ #}
+        <script src="{% static 'js/naxos.js' %}"></script>
         {% get_media_prefix as media %}
     </head>
     <body>

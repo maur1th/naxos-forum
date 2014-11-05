@@ -4,12 +4,20 @@
 {% with thread.category as category %}
 {% with thread.question as question %}
 {# Path #}
-<div class="row">
-    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a></h6>
-</div>
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">FoRuM</a></li>
+    <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
+    <li class="active">
+    {% if question %}
+        Sondage : {{ thread.title }}
+    {% else %}
+        Sujet : {{ thread.title }} 
+    {% endif %}
+    </li>
+</ol><br>
 {# Poll results #}
 {% if question %}
-<hr style="margin:10px 0 10px 0">
+{# <hr style="margin:10px 0 10px 0"> #}
 <div class="row"><div class="col-md-8 col-md-offset-2">
     <table class="table" style="table-layout:fixed;word-wrap:break-word">
         <thead>
@@ -212,9 +220,17 @@ jQuery(function($) {
 {% endif %}
 {# Path #}
 <br><br>
-<div class="row">
-    <h6><a href="{% url 'forum:top' %}">FoRuM</a> &gt; <a href="{% url 'forum:category' category %}">{{ category.title }}</a></h6>
-</div>
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">FoRuM</a></li>
+    <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
+    <li class="active">
+    {% if question %}
+        Sondage : {{ thread.title }}
+    {% else %}
+        Sujet : {{ thread.title }} 
+    {% endif %}
+    </li>
+</ol>
 {% endwith %}
 {% endwith %}
 {% endblock %}

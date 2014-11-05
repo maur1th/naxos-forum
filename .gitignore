@@ -16,9 +16,8 @@
 *.sublime-workspace
 initial_data.json
 migration.txt
-
-# secret key
 secret.txt
+util/
 
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files

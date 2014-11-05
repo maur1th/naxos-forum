@@ -19,7 +19,10 @@ from django.template.defaultfilters import urlize as django_urlize
 #compile smiles regexp
 # _SMILES = [(re.compile(smile_re), path) for smile_re, path in forum_settings.SMILES]
 
-# Test with: And [b]some[/b] tags [i]along[/i] the [u]way[/u]. [b][u]Even[/b][/u] [url=www.google.com]links[/url] and emails: test@gmail.com !!!
+singleColonSmileys = ((':)', 'singleColon-smile'),
+                      (';)', 'singleColon-wink'),
+                      (':(', 'singleColon-sad'),
+                      (':/', 'singleColon-bof'))
 
 
 class HTMLFilter(HTMLParser):

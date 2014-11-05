@@ -54,6 +54,8 @@ class Thread(models.Model):
     class Meta:
         ordering = ["-isSticky", "-modified"]
         index_together = ['category', 'slug']
+        # Permit thread.posts.latest in template
+        get_latest_by = "modified"
 
     def __str__(self):
         return "{:s}/{:s}".format(self.category.slug, self.slug)

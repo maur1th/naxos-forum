@@ -1,13 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-    <h1>Catégories :</h1>
-    <table>
+{# Path #}
+<ol class="breadcrumb">
+    <li class="active">FoRuM</li>
+</ol><br>
+{# Threads #}
+<table class="table table-condensed table-hover">
+    <thead>
+    <tr>
+        <th style="width: 65%"><small>Catégories</small></th>
+        <th class="text-center"><small>Messages</small></th>
+        <th class="text-center"><small>Réponses</small></th>
+        <th class="text-center"><small>Dernier message</small></th>
+    </tr>
+    </thead>
+    <tbody>
         {% for category in object_list %}
-            <tr>
-                <td><a href="{% url 'forum:category' category %}">{{ category.title }}</a></td>
-            </tr>
+        <tr>
+            <td class="vert-align">
+                <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
+                <small>{{ category.subtitle }}</small>
+            </td>
+            <td class="text-center vert-align"><small>{{ category.threads.count }}</small></td>
+            <td class="text-center vert-align"><small>{{ category.threads.posts.count }}</small></td>
+            <td class="text-center vert-align">
+                {% if category.threads.latest %}
+                    <small>
+                    <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}#{{ category.threads.latest.posts.latest.pk }}">
+                    {{ category.threads.latest.modified|date:'d/m/y H:i' }}
+                    <br><strong>{{ category.threads.latest.posts.latest.author }}</strong>
+                    </a>
+                    </small>
+                {% endif %}
+            </td>
+        </tr>
         {% endfor %}
-    </table>
-</div>
+    </tbody>
+</table>
 {% endblock %}

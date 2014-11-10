@@ -8,51 +8,41 @@
         <title>Project Naxos</title>
         <meta name="description" content="" />
         <meta name="author" content="Thomas Maurin" />
+        <link href="{% static 'img/favicon.ico' %}" rel="shortcut icon">
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
         <link href="{% static 'css/bootstrap-colorpicker.min.css' %}" rel="stylesheet">  {# http://mjolnic.github.io/bootstrap-colorpicker/ #}
         <style type="text/css">
-            body {
-                padding-top: 60px; /* 60px to make the container go all the
-                    way to the bottom of the topbar */
-                background-color: #f9f9f9;
-            }
-            /*a:active { color: #005398 ; text-decoration: none ; }
-            a:link { color: #005398 ; text-decoration: none ; }
-            a:visited { color: #005398 ; text-decoration: none ; }
-            a:hover { text-decoration: underline ; }*/
-            .breadcrumb {
-                background-color: #f2f2f2;;
+            /* Main (Category+Thread) views */
+            thead.main {
+                background: linear-gradient(#425e8e, #5171ae);
+                color: white;
+                padding: 20px;
             }
             .table tbody>tr>td.vert-align{
                 vertical-align: middle;
             }
-            .asteriskField { /* django-crispy-forms customization */
-                display: none;
-            }
-            .post blockquote {
-                background-color: #f9f9f9;
-                font-size: 14px;
-            }
-            .main thead {
+            /* Post specific view */
+            div.post-header {
                 background: linear-gradient(#425e8e, #5171ae);
-                padding: 5px;
+                padding: 6px;
                 font-size: 12px;
                 color: white;
             }
-            .post-header {
-                background: linear-gradient(#425e8e, #5171ae);
-                padding: 5px;
-                font-size: 12px;
-                color: white;
+            div.post-author {
+                background-color: #f2f2f2;
             }
-            .post {
+            div.post {
                 background-color: #ececec;
                 height: 100%;
                 padding-top: 5px;
                 padding-bottom: 10px;
             }
-            .post-author {
-                background-color: #f2f2f2;
+            .post blockquote {
+                background-color: #f9f9f9;
+            }
+            /* django-crispy-forms customization */
+            .asteriskField {
+                display: none;
             }
         </style>
         <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
@@ -62,25 +52,43 @@
         {% get_media_prefix as media %}
     </head>
     <body>
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span cass="icon-bar"></span>
-                        <span cass="icon-bar"></span>
-                        <span cass="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{% url 'forum:top' %}">FoRuM</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="{% url 'user:logout' %}">Déconnexion</a></li>
-                    </ul>
-                </div>
+        {# navbar #}
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+          <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="{% url 'forum:top' %}">FoRuM</a>
             </div>
-        </div>
 
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li><a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Profil</span></a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-envelope hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Messages privés</span></a></li>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-search hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Recherche</span></a></li>
+                {# Disconnect for larger diplays #}
+                <li class="dropdown hidden-xs">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-lock"></span><span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'user:logout' %}">Déconnexion</a></li>
+                  </ul>
+                </li>
+                {# Disconnect for small displays #}
+                <li class="hidden-sm hidden-md hidden-lg"><a href="{% url 'user:logout' %}">Déconnexion</a></li>
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+        {# Page content #}
         <div class="container">
             {% block content %}
             {% endblock content %}

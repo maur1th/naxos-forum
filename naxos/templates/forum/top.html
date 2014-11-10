@@ -2,39 +2,41 @@
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-    <li class="active">FoRuM</li>
+    <li class="active">Accueil</li>
 </ol><br>
 {# Threads #}
-<table class="table table-condensed table-hover">
-    <thead>
-    <tr>
-        <th style="width: 65%"><small>Catégories</small></th>
-        <th class="text-center"><small>Messages</small></th>
-        <th class="text-center"><small>Réponses</small></th>
-        <th class="text-center"><small>Dernier message</small></th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for category in object_list %}
+<div class="row">
+    <table class="table table-condensed table-hover">
+        <thead class="main">
         <tr>
-            <td class="vert-align">
-                <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
-                <small>{{ category.subtitle }}</small>
-            </td>
-            <td class="text-center vert-align"><small>{{ category.threads.count }}</small></td>
-            <td class="text-center vert-align"><small>{{ category.threads.posts.count }}</small></td>
-            <td class="text-center vert-align">
-                {% if category.threads.latest %}
-                    <small>
-                    <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}#{{ category.threads.latest.posts.latest.pk }}">
-                    {{ category.threads.latest.modified|date:'d/m/y H:i' }}
-                    <br><strong>{{ category.threads.latest.posts.latest.author }}</strong>
-                    </a>
-                    </small>
-                {% endif %}
-            </td>
+            <th><small>Catégories</small></th>
+            <th class="text-center hidden-xs"><small>Messages</small></th>
+            <th class="text-center hidden-xs"><small>Réponses</small></th>
+            <th class="text-center"><small>Dernier message</small></th>
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for category in object_list %}
+            <tr>
+                <td class="vert-align">
+                    <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
+                    <small>{{ category.subtitle }}</small>
+                </td>
+                <td class="text-center vert-align hidden-xs"><small>{{ category.threads.count }}</small></td>
+                <td class="text-center vert-align hidden-xs"><small>{{ category.postCount }}</small></td>
+                <td class="text-center vert-align">
+                    {% if category.threads.latest %}
+                        <small>
+                        <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}#{{ category.threads.latest.posts.latest.pk }}">
+                        {{ category.threads.latest.modified|date:'d/m/y H:i' }}
+                        <br><strong>{{ category.threads.latest.posts.latest.author }}</strong>
+                        </a>
+                        </small>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

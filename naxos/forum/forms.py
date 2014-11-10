@@ -6,7 +6,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
 from .models import Post, PollQuestion, PollChoice
-from .util import toolbar, get_title, rm_trailing_spaces
+from .util import get_title, rm_trailing_spaces
+
+toolbar = "{% include \"toolbar.html\" %}"  # Form toolbar
 
 
 class GenericThreadForm(forms.ModelForm):
@@ -40,14 +42,16 @@ class ThreadForm(GenericThreadForm):
                                         HTML(toolbar),
                                         Field('content_plain'))
         else:
-            if post != thread.posts.first():  # Prevent title edit
+            if post == thread.posts.first():  # Enable title edit if first post
+                self.helper.layout = Layout(Field('title'),
+                                            HTML(toolbar),
+                                            Field('content_plain'))
+            else:
                 self.fields['title'].required = False
                 self.helper.layout = Layout(Field('title', disabled=''),
                                             HTML(toolbar),
                                             Field('content_plain'))
-            self.helper.layout = Layout(Field('title'),
-                                        HTML(toolbar),
-                                        Field('content_plain'))
+
             self.helper.form_action = reverse(
                 'forum:edit', kwargs={'category_slug': c_slug,
                                       'thread_slug': thread.slug,

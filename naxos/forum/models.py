@@ -3,7 +3,7 @@ from django.db import models
 import datetime
 from uuslug import uuslug
 
-from .util import convert_text_to_html
+from .util import convert_text_to_html, smilify
 from user.models import ForumUser
 
 SLUG_LENGTH = 50
@@ -15,10 +15,10 @@ class Category(models.Model):
     slug = models.SlugField(blank=False, unique=True)
     title = models.CharField(max_length=50, blank=False)
     subtitle = models.CharField(max_length=200)
-    threadCount = models.IntegerField(default=0)
     postCount = models.IntegerField(default=0)
-    lastMessage = models.CharField(max_length=140)
-    lastMessageUrl = models.URLField()
+
+    class Meta:
+        ordering = ["pk"]
 
     def __str__(self):
         return self.slug
@@ -75,6 +75,9 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.content_html = convert_text_to_html(self.content_plain)
+        self.content_html = smilify(self.content_html)
+        self.thread.category.postCount += 1
+        self.thread.category.save()
         super(Post, self).save(*args, **kwargs)
 
     class Meta:

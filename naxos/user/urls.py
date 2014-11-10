@@ -6,6 +6,11 @@ from . import views
 
 urlpatterns = patterns('',
     url(
+        regex=r'^$',
+        view=views.UpdateUser.as_view(),
+        name='profile'
+    ),
+    url(
         regex=r'^register/$',
         view=views.Register.as_view(),
         name='register'
@@ -20,10 +25,5 @@ urlpatterns = patterns('',
         view='django.contrib.auth.views.logout',
         kwargs={'next_page': reverse_lazy('user:login')},
         name='logout'
-    ),
-    url(
-        regex=r'^edit/$',
-        view=views.UpdateUser.as_view(),
-        name='edit'
     ),
 )

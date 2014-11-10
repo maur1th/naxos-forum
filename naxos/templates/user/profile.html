@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="active"><a href="#">Profil</a></li>
+  <li role="presentation"><a href="#">Sécurité</a></li>
+  <li role="presentation"><a href="#">Liste des membres</a></li>
+  <li role="presentation"><a href="#">Top 10</a></li>
+</ul>
+<div class="row">
+    <div class="col-md-12">
+        <h1>Paramètres du profil</h1>
+        <form enctype="multipart/form-data" method="post" action="{% url 'user:profile' %}">
+        {% crispy form %}
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+    </div>
+</div>
+<script>
+    $('#changeLogoText').html(function(i, v) {
+        return v.replace(/Actuellement: /g, '');    
+    });
+    $("a:contains('logo/')").hide()
+</script>
+{% endblock %}

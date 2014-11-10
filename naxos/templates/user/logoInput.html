@@ -1,0 +1,12 @@
+{% load crispy_forms_field %}
+
+<label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
+<div id="div_{{ field.auto_id }}" class="form-group">
+    {% if 'Logo' in field.label_tag and user.logo %}
+        <img src="{{ media }}{{ user.logo }}">
+        <br>
+    {% endif %}
+    <div id="changeLogoText">
+    {% crispy_field field %}
+    </div>
+</div>

@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, HTML, Submit
+
 from .models import ForumUser
 
 MAX_USERNAME_LENGTH = 20
@@ -71,14 +74,31 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
 
 
 class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
+    threadPaternityCode = forms.CharField(
+        required=False, label='Obtenir la paternité d\'un sujet')
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
         super(UpdateUserForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
         self.request = request
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('email'),
+            Field('quote'),
+            Field('website', placeholder="http://"),
+            Field('logo', template="user/logoInput.html"),
+            HTML('<label class="control-label">Autres préférences</label>'),
+            Field('emailVisible'),
+            Field('subscribeToEmails'),
+            Field('mpEmailNotif'),
+            # HTML('{% include "user/threadPaternity.html" %}'),
+            Field('threadPaternityCode',
+                  template="user/threadPaternityInput.html"),
+        )
 
     class Meta:
         model = ForumUser
-        fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpPopupNotif',
-                  'mpEmailNotif', 'logo', 'quote', 'website')
+        fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpEmailNotif',
+                  'logo', 'quote', 'website')

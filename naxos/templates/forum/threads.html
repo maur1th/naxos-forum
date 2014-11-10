@@ -3,59 +3,60 @@
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-    <li><a href="{% url 'forum:top' %}">FoRuM</a></li>
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li class="active">{{ category.title }}</li>
-</ol><br>
-{# Buttons #}
+</ol>
 <div class="row">
-    <a href="{% url 'forum:new_thread' category.slug %}">
-        <button class="btn btn-primary btn-sm">Nouveau sujet</button></a>
-    <a href="{% url 'forum:new_poll' category.slug %}">
-        <button class="btn btn-default btn-sm">Nouveau sondage</button></a>
-</div>
-<br>
-{# Threads #}
-<table class="table table-condensed table-hover">
-    <thead>
-    <tr>
-        <th style="width: 60%"><small>Message</small></th>
-        <th class="text-center"><small>Auteur</small></th>
-        <th class="text-center"><small>Rép.</small></th>
-        <th class="text-center"><small>Vues</small></th>
-        <th class="text-center"><small>Dernier message</small></th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for thread in object_list %}
+{# Buttons #}
+    <div style="padding: 10px 0">
+        <a href="{% url 'forum:new_thread' category.slug %}">
+            <button class="btn btn-primary btn-sm">Nouveau sujet</button></a>
+        <a href="{% url 'forum:new_poll' category.slug %}">
+            <button class="btn btn-default btn-sm">Nouveau sondage</button></a>
+    </div>
+    {# Threads #}
+    <table class="table table-condensed table-hover">
+        <thead class="main">
         <tr>
-            <td class="vert-align">
-                <img src="{% static 'img/icon1.gif' %}">
-                {% if thread.isSticky and thread.question %}
-                    Annonce/Sondage : 
-                {% elif thread.isSticky %}
-                    Annonce :
-                {% elif thread.question %}
-                    Sondage :
-                {% endif %}
-                <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
-            </td>
-            <td class="text-center vert-align">
-                <small><strong>{{ thread.author }}</strong></small>
-            </td>
-            <td class="text-center vert-align"><small>{{ thread.posts.count }}</small></td>
-            <td class="text-center vert-align"><small>{{ thread.viewCount }}</small></td>
-            <td class="text-center vert-align">
-                <small>
-                <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
-                {{ thread.modified|date:'d/m/y H:i' }}
-                <br><strong>{{ thread.posts.latest.author }}</strong>
-                </a>
-                </small>
-            </td>
+            <th><small>Message</small></th>
+            <th class="text-center"><small>Auteur</small></th>
+            <th class="text-center hidden-xs"><small>Rép.</small></th>
+            <th class="text-center hidden-xs"><small>Vues</small></th>
+            <th class="text-center"><small>Dernier message</small></th>
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for thread in object_list %}
+            <tr>
+                <td class="vert-align">
+                    <img src="{% static 'img/icon1.gif' %}">
+                    {% if thread.isSticky and thread.question %}
+                        Annonce/Sondage : 
+                    {% elif thread.isSticky %}
+                        Annonce :
+                    {% elif thread.question %}
+                        Sondage :
+                    {% endif %}
+                    <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+                </td>
+                <td class="text-center vert-align">
+                    <small><strong>{{ thread.author }}</strong></small>
+                </td>
+                <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
+                <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+                <td class="text-center vert-align">
+                    <small>
+                    <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
+                    {{ thread.modified|date:'d/m/y H:i' }}
+                    <br><strong>{{ thread.posts.latest.author }}</strong>
+                    </a>
+                    </small>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {# Pagination #}
 <div class="col-md-12 text-center">
 {% if is_paginated %}

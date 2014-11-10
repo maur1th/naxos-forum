@@ -23,17 +23,12 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        $("input[id$='title']").focus();
+    $("input[id$='title']").focus();
+    $('div:regex(id,^div_id_choices-[2-9])').hide();
+    $('label:regex(for,^id_choices)').text(function(index) {
+        return "Choix " + (index + 1);
     });
-
-    $(document).ready(function() {
-        $('div:regex(id,^div_id_choices-[2-9])').hide();
-        $('label:regex(for,^id_choices)').text(function(index) {
-            return "Choix " + (index + 1);
-        });
-        $('#less').attr("disabled", "disabled");
-    });
+    $('#less').attr("disabled", "disabled");
 
     $('#more').click(function() {
         var $firstHiddenChoice = $("div[id^='div_id_choices']:hidden:first");

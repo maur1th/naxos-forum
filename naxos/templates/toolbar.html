@@ -82,12 +82,12 @@
             <span style="font-family:serif"></span>
         </button>
         <button type="button" class="btn btn-default" id="toolbar-code">
-            <span style="font-family:monospace">Code</span>
+            <span style="font-family:monospace">C</span>
             <span style="font-family:serif"></span>
         </button>
     </div>
-    <button type="button" class="btn btn-success">
-        <span>Smileys</span>
+    <button type="button" class="btn btn-success" id="show-smileys">
+        <span>:-)</span>
         <span style="font-family:serif"></span>
     </button>
 </div>
@@ -145,7 +145,6 @@
         var $text = $("textarea[id$='content_plain']");
         if(m in tags) {
             var caret = wrapText($text, "["+tags[m]+"]", "[/"+tags[m]+"]");
-            console.log(caret);
         } else if(m in equalTags) {
             tags = equalTags;
             var caret = wrapText($text, "["+tags[m]+"=]", "[/"+tags[m]+"]", true) - 1;
@@ -172,7 +171,6 @@
         };
         $text.focus();
         if(caret) {
-            console.log(caret);
             $text[0].setSelectionRange(caret, caret);
         } else {
             var length = $text.val().length;

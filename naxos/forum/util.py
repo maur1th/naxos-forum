@@ -108,7 +108,7 @@ def convert_text_to_html(text, markup='bbcode'):
 
 
 # Smiley stuff
-SMILEYS_PATH = "<img style=\"vertical-align:bottom;padding-bottom:5px\" src=\"/static/img/smileys/{:s}.gif\">"
+SMILEYS_PATH = "<img class=\"smiley\" src=\"/static/img/smileys/{:s}.gif\">"
 
 specialSmileys = [(r':\)', SMILEYS_PATH.format('special-smile')),
                   (r';\)', SMILEYS_PATH.format('special-wink')),

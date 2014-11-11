@@ -8,7 +8,7 @@ from crispy_forms.layout import Layout, Field, HTML, Submit
 from .models import Post, PollQuestion, PollChoice
 from .util import get_title, rm_trailing_spaces
 
-toolbar = "{% include \"toolbar.html\" %}"  # Form toolbar
+toolbar = "{% include \"toolbar.html\" %}"  # Text format
 
 
 class GenericThreadForm(forms.ModelForm):

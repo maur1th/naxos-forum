@@ -6,10 +6,10 @@
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
     <li class="active">Nouveau sujet</li>
-</ol><br>
+</ol>
 {# Form #}
 <div class="row">
-    <div class="col-xs-12 equal-divs" id="main">
+    <div class="col-xs-12" id="main">
         {% crispy form %}
     </div>
     {% include "smileys.html" %}

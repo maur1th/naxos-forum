@@ -106,13 +106,13 @@ class NewThread(LoginRequiredMixin, CreateView):
 
 @login_required
 def NewPoll(request, category_slug):
+    c = Category.objects.get(slug=category_slug)
     thread_form = PollThreadForm(prefix="thread")
     question_form = QuestionForm(prefix="question")
     choices_formset = ChoicesFormSet(instance=PollQuestion())
     formset_helper = FormSetHelper()
 
     if request.method == 'POST':
-        c = Category.objects.get(slug=category_slug)
         thread_form = PollThreadForm(request.POST, prefix="thread")
         question_form = QuestionForm(request.POST, prefix="question")
         if thread_form.is_valid() and question_form.is_valid():
@@ -138,7 +138,9 @@ def NewPoll(request, category_slug):
         'question_form': question_form,
         'thread_form': thread_form,
         'choices_formset': choices_formset,
-        'formset_helper': formset_helper
+        'formset_helper': formset_helper,
+        'category_slug': category_slug,
+        'category': c,
     })
 
 
@@ -175,8 +177,8 @@ class NewPost(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super(NewPost, self).get_context_data(**kwargs)
-        context['category'] = self.kwargs['category_slug']
-        context['thread'] = self.kwargs['thread_slug']
+        context['category'] = self.t.category
+        context['thread'] = self.t
         return context
 
     def get_form_kwargs(self):

@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 {% load crispy_forms_tags %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
+    <li class="active">Nouveau sondage</li>
+</ol>
+{# Form #}
 <div class="row">
-    <div class="col-md-12">
-        <h1>Nouveau sondage :</h1>
+    <div class="col-md-12" id="main">
         <form method="post">
             {% crispy thread_form %}
             {% crispy question_form %}
@@ -21,6 +27,7 @@
             <input type="submit" name="submit" value="Enregistrer" class="btn btn-primary" id="submit-id-submit" />
         </form>
     </div>
+    {% include "smileys.html" %}
 </div>
 <script>
     $("input[id$='title']").focus();

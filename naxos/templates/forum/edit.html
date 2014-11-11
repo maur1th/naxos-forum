@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 {% load crispy_forms_tags %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
+    <li><a href="{% url 'forum:thread' category.slug thread.slug %}">{{ thread.title }}</a></li>
+    <li class="active">Modifier</li>
+</ol>
+{# Form #}
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" id="main">
         {% ifnotequal post.author user %}
             <h3>Vous ne pouvez pas modifier ce post.</h3>
-            <a href="{% url 'forum:thread' category.slug thread.slug %}">Retour</a>
         {% else %}
-            <h1>Modifier :</h1>
             {% crispy form form.helper %}
         {% endifnotequal %}
     </div>
+    {% include "smileys.html" %}
 </div>
 <script>
     $(document).ready(function() {

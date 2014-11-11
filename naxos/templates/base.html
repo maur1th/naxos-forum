@@ -31,12 +31,19 @@
         <link href="{% static 'css/bootstrap-colorpicker.min.css' %}" rel="stylesheet">  {# http://mjolnic.github.io/bootstrap-colorpicker/ #}
         <style type="text/css">
             /* Main (Category+Thread) views */
-            thead.main {
+            table#view thead {
                 background: linear-gradient(#425e8e, #5171ae);
                 color: white;
                 padding: 20px;
             }
-            .table tbody>tr>td.vert-align{
+            table#view tbody td {
+                background-color: #efefef;
+                border-color: #f9f9f9;
+            }
+            table#view tbody tr:hover td {
+                background-color: #e8e8e8;
+            }
+            table.table tbody>tr>td.vert-align{
                 vertical-align: middle;
             }
             /* Post specific view */

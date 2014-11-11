@@ -15,9 +15,10 @@
             <button class="btn btn-default btn-sm">Nouveau sondage</button></a>
     </div>
     {# Threads #}
-    <table class="table table-condensed table-hover">
-        <thead class="main">
+    <table class="table table-condensed table-bordered" id="view">
+        <thead>
         <tr>
+            <th class="text-center"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
             <th><small>Message</small></th>
             <th class="text-center"><small>Auteur</small></th>
             <th class="text-center hidden-xs"><small>Rép.</small></th>
@@ -28,8 +29,11 @@
         <tbody>
             {% for thread in object_list %}
             <tr>
+                <td class="text-center vert-align">
+                    
+                </td>
                 <td class="vert-align">
-                    <img src="{% static 'img/icon1.gif' %}">
+                    <img src="{% static 'img/icon1.gif' %}" style="vertical-align:bottom;padding-bottom:3px">
                     {% if thread.isSticky and thread.question %}
                         Annonce/Sondage : 
                     {% elif thread.isSticky %}
@@ -44,7 +48,7 @@
                 </td>
                 <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-                <td class="text-center vert-align">
+                <td class="text-center vert-align" style="line-height:100%">
                     <small>
                     <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}">
                     {{ thread.modified|date:'d/m/y H:i' }}

@@ -84,9 +84,13 @@ $(document).ready(function() {
         // Convert to percentage and round
         dispPerc = Math.round((num / highestNumber) * 100);
         realPerc = Math.round((num / sum) * 100);
-        $(this).animate({width: dispPerc + '%'}, {duration:'fast'});
-        $(this).text(Math.round(realPerc) + '%');
-        $(this).attr("aria-valuenow", dispPerc);
+        if(!isNaN(realPerc) && realPerc !== 0) {
+            $(this).animate({width: dispPerc + '%'}, {duration:'fast'});
+            $(this).text(Math.round(realPerc) + '%');
+            $(this).attr("aria-valuenow", dispPerc);
+        } else {
+            $(this).text("");
+        };
     });
 });
 </script>

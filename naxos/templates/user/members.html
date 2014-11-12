@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="{% url 'user:profile' %}">Profil</a></li>
+    <li role="presentation"><a href="#">Sécurité</a></li>
+    <li role="presentation" class="active"><a href="#">Liste des membres</a></li>
+    <li role="presentation"><a href="#">Top 10</a></li>
+</ul>
+<div class="row">
+<div class="col-md-10 col-md-offset-1" style="padding-top:40px">
+    <table class="table table-condensed table-bordered" id="view">
+        <thead>
+        <tr>
+            <th><small>Pseudonyme</small></th>
+            <th class="text-center"><small>Enregistré le</small></th>
+            <th class="text-center"><small>E-mail</small></th>
+            <th class="text-center"><small>Site web</small></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for member in object_list %}
+            <tr>
+                <td>
+                    <strong>{{ member }}</strong>
+                </td>
+                <td class="text-center">
+                    {{ member.date_joined|date:'d/m/Y' }}
+                </td>
+                <td class="text-center">
+                {% if member.emailVisible %}
+                    {{ member.email }}
+                {% endif %}
+                </td>
+                <td class="text-center">
+                {% if member.website %}
+                    <a href="{{ member.website }}"><span class="glyphicon glyphicon-home"></span></a>
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}

@@ -2,10 +2,10 @@
 {% block content %}
 {% load crispy_forms_tags %}
 <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active"><a href="#">Profil</a></li>
-  <li role="presentation"><a href="#">Sécurité</a></li>
-  <li role="presentation"><a href="#">Liste des membres</a></li>
-  <li role="presentation"><a href="#">Top 10</a></li>
+    <li role="presentation" class="active"><a href="#">Profil</a></li>
+    <li role="presentation"><a href="#">Sécurité</a></li>
+    <li role="presentation"><a href="{% url 'user:members' %}">Liste des membres</a></li>
+    <li role="presentation"><a href="#">Top 10</a></li>
 </ul>
 <div class="row">
     <div class="col-md-12">

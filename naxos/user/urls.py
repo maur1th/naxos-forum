@@ -11,6 +11,11 @@ urlpatterns = patterns('',
         name='profile'
     ),
     url(
+        regex=r'^members/$',
+        view=views.MemberList.as_view(),
+        name='members'
+    ),
+    url(
         regex=r'^register/$',
         view=views.Register.as_view(),
         name='register'

@@ -20,7 +20,7 @@
     <table class="table table-condensed table-bordered" id="view">
         <thead>
         <tr>
-            <th class="text-center" style="padding:5px 0"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+            <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
             <th><small>Message</small></th>
             <th class="col-xs-2 text-center"><small>Auteur</small></th>
             <th class="text-center hidden-xs"><small>Rép.</small></th>
@@ -31,9 +31,15 @@
         <tbody>
             {% for thread in object_list %}
             <tr>
-                <td class="text-center vert-align">
-                {% if thread.posts.latest in user.postsReadCaret.all %}
-                    1
+                <td class="text-center vert-align" style="padding:0">
+                {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}
+                    <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                {% elif user in thread.contributors.all %}
+                    <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                {% elif thread.posts.latest in user.postsReadCaret.all %}
+                    <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                {% else %}
+                    <img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                 {% endif %}
                 </td>
                 <td class="vert-align">
@@ -47,12 +53,12 @@
                     {% endif %}
                     <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
                 </td>
-                <td class="text-center vert-align">
+                <td class="text-center vert-align importantData">
                     <small><strong>{{ thread.author }}</strong></small>
                 </td>
                 <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-                <td class="text-center vert-align" style="line-height:100%">
+                <td class="text-center vert-align importantData" style="line-height:100%">
                     <small>
                     <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}" class="lastMessage">
                     {{ thread.modified|date:'d/m/y H:i' }}
@@ -75,12 +81,12 @@
     <div class="col-md-4">
         <small>Sujets auxquels vous avez participé</small>
         <p class="legend"><img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-        <p class="legend"><img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding-bottom:3px;padding-right:5px;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
     </div>
     <div class="col-md-4">
         <small>Sujets auxquels vous n'avez pas participé</small>
-        <p class="legend"><img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding-bottom:3px;padding-right:5px;"><small>Des messages non lus depuis votre dernière visite</small></p>
-        <p class="legend"><img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding-bottom:3px;padding-right:5px;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
     </div>
 </div>
 <div class="row hidden-lg hidden-md">  {# Small #}

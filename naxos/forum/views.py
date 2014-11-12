@@ -109,7 +109,8 @@ class NewThread(LoginRequiredMixin, CreateView):
         # Complete the post and save it
         form.instance.thread = t
         form.instance.author = self.request.user
-        form.save()
+        p = form.save()
+        self.request.user.postsReadCaret.add(p)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

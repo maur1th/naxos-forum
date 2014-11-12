@@ -39,6 +39,7 @@
             table#view tbody td {
                 background-color: #efefef;
                 border-color: #f9f9f9;
+                padding:2px 5px;
             }
             table#view tbody tr:hover td {
                 background-color: #e8e8e8;
@@ -69,12 +70,23 @@
             .asteriskField {
                 display: none;
             }
+            /* Misc */
             .smiley {
                 vertical-align:bottom;
                 padding-bottom:5px;
             }
             .fake-link {
                 cursor: pointer;
+            }
+            a.lastMessage:link {
+                color: #333333;
+            }
+            a.lastMessage:visited {
+                color: #333333;
+            }
+            p.legend {
+                padding-left: 0;
+                margin: 0;
             }
         </style>
         <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
@@ -133,7 +145,7 @@
         <div class="col-md-6 col-md-offset-3 text-center">
             <small>
             <p>Powered by <a href="https://github.com/maur1th/naxos-project">Naxos</a> and <a href="https://djangoproject.com">Django</a>, pre-alpha version. <a href="https://github.com/maur1th">Thomas Maurin</a>, 2014.</p>
-            <p>Art: <a href="glyphicons.com">glyphicons.com</a></p>
+            <p>Art: <a href="http://www.glyphicons.com">glyphicons.com</a></p>
             </small>
         </div>
         <br><br><br>

@@ -30,6 +30,7 @@ class Thread(models.Model):
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='threads')
+    # contributors = models.ManyToManyField(ForumUser)
     modified = models.DateTimeField(default=datetime.datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
     icon = models.ImageField(blank=True)
@@ -76,8 +77,10 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.content_html = convert_text_to_html(self.content_plain)
         self.content_html = smilify(self.content_html)
+        # self.thread.contributors.add(self.author)
         self.thread.category.postCount += 1
         self.thread.category.save()
+        # self.thread.save()
         super(Post, self).save(*args, **kwargs)
 
     class Meta:

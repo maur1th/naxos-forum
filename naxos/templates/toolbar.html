@@ -116,6 +116,9 @@
         $text.focus();
         if(caret) {
             $text[0].setSelectionRange(caret, caret);
+        } else {
+            var length = $text.val().length;
+            $text[0].setSelectionRange(length, length);
         };
     });
     $('*:regex(id,^toolbar-)').click(function() {
@@ -155,17 +158,6 @@
             tags = fontTags;
             var attr = $(this).data("alt");
             var caret = wrapText($text, "["+tags[m]+"="+attr+"]", "[/"+tags[m]+"]");
-        } else if(m === "colorpicker") {
-            var ev;
-            $(this).colorpicker().on('hidePicker', function(ev) {
-                var color = ev.color.toHex();
-                var caret = wrapText($text, "[color="+color+"]", "[/color]");
-                $text.focus();
-                if(caret) {
-                    $text[0].setSelectionRange(caret, caret);
-                };
-                return;
-            });
         } else {
             return;
         };

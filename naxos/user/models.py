@@ -18,3 +18,4 @@ class ForumUser(AbstractUser):
                              verbose_name='Citation')
     website = models.URLField(blank=True,
                               verbose_name='Site web')
+    postsReadCaret = models.ManyToManyField('forum.Post', blank=True)

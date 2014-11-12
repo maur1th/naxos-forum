@@ -53,7 +53,19 @@ class PostView(LoginRequiredMixin, ListView):
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
-        self.t.viewCount += 1
+
+        self.t.viewCount += 1  # Increment views
+
+        # Handle user read caret
+        p = self.t.posts.latest()
+        try:
+            caret = self.request.user.postsReadCaret.get(thread=self.t)
+        except:
+            caret = False
+        if caret != p:
+            self.request.user.postsReadCaret.remove(caret)
+            self.request.user.postsReadCaret.add(p)
+
         self.t.save()
         return super(PostView, self).dispatch(request, *args, **kwargs)
 
@@ -189,7 +201,7 @@ class NewPost(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         "Handle post creation in the db"
-        # Merge with previous thread if same author
+        # Merge with previous post if same author
         p = self.t.posts.latest()  # Get the latest post
         if p.author == self.request.user:
             p.content_plain += "\n\n{:s}".format(form.instance.content_plain)

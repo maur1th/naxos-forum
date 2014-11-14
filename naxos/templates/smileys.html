@@ -92,13 +92,18 @@
             <span class="fake-link"><img class="smiley" src="/static/img/smileys/diable2.gif" alt=":diable2:"></span>
         </div>
         <small>
-            <p class="text-center" style="padding:25px">Voir tous les smileys</p>
+            <p class="text-center" style="padding-top:25px">Voir tous les smileys</p>
         </small>
     </div>
 </div>
 <script>
     // Show-Hide the smiley's panel
-    $('#smileys-panel').hide();
+    {% if user.showSmileys %}
+        $('#show-smileys').addClass("active");
+        $('#main').removeClass("col-xs-12").addClass("col-xs-7");
+    {% else %}
+        $('#smileys-panel').hide();
+    {% endif %}
     $('#show-smileys').click(function() {
         if($(this).hasClass("active")) {
             $(this).removeClass("active");
@@ -123,6 +128,5 @@
         var $text = $("textarea[id$='content_plain']");
         var caret = insertSmiley($text, $(this).attr("alt"));
         scrollToPosition($text, caret);
-        // $text[0].setSelectionRange(caret, caret);
     });
 </script>

@@ -56,7 +56,7 @@
                 <td class="text-center vert-align importantData">
                     <small><strong>{{ thread.author }}</strong></small>
                 </td>
-                <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
+                <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
                 <td class="text-center vert-align importantData" style="line-height:100%">
                     <small>

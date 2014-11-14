@@ -14,7 +14,6 @@
 ## project specific
 *.sublime-project
 *.sublime-workspace
-initial_data.json
 migration.txt
 secret.txt
 util/

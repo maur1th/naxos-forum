@@ -132,7 +132,7 @@ $(document).ready(function() {
         {% if post.author.logo %}
             <p><img src="{{ media }}{{ post.author.logo }}" alt=""></p>
         {% endif %}
-        <p style="font-size:10px">depuis le DD/MM/YYYY</p>
+        <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
     </div>
     {# Small display author #}
     <div class="col-sm-2 hidden-sm hidden-md hidden-lg post-author" style="padding-top: 5px;">

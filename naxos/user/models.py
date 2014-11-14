@@ -11,6 +11,8 @@ class ForumUser(AbstractUser):
         default=True, verbose_name='Mailing-list')
     mpEmailNotif = models.BooleanField(
         default=False, verbose_name='Notification des MP par e-mail')
+    showSmileys = models.BooleanField(
+        default=False, verbose_name='Affichage des smileys par defaut')
     logo = models.ImageField(upload_to="logo",
                              blank=True)
     quote = models.CharField(max_length=50,

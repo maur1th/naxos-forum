@@ -88,6 +88,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
             Field('email'),
             Field('quote'),
             Field('website', placeholder="http://"),
+            Field('showSmileys'),
             Field('logo', template="user/logoInput.html"),
             HTML('<label class="control-label">Autres préférences</label>'),
             Field('emailVisible'),
@@ -101,4 +102,4 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     class Meta:
         model = ForumUser
         fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpEmailNotif',
-                  'logo', 'quote', 'website')
+                  'logo', 'quote', 'website', 'showSmileys')

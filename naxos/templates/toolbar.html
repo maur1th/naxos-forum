@@ -93,15 +93,6 @@
 </div>
 <br>
 <script>
-    function scrollToPosition($textarea, caret) {
-        var text = $textarea.val();
-        var textBeforePosition = text.substring(0, caret);
-        $textarea.blur();
-        $textarea.val(textBeforePosition);
-        $textarea.focus();
-        $textarea.val(text);
-        $textarea[0].setSelectionRange(caret, caret);
-    };
     function wrapText($textArea, openTag, closeTag, custCursor) {
         var len = $textArea.val().length;
         var start = $textArea[0].selectionStart;

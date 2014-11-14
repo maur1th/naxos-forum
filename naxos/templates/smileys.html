@@ -122,7 +122,7 @@
         console.log($(this).attr("alt"));
         var $text = $("textarea[id$='content_plain']");
         var caret = insertSmiley($text, $(this).attr("alt"));
-        $text.focus();
-        $text[0].setSelectionRange(caret, caret);
+        scrollToPosition($text, caret);
+        // $text[0].setSelectionRange(caret, caret);
     });
 </script>

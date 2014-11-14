@@ -20,3 +20,13 @@ heights.push(element_height);});this.css('height',Math.max.apply(window,heights)
 row.equalHeight();}}
 return this;};$.fn.detectGridColumns=function(){var offset=0,cols=0;this.each(function(i,elem){var elem_offset=$(elem).offset().top;if(offset===0||elem_offset==offset){cols++;offset=elem_offset;}else{return false;}});return cols;};$.fn.responsiveEqualHeightGrid=function(){var _this=this;function syncHeights(){var cols=_this.detectGridColumns();_this.equalHeightGrid(cols);}
 $(window).bind('resize load',syncHeights);syncHeights();return this;};})(jQuery);
+// Scroll to caret position in a text field
+function scrollToPosition($textarea, caret) {
+    var text = $textarea.val();
+    var textBeforePosition = text.substring(0, caret);
+    $textarea.blur();
+    $textarea.val(textBeforePosition);
+    $textarea.focus();
+    $textarea.val(text);
+    $textarea[0].setSelectionRange(caret, caret);
+};

@@ -2,7 +2,7 @@
 {% block content %}
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"><a href="{% url 'user:profile' %}">Profil</a></li>
-    <li role="presentation"><a href="#">Sécurité</a></li>
+    <li role="presentation"><a href="{% url 'user:password' %}">Sécurité</a></li>
     <li role="presentation" class="active"><a href="#">Liste des membres</a></li>
     <li role="presentation"><a href="#">Top 10</a></li>
 </ul>

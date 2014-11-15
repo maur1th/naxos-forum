@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
@@ -20,7 +20,7 @@ class UniqueEmailMixin(object):
         username = self.cleaned_data.get('username')  # For registration form
         if not username:                              # For other forms
             try:
-                username = self.request.user
+                username = self.user
             except:  # Handle when Registration username is incorrect
                 return email
         if email and ForumUser.objects.filter(email=email).exclude(
@@ -62,10 +62,9 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
         required=False, label='Obtenir la paternité d\'un sujet')
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request')
+        self.user = kwargs.pop('user')  # Used to ensure email is unique
         super(UpdateUserForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
-        self.request = request
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -86,6 +85,14 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
         model = ForumUser
         fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpEmailNotif',
                   'logo', 'quote', 'website', 'showSmileys')
+
+
+class CrispyPasswordForm(PasswordChangeForm):
+
+    def __init__(self, user, *args, **kwargs):
+        super(CrispyPasswordForm, self).__init__(user=user, *args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Modifier'))
 
 
 class RestrictedImageField(forms.ImageField):

@@ -11,6 +11,11 @@ urlpatterns = patterns('',
         name='profile'
     ),
     url(
+        regex=r'^password/$',
+        view=views.UpdatePassword,
+        name='password'
+    ),
+    url(
         regex=r'^members/$',
         view=views.MemberList.as_view(),
         name='members'

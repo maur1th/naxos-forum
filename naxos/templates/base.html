@@ -114,7 +114,8 @@
                 <img src="{% static 'img/logo-FoRuM-20.png' %}" rel="shortcut icon">
               </a>
             </div>
-
+            
+            {% if user.is_authenticated %}
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
@@ -135,6 +136,7 @@
                 <li class="hidden-sm hidden-md hidden-lg"><a href="{% url 'user:logout' %}">Déconnexion</a></li>
               </ul>
             </div><!-- /.navbar-collapse -->
+            {% endif %}
           </div><!-- /.container-fluid -->
         </nav>
         {# Page content #}

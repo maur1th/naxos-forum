@@ -1,9 +1,13 @@
 from django.views.generic import CreateView, UpdateView, ListView
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 from braces.views import LoginRequiredMixin
 
-from .forms import RegisterForm,  UpdateUserForm
+from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
 from .models import ForumUser
 
 
@@ -22,10 +26,26 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         return ForumUser.objects.get(username=self.request.user)
 
     def get_form_kwargs(self):
-        """Pass request to form."""
+        """Pass user to form."""
         kwargs = super(UpdateUser, self).get_form_kwargs()
-        kwargs.update({'request': self.request})
+        kwargs.update({'user': self.request.user})
         return kwargs
+
+
+@login_required
+def UpdatePassword(request):
+    form = CrispyPasswordForm(user=request.user)
+
+    if request.method == 'POST':
+        form = CrispyPasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return HttpResponseRedirect(reverse('user:profile'))
+
+    return render(request, 'user/password.html', {
+        'form': form,
+    })
 
 
 class MemberList(LoginRequiredMixin, ListView):

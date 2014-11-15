@@ -16,7 +16,7 @@ class Register(CreateView):
 class UpdateUser(LoginRequiredMixin, UpdateView):
     form_class = UpdateUserForm
     template_name = 'user/profile.html'
-    success_url = reverse_lazy('forum:top')
+    success_url = reverse_lazy('user:profile')
 
     def get_object(self):
         return ForumUser.objects.get(username=self.request.user)

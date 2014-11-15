@@ -1,20 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 <div class="row">
-    <div class="col-md-8">
-        <h1>Merci de vous identifier :</h1>
-
-        <form method="post" action="{% url 'user:login' %}">
-            {% csrf_token %}
-            <table>
-                {{ form }}
-            </table>
-
-            <input type="submit" value="Connexion" />
-            <input type="hidden" name="next" value="{% url 'forum:top' %}" />
-        </form>
+    <div class="col-md-12">
+        <h1>Merci de vous identifier</h1>
+        {% crispy form %}
         <br>
-        <p>Pas de compte ? <a href="{% url 'user:register' %}">S'enregistrer</a>.</p>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                Pas de compte ? <a href="{% url 'user:register' %}">Créer un compte</a>.
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

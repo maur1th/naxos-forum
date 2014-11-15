@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     ),
     url(
         regex=r'^login/$',
-        view='django.contrib.auth.views.login',
+        view=views.Login.as_view(),
         name='login'
     ),
     url(

@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
+    AuthenticationForm
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
@@ -62,6 +63,13 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
         )
 
 
+class CrispyAuthForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(CrispyAuthForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Connexion'))
+
+
 class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     threadPaternityCode = forms.CharField(
         required=False, label='Obtenir la paternité d\'un sujet')
@@ -93,7 +101,6 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
 
 
 class CrispyPasswordForm(PasswordChangeForm):
-
     def __init__(self, user, *args, **kwargs):
         super(CrispyPasswordForm, self).__init__(user=user, *args, **kwargs)
         self.helper = FormHelper()

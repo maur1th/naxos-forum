@@ -10,6 +10,9 @@
 <div class="row">
     <div class="col-md-12">
         <h1>Paramètres du profil</h1>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
         <form enctype="multipart/form-data" method="post" action="{% url 'user:profile' %}">
         {% crispy form %}
         <button type="submit" class="btn btn-primary">Enregistrer</button>

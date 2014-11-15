@@ -11,7 +11,7 @@
     <div class="col-md-12">
         <h1>Paramètres du profil</h1>
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }}"><span class="glyphicon glyphicon-saved"></span> {{ message }}</div>
         {% endfor %}
         <form enctype="multipart/form-data" method="post" action="{% url 'user:profile' %}">
         {% crispy form %}

@@ -32,6 +32,11 @@ class UniqueEmailMixin(object):
 class RegisterForm(UniqueEmailMixin, UserCreationForm):
     email = forms.EmailField(required=True)
 
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Enregistrer'))
+
     class Meta:
         model = ForumUser
         fields = ('username', 'email', 'password1', 'password2')

@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Créer un compte :</h1>
-<form method="post" action="{% url 'user:register' %}">
-    {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
-    
-    <input type="submit" value="Enregistrer" />
-</form>
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Créer un compte</h1>
+        {% crispy form %}
+    </div>
+</div>
 {% endblock %}

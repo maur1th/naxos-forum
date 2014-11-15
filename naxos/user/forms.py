@@ -29,22 +29,6 @@ class UniqueEmailMixin(object):
         return email
 
 
-class RestrictedImageField(forms.ImageField):
-    def __init__(self, *args, **kwargs):
-        self.max_upload_size = kwargs.pop('max_upload_size', None)
-        super(RestrictedImageField, self).__init__(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        data = super(RestrictedImageField, self).clean(*args, **kwargs)
-        try:
-            if data.size > self.max_upload_size:
-                raise forms.ValidationError(
-                    'La taille du fichier doit être inférieure à 100ko.')
-        except AttributeError:
-            pass
-        return data
-
-
 class RegisterForm(UniqueEmailMixin, UserCreationForm):
     email = forms.EmailField(required=True)
 
@@ -102,3 +86,19 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
         model = ForumUser
         fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpEmailNotif',
                   'logo', 'quote', 'website', 'showSmileys')
+
+
+class RestrictedImageField(forms.ImageField):
+    def __init__(self, *args, **kwargs):
+        self.max_upload_size = kwargs.pop('max_upload_size', None)
+        super(RestrictedImageField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(RestrictedImageField, self).clean(*args, **kwargs)
+        try:
+            if data.size > self.max_upload_size:
+                raise forms.ValidationError(
+                    'La taille du fichier doit être inférieure à 100ko.')
+        except AttributeError:
+            pass
+        return data

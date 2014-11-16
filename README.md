@@ -1,1 +1,3 @@
-Bulletin board project undertook in order to acquire practical knowledge of the Django framework and its powerful Class-based Views.
+Bulletin board project undertook in order replace a [CoolForum](https://github.com/dsoriano/coolforum) solution.
+
+Based on a Django+PostgreSQL backend with a BootStrap+JQuery frontend.

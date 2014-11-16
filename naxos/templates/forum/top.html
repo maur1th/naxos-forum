@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
@@ -9,15 +10,25 @@
     <table class="table table-condensed table-bordered" id="view">
         <thead>
         <tr>
+            <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
             <th><small>Catégories</small></th>
-            <th class="text-center hidden-xs"><small>Messages</small></th>
-            <th class="text-center hidden-xs"><small>Réponses</small></th>
-            <th class="text-center"><small>Dernier message</small></th>
+            <th class="text-center col-xs-1 hidden-xs"><small>Messages</small></th>
+            <th class="text-center col-xs-1 hidden-xs"><small>Réponses</small></th>
+            <th class="text-center col-xs-2"><small>Dernier message</small></th>
         </tr>
         </thead>
         <tbody>
             {% for category in object_list %}
             <tr>
+                <td class="vert-align">
+                    {% if category.threads.latest.posts.latest in user.postsReadCaret.all %}
+                        <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                    {% elif not category.threads.latest.posts.latest %}
+                        <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                    {% else %}
+                        <img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                    {% endif %}
+                </td>
                 <td class="vert-align">
                     <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
                     <small>{{ category.subtitle }}</small>

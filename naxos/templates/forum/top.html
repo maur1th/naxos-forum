@@ -50,4 +50,16 @@
         </tbody>
     </table>
 </div>
+{# Caption #}
+<div class="row">
+    <div class="col-xs-12">
+        <h6>Légende</h6>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p class="legend"><img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+    </div>
+</div>
 {% endblock %}

@@ -10,7 +10,7 @@ from postmarkup import render_bbcode
 # except ImportError:
 #     pass
 
-from naxos.settings.local import STATICFILES_DIRS as static
+from naxos.settings.local import STATICFILES_DIRS as static, DEBUG
 
 
 class HTMLFilter(HTMLParser):
@@ -60,7 +60,7 @@ class ExcludeTagsHTMLFilter(HTMLFilter):
     Class for html parsing with excluding specified tags.
     """
 
-    def __init__(self, func, tags=('a', 'pre', 'span')):
+    def __init__(self, func, tags=('a', 'pre', 'strike')):
         HTMLFilter.__init__(self)
         self.func = func
         self.is_ignored = False
@@ -92,14 +92,30 @@ def urlize(html):
         urlized_html = parser.html
         parser.close()
     except HTMLParseError:
-        if settings.DEBUG:
+        if DEBUG:
             raise
         return html
     return urlized_html
 
 
+def rm_legacy_tags(text):
+    "Replace legacy tags by bbcode"
+    base_tags = [(r'ita', 'i'),
+                 (r'bold', 'b'),
+                 (r'under', 'u')]
+    allTags = ([(re.escape('['+old+']'), '['+new+']')
+                for old, new in base_tags] +
+               [(re.escape('[/'+old+']'), '[/'+new+']')
+                for old, new in base_tags])
+    query = [(re.compile(old), new) for old, new in allTags]
+    for old_match, new in query:
+        text = old_match.sub(new, text)
+    return text
+
+
 def convert_text_to_html(text, markup='bbcode'):
     if markup == 'bbcode':
+        text = rm_legacy_tags(text)
         text = render_bbcode(text)
     # elif markup == 'markdown':
     #     text = markdown.markdown(text, safe_mode='escape')
@@ -108,18 +124,18 @@ def convert_text_to_html(text, markup='bbcode'):
 
 
 # Smiley stuff
-SMILEYS_PATH = "<img class=\"smiley\" src=\"/static/img/smileys/{:s}.gif\">"
-
-specialSmileys = [(r':\)', SMILEYS_PATH.format('special-smile')),
-                  (r';\)', SMILEYS_PATH.format('special-wink')),
-                  (r':\(', SMILEYS_PATH.format('special-sad')),
-                  (r':\/', SMILEYS_PATH.format('special-bof')),
-                  (r':D', SMILEYS_PATH.format('green')),
-                  (r':\?:', SMILEYS_PATH.format('special-question')),
-                  (r':\?\?\?:', SMILEYS_PATH.format('special-3question'))]
-
-
 def compileSmileys():
+
+    SMILEYS_PATH = ("<img class=\"smiley\" src=\""
+                    "/static/img/smileys/{:s}.gif\">")
+
+    specialSmileys = [(r':\)', SMILEYS_PATH.format('special-smile')),
+                      (r';\)', SMILEYS_PATH.format('special-wink')),
+                      (r':\(', SMILEYS_PATH.format('special-sad')),
+                      (r':\/', SMILEYS_PATH.format('special-bof')),
+                      (r':D', SMILEYS_PATH.format('green')),
+                      (r':\?:', SMILEYS_PATH.format('special-question')),
+                      (r':\?\?\?:', SMILEYS_PATH.format('special-3question'))]
 
     def get_smileys(path):
         "Get all smileys"
@@ -139,18 +155,16 @@ def compileSmileys():
 
     return [(re.compile(smiley), path) for smiley, path in allSmileys]
 
-smileys = compileSmileys()
 
-
-def _smiley_replacer(data):
-    for smiley, path in smileys:
-        data = smiley.sub(path, data)
-    return data
+def _smiley_replacer(text):
+    for smiley, path in compileSmileys():
+        text = smiley.sub(path, text)
+    return text
 
 
 def smilify(html):
     """
-    Replace text smiles.
+    Replace text smileys.
     """
     try:
         parser = ExcludeTagsHTMLFilter(_smiley_replacer)
@@ -158,7 +172,7 @@ def smilify(html):
         smiled_html = parser.html
         parser.close()
     except HTMLParseError:
-        if settings.DEBUG:
+        if DEBUG:
             raise
         return html
     return smiled_html
@@ -166,16 +180,16 @@ def smilify(html):
 
 # Misc stuff
 def get_title(value):
-    title = """
-    <div id="div_id_title" class="form-group">
-        <label for="id_title" class="control-label  requiredField">
-            Titre<span class="asteriskField">*</span>
-        </label>
-        <div class="controls ">
-            <input class="textinput textInput form-control" id="id_title" maxlength="140" name="title" type="text" value="{:s}" disabled/>
-        </div>
-    </div>
-    """.format(value)
+    title = (
+        "<div id='div_id_title' class='form-group'>"
+        "<label for='id_title' class='control-label requiredField'>"
+        "Titre<span class='asteriskField'>*</span>"
+        "</label>"
+        "<div class='controls'>"
+        "<input class='textinput textInput form-control' id='id_title' "
+        "maxlength='140' name='title' type='text' value='{:s}' disabled/>"
+        "</div>"
+        "</div>").format(value)
     return title
 
 

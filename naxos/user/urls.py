@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse_lazy
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(
         regex=r'^$',
         view=views.UpdateUser.as_view(),

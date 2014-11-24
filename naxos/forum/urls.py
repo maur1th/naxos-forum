@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url
 from . import views
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(
         regex=r'^$',
         view=views.TopView.as_view(),

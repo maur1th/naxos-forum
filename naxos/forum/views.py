@@ -12,6 +12,7 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 
 
+### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
 
     """Top view with all categories"""
@@ -80,6 +81,7 @@ class PostView(LoginRequiredMixin, ListView):
         return context
 
 
+### Thread and Post creation and edit ###
 class NewThread(LoginRequiredMixin, CreateView):
     form_class = ThreadForm
     template_name = 'forum/new_thread.html'
@@ -115,65 +117,6 @@ class NewThread(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
-
-
-@login_required
-def NewPoll(request, category_slug):
-    c = Category.objects.get(slug=category_slug)
-    thread_form = PollThreadForm(prefix="thread")
-    question_form = QuestionForm(prefix="question")
-    choices_formset = ChoicesFormSet(instance=PollQuestion())
-    formset_helper = FormSetHelper()
-
-    if request.method == 'POST':
-        thread_form = PollThreadForm(request.POST, prefix="thread")
-        question_form = QuestionForm(request.POST, prefix="question")
-        if thread_form.is_valid() and question_form.is_valid():
-            # Create the thread
-            t = Thread.objects.create(
-                title=request.POST['thread-title'],
-                author=request.user,
-                category=c)
-            # Complete the post and save it
-            thread_form.instance.thread = t
-            thread_form.instance.author = request.user
-            thread_form.save()
-            # Complete the poll and save it
-            question_form.instance.thread = t
-            question = question_form.save()
-            choices_formset = ChoicesFormSet(request.POST, instance=question)
-            if choices_formset.is_valid():
-                choices_formset.save()
-                return HttpResponseRedirect(reverse(
-                    'forum:category', kwargs={'category_slug': category_slug}))
-
-    return render(request, 'forum/new_poll.html', {
-        'question_form': question_form,
-        'thread_form': thread_form,
-        'choices_formset': choices_formset,
-        'formset_helper': formset_helper,
-        'category_slug': category_slug,
-        'category': c,
-    })
-
-
-@login_required
-def VotePoll(request, category_slug, thread_slug):
-    thread = Thread.objects.get(slug=thread_slug,
-                                category__slug=category_slug)
-    question = thread.question
-
-    if request.method == 'POST':
-        if request.user not in question.voters.all():
-            choice = question.choices.get(
-                choice_text=request.POST['choice_text'])
-            choice.votes += 1
-            question.voters.add(request.user)
-            choice.save()
-            question.save()
-        return HttpResponseRedirect(reverse(
-            'forum:thread', kwargs={'category_slug': category_slug,
-                                    'thread_slug': thread_slug}))
 
 
 class NewPost(LoginRequiredMixin, CreateView):
@@ -299,3 +242,63 @@ class EditPost(LoginRequiredMixin, UpdateView):
         self.kwargs['thread_slug'] = self.t.slug
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '#' + pk)
+
+
+### Poll Views ###
+@login_required
+def NewPoll(request, category_slug):
+    c = Category.objects.get(slug=category_slug)
+    thread_form = PollThreadForm(prefix="thread")
+    question_form = QuestionForm(prefix="question")
+    choices_formset = ChoicesFormSet(instance=PollQuestion())
+    formset_helper = FormSetHelper()
+
+    if request.method == 'POST':
+        thread_form = PollThreadForm(request.POST, prefix="thread")
+        question_form = QuestionForm(request.POST, prefix="question")
+        if thread_form.is_valid() and question_form.is_valid():
+            # Create the thread
+            t = Thread.objects.create(
+                title=request.POST['thread-title'],
+                author=request.user,
+                category=c)
+            # Complete the post and save it
+            thread_form.instance.thread = t
+            thread_form.instance.author = request.user
+            thread_form.save()
+            # Complete the poll and save it
+            question_form.instance.thread = t
+            question = question_form.save()
+            choices_formset = ChoicesFormSet(request.POST, instance=question)
+            if choices_formset.is_valid():
+                choices_formset.save()
+                return HttpResponseRedirect(reverse(
+                    'forum:category', kwargs={'category_slug': category_slug}))
+
+    return render(request, 'forum/new_poll.html', {
+        'question_form': question_form,
+        'thread_form': thread_form,
+        'choices_formset': choices_formset,
+        'formset_helper': formset_helper,
+        'category_slug': category_slug,
+        'category': c,
+    })
+
+
+@login_required
+def VotePoll(request, category_slug, thread_slug):
+    thread = Thread.objects.get(slug=thread_slug,
+                                category__slug=category_slug)
+    question = thread.question
+
+    if request.method == 'POST':
+        if request.user not in question.voters.all():
+            choice = question.choices.get(
+                choice_text=request.POST['choice_text'])
+            choice.votes += 1
+            question.voters.add(request.user)
+            choice.save()
+            question.save()
+        return HttpResponseRedirect(reverse(
+            'forum:thread', kwargs={'category_slug': category_slug,
+                                    'thread_slug': thread_slug}))

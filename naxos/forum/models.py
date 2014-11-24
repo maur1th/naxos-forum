@@ -9,6 +9,7 @@ from user.models import ForumUser
 SLUG_LENGTH = 50
 
 
+# Forum models
 class Category(models.Model):
 
     """Contains threads."""
@@ -92,6 +93,7 @@ class Post(models.Model):
         return "{:s}: {:d}".format(self.author.username, self.pk)
 
 
+# Poll models
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
     thread = models.OneToOneField(Thread, related_name='question')
@@ -111,3 +113,47 @@ class PollChoice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+
+# PM models
+class PConversation(models.Model):
+    """Contains PMs between two participants"""
+
+    participants = models.ManyToManyField(ForumUser, blank=False)
+    modified = models.DateTimeField(default=datetime.datetime.now)
+    isRemoved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-modified"]
+        # Permit thread.posts.latest in template
+        get_latest_by = "modified"
+
+    def __str__(self):
+        return self.participants
+
+
+class PMessage(models.Model):
+
+    """A message."""
+    created = models.DateTimeField(default=datetime.datetime.now,
+                                   editable=False)
+    content_plain = models.TextField(verbose_name='Message')
+    content_html = models.TextField()
+    markup = models.TextField(default='bbcode')
+    author = models.ForeignKey(ForumUser, related_name='pmessage')
+    conversation = models.ForeignKey(PConversation, related_name='message')
+
+    def save(self, *args, **kwargs):
+        self.content_html = convert_text_to_html(self.content_plain)
+        self.content_html = smilify(self.content_html)
+        self.conversation.participants.add(self.author)
+        self.conversation.save()
+        super(Post, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["created"]
+        # Permit thread.posts.latest in template
+        get_latest_by = "created"
+
+    def __str__(self):
+        return "{:s}: {:d}".format(self.author.username, self.pk)

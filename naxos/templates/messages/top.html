@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li class="active">Messages privés</li>
+</ol>
+<div class="row">
+<div class="col-md-10 col-md-offset-1">
+{# Buttons #}
+<div style="padding: 10px 0">
+    <a href=""><button class="btn btn-primary btn-sm">Nouvelle conversation</button></a>
+</div>
+{# Threads #}
+<table class="table table-condensed table-bordered" id="view">
+    <thead>
+    <tr>
+        <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+        <th><small>Membre</small></th>
+        <th class="text-center col-xs-1"><small>Messages</small></th>
+        <th class="text-center col-xs-2"><small>Dernier message</small></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for conversation in object_list %}
+        <tr>
+            <td class="text-center vert-align" style="padding:0">
+            </td>
+            <td class="text-center vert-align importantData">
+            {% for p in conversation.participants %}
+                {% ifnotequal p user  %}
+                    <small><strong>{{ p }}</strong></small>
+                {% endifnotequal %}
+            {% endfor %}
+            </td>
+            <td class="text-center vert-align"><small>{{ conversation.messages.count|add:"-1" }}</small></td>
+            <td class="text-center vert-align importantData" style="line-height:100%">
+                <small>
+                <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}" class="lastMessage">
+                {{ conversation.modified|date:'d/m/y H:i' }}
+                <br><strong>{{ conversation.messages.latest.author }}</strong>
+                </a>
+                </small>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{# Caption #}
+<div class="col-xs-12">
+    <h6>Légende</h6>
+</div>
+<div class="col-md-4">
+    <p class="legend"><img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+    <p class="legend"><img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+</div>
+{# Pagination #}
+<div class="col-md-12 text-center">
+{% if is_paginated %}
+<div class="pagination">
+    <span class="page-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&lt;&lt; </a>
+            <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
+            <a href="?page=last">&gt;&gt;</a>
+        {% endif %}
+    </span>
+</div>
+{% endif %}
+</div>
+{% endblock %}

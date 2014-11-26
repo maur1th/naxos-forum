@@ -27,4 +27,4 @@ class ForumUser(AbstractUser):
     postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
 
     class Meta:
-        ordering = ["username"]
+        ordering = ["pk"]

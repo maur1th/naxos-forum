@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li><a href="{% url 'pm:top' %}">Messages privés</a></li>
+    <li class="active">Nouveau message</li>
+</ol>
+{# Form #}
+<div class="row">
+    <div class="col-xs-12" id="main">
+        {% crispy form %}
+    </div>
+    {% include "smileys.html" %}
+</div>
+<script>
+    $(document).ready(function() {
+        $textArea = $("textarea[id$='content_plain']")
+        $textArea.focus();
+        var length = $textArea.val().length;
+        $textArea[0].setSelectionRange(length, length);
+    });
+</script>
+{% endblock %}

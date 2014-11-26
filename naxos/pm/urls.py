@@ -10,4 +10,9 @@ urlpatterns = patterns(
         view=views.PMTopView.as_view(),
         name='top'
     ),
+    url(
+        regex=r'^\+$',
+        view=views.NewConversation.as_view(),
+        name='new'
+    )
 )

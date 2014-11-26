@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li class="active">Profil</li>
+</ol>
+{# Tabs #}
 <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation"><a href="{% url 'user:profile' %}">Profil</a></li>
+    <li role="presentation"><a href="{% url 'user:profile' %}">Paramètres</a></li>
     <li role="presentation"><a href="{% url 'user:password' %}">Sécurité</a></li>
     <li role="presentation" class="active"><a href="#">Liste des membres</a></li>
     <li role="presentation"><a href="#">Top 10</a></li>
 </ul>
+{# Content #}
 <div class="row">
 <div class="col-md-10 col-md-offset-1" style="padding-top:40px">
     <table class="table table-condensed">

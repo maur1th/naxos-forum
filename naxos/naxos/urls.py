@@ -11,7 +11,7 @@ urlpatterns = patterns(
     url(r'^$', RedirectView.as_view(url=reverse_lazy('forum:top'))),
     url(r'^forum/', include('forum.urls', namespace='forum')),
     url(r'^user/', include('user.urls', namespace='user')),
-    url(r'^messages/', include('pvt_messages.urls', namespace='messages')),
+    url(r'^messages/', include('pm.urls', namespace='pm')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.MEDIA_ROOT}),
 

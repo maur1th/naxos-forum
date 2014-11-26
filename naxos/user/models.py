@@ -25,3 +25,6 @@ class ForumUser(AbstractUser):
     website = models.URLField(blank=True,
                               verbose_name='Site web')
     postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
+
+    class Meta:
+        ordering = ["username"]

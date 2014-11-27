@@ -119,7 +119,7 @@
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -130,15 +130,16 @@
           </a>
         </div>            
         {% if user.is_authenticated %}
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+          <ul class="nav navbar-nav navbar-left">
             <li><a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Profil</span></a></li>
-            <li><a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Messages privés</span></a></li>
+            <li>
+              <a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Messages privés</span></a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><span class="glyphicon glyphicon-search hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Recherche</span></a></li>
-            {# Disconnect for larger diplays #}
+            {# Disconnect for large diplays #}
             <li class="dropdown hidden-xs">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-lock"></span><span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
@@ -154,8 +155,13 @@
     </nav>
     {# Page content #}
     <div class="container">
-        {% block content %}
-        {% endblock content %}
+    {% if user.pmUnreadCount == 1 %}
+      <div class="alert alert-info"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveau message privé.</a></div>
+    {% elif user.pmUnreadCount > 1 %}
+      <div class="alert alert-info"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveaux messages privés.</a></div>
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
     </div>
     {# Footer #}
     {% if user.is_authenticated %}

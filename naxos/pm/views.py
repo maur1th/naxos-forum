@@ -9,10 +9,23 @@ from .models import Conversation, Message
 from .forms import ConversationForm
 
 
+### Helper ###
+def pm_counter(request, c):
+    """Increment conversation recipient pm counter"""
+    recipient = c.participants.exclude(username=request.user).get()
+    recipient.pmUnreadCount += 1
+    recipient.save()
+
+
 ### PM views ###
 class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
     template_name = "messages/top.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request.user.pmUnreadCount = 0
+        self.request.user.save()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return Conversation.objects.filter(participants=self.request.user)
@@ -65,6 +78,7 @@ class NewConversation(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         recipient = self.request.POST['recipient']
+        # Check if conversation already exists
         query = Conversation.objects.filter(
                     participants=self.request.user).filter(
                     participants=recipient)
@@ -78,16 +92,21 @@ class NewConversation(LoginRequiredMixin, CreateView):
         # Complete the message and save it
         form.instance.conversation = c
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        m = form.save()
+        self.request.user.pmReadCaret.add(m)
+        pm_counter(self.request, c)
+        return HttpResponseRedirect(self.success_url)
 
 
 @login_required
 def NewMessage(request, pk):
     if request.method == 'POST':
+        c = Conversation.objects.get(pk=pk)
         m = Message.objects.create(
-                conversation = Conversation.objects.get(pk=pk),
+                conversation = c,
                 author = request.user,
                 content_plain=request.POST['content_plain'])
+        pm_counter(request, c)
         return HttpResponseRedirect(reverse_lazy('pm:msg',
             kwargs={'pk': pk}) + '#' + str(m.pk))
 

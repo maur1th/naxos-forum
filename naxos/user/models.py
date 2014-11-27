@@ -26,6 +26,7 @@ class ForumUser(AbstractUser):
                               verbose_name='Site web')
     postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
+    pmUnreadCount = models.IntegerField(default=0)
 
     class Meta:
         ordering = ["pk"]

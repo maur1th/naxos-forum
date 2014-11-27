@@ -14,7 +14,7 @@
             <th><small>Catégories</small></th>
             <th class="text-center col-xs-1 hidden-xs"><small>Messages</small></th>
             <th class="text-center col-xs-1 hidden-xs"><small>Réponses</small></th>
-            <th class="text-center col-xs-2"><small>Dernier message</small></th>
+            <th class="text-center col-xs-2"><small>Dernier<span class="hidden-xs"> message</span></small></th>
         </tr>
         </thead>
         <tbody>
@@ -39,8 +39,9 @@
                     {% if category.threads.latest %}
                         <small>
                         <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}#{{ category.threads.latest.posts.latest.pk }}" class="lastMessage">
-                        {{ category.threads.latest.modified|date:'d/m/y H:i' }}
-                        <br><strong>{{ category.threads.latest.posts.latest.author }}</strong>
+                        <span class="hidden-xs">{{ category.threads.latest.modified|date:'d/m/y H:i' }}<br></span>
+                        <span class="visible-xs">{{ category.threads.latest.modified|date:'d/m H:i' }}</span>
+                        <strong>{{ category.threads.latest.posts.latest.author }}</strong>
                         </a>
                         </small>
                     {% endif %}

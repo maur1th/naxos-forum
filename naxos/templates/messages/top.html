@@ -8,17 +8,30 @@
 </ol>
 <div class="row">
 {# Buttons #}
-<div style="padding: 10px 0">
-    <a href="{% url 'pm:new_conv' %}"><button class="btn btn-primary btn-sm">Nouvelle conversation</button></a>
-</div>
+<div class="row" style="padding: 10px 0">
+  <div class="col-xs-6">
+      <a href="{% url 'pm:new_conv' %}"><button class="btn btn-default">Nouveau</button></a>
+  </div>
+  <div class="col-xs-6">
+    <form method="post" action="{% url 'pm:search' %}">
+    {% csrf_token %}
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Rechercher une conversation" name="query">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </span>
+      </div><!-- /input-group -->
+    </form>
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
 {# Conversations #}
 <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
         <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
-        <th><small>Membre</small></th>
-        <th class="text-center col-xs-1"><small>Messages</small></th>
-        <th class="text-center col-xs-2"><small>Dernier message</small></th>
+        <th>Membre</th>
+        <th class="text-center col-xs-1">Messages</th>
+        <th class="text-center col-xs-2">Dernier message</th>
     </tr>
     </thead>
     <tbody>

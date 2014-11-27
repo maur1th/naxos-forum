@@ -1,10 +1,12 @@
 from django.views.generic import ListView, CreateView
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, \
+    HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 
 from braces.views import LoginRequiredMixin
 
+from user.models import ForumUser
 from .models import Conversation, Message
 from .forms import ConversationForm
 
@@ -110,5 +112,19 @@ def NewMessage(request, pk):
         return HttpResponseRedirect(reverse_lazy('pm:msg',
             kwargs={'pk': pk}) + '#' + str(m.pk))
 
+    else:
+        return HttpResponseRedirect(reverse_lazy('pm:top'))
+
+@login_required
+def GetConversation(request):
+    if request.method == 'POST':
+        try:
+            u = ForumUser.objects.get(username=request.POST['query'])
+        except:
+            return HttpResponseNotFound()
+        c = Conversation.objects.filter(participants=request.user).filter(
+            participants=u).get()
+        return HttpResponseRedirect(reverse_lazy('pm:msg',
+            kwargs={'pk': c.pk}) + '#' + str(c.messages.latest().pk))
     else:
         return HttpResponseRedirect(reverse_lazy('pm:top'))

@@ -25,4 +25,9 @@ urlpatterns = patterns(
         view=views.NewMessage,
         name='new_msg'
     ),
+    url(
+        regex=r'^\$$',
+        view=views.GetConversation,
+        name='search'
+    ),
 )

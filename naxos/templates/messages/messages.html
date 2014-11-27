@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li><a href="{% url 'pm:top' %}">Messages privés</a></li>
+    <li class="active">Discussion avec {{ recipient }}</li>
+</ol><br>
+{# Header #}
+<hr style="margin:8px; border-top:0">
+<div class="row">
+    <strong>
+        <div class="col-sm-2 hidden-xs text-left post-header" style="border-right:1px solid #f9f9f9">
+            Auteur
+        </div>
+        <div class="col-sm-10 post-header">
+            Message
+        </div>
+    </strong>
+</div>
+<hr style="margin:1px; border-top:0">
+{# Posts #}
+{% for msg in object_list %}
+<div class="row">
+    <a name="{{ msg.pk }}"></a>
+    {# Large display author #}
+    <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
+        <p style="word-wrap: break-word">
+            <strong>{{ msg.author }}</strong><br>
+            {% if msg.author.quote %}
+                <small>{{ msg.author.quote }}</small>
+            {% endif %}
+        </p>
+        {% if msg.author.logo %}
+            <p><img src="{{ media }}{{ msg.author.logo }}" alt=""></p>
+        {% endif %}
+        <p style="font-size:10px">depuis le {{ msg.author.date_joined|date:'d/m/Y' }}</p>
+    </div>
+    {# Small display author #}
+    <div class="col-sm-2 hidden-sm hidden-md hidden-lg post-author" style="padding-top: 5px;">
+        <strong>{{ msg.author }}</strong>
+        <small>
+            | Posté le {{ msg.created|date:"j F Y à H:i:s" }}
+        </small>
+    </div>
+    {# Content #}
+    <div class="col-sm-10 post equal-divs">
+        <small class="hidden-xs">
+            Posté le {{ msg.created|date:"j F Y à H:i:s" }}
+        </small>
+        <hr style="margin:5px; border-top: 1px solid #ccc">
+        <div class="post-content">
+            {{ msg.content_html|safe }}
+        </div>
+    </div>
+</div>
+<hr style="margin:8px; border-top:0">
+{% endfor %}
+<script>
+    $('.equal-divs').responsiveEqualHeightGrid();
+</script>
+{# Quick reply #}
+<hr style="margin:20px; border-top: 1px solid #ccc">
+<div class="row">
+    <div class="col-lg-10 col-lg-offset-1">
+        {% include "toolbar.html" %}
+        <form method="post" action="{% url 'pm:new_msg' conversation.pk %}">
+        {% csrf_token %}
+            <strong>Répondre :</strong>
+            <br>
+            <textarea cols="80" id="id_content_plain" class="textarea form-control" name="content_plain" rows="5"></textarea>
+            <br>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+        <br>
+        {% include "smileys.html" %}
+        <script>
+            $('#smileys-panel').removeClass("col-xs-5").addClass("col-xs-12");
+            $('#smileys-panel > div > div > br').remove()
+        </script>
+    </div>
+</div>
+{# Pagination #}
+{% if is_paginated %}
+<div class="col-sm-12 text-center">
+    <div class="pagination">
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&lt;&lt; </a>
+                <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+            {% endif %}
+            <span class="page-current">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
+                <a href="?page=last">&gt;&gt;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endif %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li><a href="{% url 'pm:top' %}">Messages privés</a></li>
+    <li class="active">Stuff</li>
+</ol>
+{% endblock %}

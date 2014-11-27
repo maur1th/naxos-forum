@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     # Project Apps
     'forum',
     'user',
+    'pm',
 )
 
 MIDDLEWARE_CLASSES = (

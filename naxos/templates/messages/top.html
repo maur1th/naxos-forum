@@ -22,25 +22,30 @@
     </tr>
     </thead>
     <tbody>
-    {% for conversation in object_list %}
+    {% for conv in object_list %}
         <tr>
             <td class="text-center vert-align" style="padding:0">
+            {% if conv.messages.latest in user.pmReadCaret.all %}
+                <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            {% else %}
+                <img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            {% endif %}
             </td>
             <td class="vert-align importantData">
-                <a href="{% url 'pm:msg' conversation.pk %}">
-                {% for p in conversation.participants.all %}
+                <a href="{% url 'pm:msg' conv.pk %}">
+                {% for p in conv.participants.all %}
                     {% ifnotequal p user  %}
-                        <small><strong>{{ p }}</strong></small>
+                        {{ p }}
                     {% endifnotequal %}
                 {% endfor %}
                 </a>
             </td>
-            <td class="text-center vert-align"><small>{{ conversation.messages.count }}</small></td>
+            <td class="text-center vert-align"><small>{{ conv.messages.count }}</small></td>
             <td class="text-center vert-align importantData" style="line-height:100%">
                 <small>
-                <a href="{% url 'pm:msg' conversation.pk %}#{{ conversation.messages.latest.pk }}" class="lastMessage">
-                {{ conversation.modified|date:'d/m/y H:i' }}
-                <br><strong>{{ conversation.messages.latest.author }}</strong>
+                <a href="{% url 'pm:msg' conv.pk %}#{{ conv.messages.latest.pk }}" class="lastMessage">
+                {{ conv.modified|date:'d/m/y H:i' }}
+                <br><strong>{{ conv.messages.latest.author }}</strong>
                 </a>
                 </small>
             </td>

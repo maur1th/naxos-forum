@@ -27,24 +27,19 @@ class MessageView(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.c = Conversation.objects.get(pk=self.kwargs['pk'])
+        # Handle forbidden user
         if self.request.user not in self.c.participants.all():
             return HttpResponseForbidden()
+        # Handle user read caret
+        m = self.c.messages.latest()
+        try:
+            caret = self.request.user.pmReadCaret.get(conversation=self.c)
+        except:
+            caret = False
+        if caret != m:
+            self.request.user.pmReadCaret.remove(caret)
+            self.request.user.pmReadCaret.add(m)
         return super().dispatch(request, *args, **kwargs)
-
-        # c_slug = self.kwargs['category_slug']
-        # t_slug = self.kwargs['thread_slug']
-        # self.t = Thread.objects.get(slug=t_slug,
-        #                             category__slug=c_slug)
-        # # Handle user read caret
-        # p = self.t.posts.latest()
-        # try:
-        #     caret = self.request.user.postsReadCaret.get(thread=self.t)
-        # except:
-        #     caret = False
-        # if caret != p:
-        #     self.request.user.postsReadCaret.remove(caret)
-        #     self.request.user.postsReadCaret.add(p)
-        # self.t.save()
 
     def get_queryset(self):
         return Message.objects.filter(conversation=self.c).all()

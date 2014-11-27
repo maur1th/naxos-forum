@@ -9,9 +9,9 @@
 <div class="row">
 {# Buttons #}
 <div style="padding: 10px 0">
-    <a href="{% url 'pm:new' %}"><button class="btn btn-primary btn-sm">Nouvelle conversation</button></a>
+    <a href="{% url 'pm:new_conv' %}"><button class="btn btn-primary btn-sm">Nouvelle conversation</button></a>
 </div>
-{# Threads #}
+{# Conversations #}
 <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
@@ -26,17 +26,19 @@
         <tr>
             <td class="text-center vert-align" style="padding:0">
             </td>
-            <td class="text-center vert-align importantData">
-            {% for p in conversation.participants %}
-                {% ifnotequal p user  %}
-                    <small><strong>{{ p }}</strong></small>
-                {% endifnotequal %}
-            {% endfor %}
+            <td class="vert-align importantData">
+                <a href="{% url 'pm:msg' conversation.pk %}">
+                {% for p in conversation.participants.all %}
+                    {% ifnotequal p user  %}
+                        <small><strong>{{ p }}</strong></small>
+                    {% endifnotequal %}
+                {% endfor %}
+                </a>
             </td>
-            <td class="text-center vert-align"><small>{{ conversation.messages.count|add:"-1" }}</small></td>
+            <td class="text-center vert-align"><small>{{ conversation.messages.count }}</small></td>
             <td class="text-center vert-align importantData" style="line-height:100%">
                 <small>
-                <a href="{% url 'forum:thread' category.slug thread.slug %}#{{ thread.posts.latest.pk }}" class="lastMessage">
+                <a href="{% url 'pm:msg' conversation.pk %}#{{ conversation.messages.latest.pk }}" class="lastMessage">
                 {{ conversation.modified|date:'d/m/y H:i' }}
                 <br><strong>{{ conversation.messages.latest.author }}</strong>
                 </a>

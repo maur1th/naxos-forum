@@ -1,10 +1,11 @@
 from django.views.generic import ListView, CreateView
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
 
 from braces.views import LoginRequiredMixin
 
-from .models import Conversation
+from .models import Conversation, Message
 from .forms import ConversationForm
 
 
@@ -13,49 +14,87 @@ class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
     template_name = "messages/top.html"
 
+    def get_queryset(self):
+        return Conversation.objects.filter(participants=self.request.user)
+
+
+class MessageView(LoginRequiredMixin, ListView):
+
+    """Display conversation list of messages"""
+    template_name = "messages/messages.html"
+    model = Message
+    paginate_by = 30
+
+    def dispatch(self, request, *args, **kwargs):
+        self.c = Conversation.objects.get(pk=self.kwargs['pk'])
+        if self.request.user not in self.c.participants.all():
+            return HttpResponseForbidden()
+        return super().dispatch(request, *args, **kwargs)
+
+        # c_slug = self.kwargs['category_slug']
+        # t_slug = self.kwargs['thread_slug']
+        # self.t = Thread.objects.get(slug=t_slug,
+        #                             category__slug=c_slug)
+        # # Handle user read caret
+        # p = self.t.posts.latest()
+        # try:
+        #     caret = self.request.user.postsReadCaret.get(thread=self.t)
+        # except:
+        #     caret = False
+        # if caret != p:
+        #     self.request.user.postsReadCaret.remove(caret)
+        #     self.request.user.postsReadCaret.add(p)
+        # self.t.save()
+
+    def get_queryset(self):
+        return Message.objects.filter(conversation=self.c).all()
+
+    def get_context_data(self, **kwargs):
+        "Pass recipient to context"
+        context = super().get_context_data(**kwargs)
+        context['recipient'] = self.c.participants.exclude(
+            username=self.request.user).get()
+        context['conversation'] = self.c
+        return context
+
 
 class NewConversation(LoginRequiredMixin, CreateView):
     form_class = ConversationForm
     template_name = "messages/new_conversation.html"
+    success_url = reverse_lazy('pm:top')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
 
-    # def get_form_kwargs(self):
-    #     kwargs = super(NewPost, self).get_form_kwargs()
-    #     kwargs.update({'category_slug': self.kwargs['category_slug'],
-    #                    'thread': self.t})
-    #     return kwargs
+    def form_valid(self, form):
+        recipient = self.request.POST['recipient']
+        query = Conversation.objects.filter(
+                    participants=self.request.user).filter(
+                    participants=recipient)
+        if query:
+            c = query.get()
+        else:
+            # Create the conversation
+            c = Conversation()
+            c.save()
+            c.participants.add(self.request.user, recipient)
+        # Complete the message and save it
+        form.instance.conversation = c
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
-# class NewPvtConversation(LoginRequiredMixin, CreateView):
-#     form_class = ConversationForm
-#     template_name = 'forum/new_conversation.html'
+@login_required
+def NewMessage(request, pk):
+    if request.method == 'POST':
+        m = Message.objects.create(
+                conversation = Conversation.objects.get(pk=pk),
+                author = request.user,
+                content_plain=request.POST['content_plain'])
+        return HttpResponseRedirect(reverse_lazy('pm:msg',
+            kwargs={'pk': pk}) + '#' + str(m.pk))
 
-#     def dispatch(self, request, *args, **kwargs):
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         "Pass Category from url to context"
-#         context = super().get_context_data(**kwargs)
-#         context['category'] = self.c
-#         return context
-
-#     def form_valid(self, form):
-#         "Handle thread and 1st post creation in the db"
-#         # Create the thread
-#         t = Conversation.objects.create(
-#             title=self.request.POST['title'],
-#             author=self.request.user,
-#             category=self.c)
-#         # Complete the post and save it
-#         form.instance.thread = t
-#         form.instance.author = self.request.user
-#         m = form.save()
-#         self.request.user.postsReadCaret.add(m)
-#         return HttpResponseRedirect(self.get_success_url())
-
-#     def get_success_url(self):
-#         return reverse('forum:top')
+    else:
+        return HttpResponseRedirect(reverse_lazy('pm:top'))

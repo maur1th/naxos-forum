@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 import datetime
 
@@ -20,7 +21,7 @@ class Conversation(models.Model):
         get_latest_by = "modified"
 
     def __str__(self):
-        return self.participants
+        return str([user.username for user in self.participants.all()])
 
 
 class Message(models.Model):
@@ -35,9 +36,11 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, related_name='messages')
 
     def save(self, *args, **kwargs):
+        # BBCode + Smileys
         self.content_html = convert_text_to_html(self.content_plain)
         self.content_html = smilify(self.content_html)
-        self.conversation.participants.add(self.author)
+        # Update conv datetime
+        self.conversation.modified = self.created
         self.conversation.save()
         super().save(*args, **kwargs)
 

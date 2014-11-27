@@ -119,7 +119,7 @@ def NewMessage(request, pk):
 def GetConversation(request):
     if request.method == 'POST':
         try:
-            u = ForumUser.objects.get(username=request.POST['query'])
+            u = ForumUser.objects.get(username__iexact=request.POST['query'])
         except:
             return HttpResponseNotFound()
         c = Conversation.objects.filter(participants=request.user).filter(

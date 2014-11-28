@@ -136,5 +136,4 @@ def GetConversation(request):
                     ", ".join([u.username for u in u])))
         else:
             messages.error(request, "Aucun utilisateur trouvé.")
-    
     return HttpResponseRedirect(reverse_lazy('pm:top'))

@@ -128,7 +128,8 @@ def GetConversation(request):
                 return HttpResponseRedirect(reverse_lazy('pm:msg',
                     kwargs={'pk': c.pk}) + '#' + str(c.messages.latest().pk))
             else:
-                messages.error(request, "Il n'existe pas de conversation avec cet utilisateur : {:s}.".format(u.get().username))
+                messages.error(request, ("Il n'existe pas de conversation avec"
+                     " cet utilisateur : {:s}.".format(u.get().username)))
         elif u.count() > 1:
             messages.error(request,
                 "Plusieurs utilisateurs possibles : {:s}.".format(

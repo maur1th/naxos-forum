@@ -1,7 +1,7 @@
 from django.views.generic import ListView, CreateView
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseRedirect, HttpResponseForbidden, \
-    HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from braces.views import LoginRequiredMixin
@@ -118,13 +118,22 @@ def NewMessage(request, pk):
 @login_required
 def GetConversation(request):
     if request.method == 'POST':
-        try:
-            u = ForumUser.objects.get(username__iexact=request.POST['query'])
-        except:
-            return HttpResponseNotFound()
-        c = Conversation.objects.filter(participants=request.user).filter(
-            participants=u).get()
-        return HttpResponseRedirect(reverse_lazy('pm:msg',
-            kwargs={'pk': c.pk}) + '#' + str(c.messages.latest().pk))
-    else:
-        return HttpResponseRedirect(reverse_lazy('pm:top'))
+        u = ForumUser.objects.exclude(username=request.user).filter(
+                username__istartswith=request.POST['query'])
+        if u.count() == 1:
+            c = Conversation.objects.filter(participants=request.user).filter(
+                    participants=u.get())
+            if c.count() == 1:
+                c = c.get()
+                return HttpResponseRedirect(reverse_lazy('pm:msg',
+                    kwargs={'pk': c.pk}) + '#' + str(c.messages.latest().pk))
+            else:
+                messages.error(request, "Il n'existe pas de conversation avec cet utilisateur.")
+        elif u.count() > 1:
+            messages.error(request,
+                "Plusieurs utilisateurs possibles : {:s}.".format(
+                    ", ".join([u.username for u in u])))
+        else:
+            messages.error(request, "Aucun utilisateur trouvé.")
+    
+    return HttpResponseRedirect(reverse_lazy('pm:top'))

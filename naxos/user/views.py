@@ -74,4 +74,8 @@ def UpdatePassword(request):
 
 class MemberList(LoginRequiredMixin, ListView):
     template_name = "user/members.html"
-    model = ForumUser
+
+    def get_queryset(self):
+        q = ForumUser.objects.extra(
+            select={'username_lower': 'lower(username)'})
+        return q.order_by('username_lower')

@@ -121,10 +121,11 @@ $(document).ready(function() {
 <script>
     var x = setInterval(function() {
         $('.equal-divs').responsiveEqualHeightGrid();
-        console.log('function called');
     }, 500);
+    $(document).ready(function() {
+        $('.equal-divs').responsiveEqualHeightGrid();
+    })
     $(window).load(function() {
-        console.log("loaded");
         clearInterval(x);
     });
 </script>

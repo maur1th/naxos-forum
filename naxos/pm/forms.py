@@ -24,8 +24,6 @@ class ConversationForm(forms.ModelForm):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
         self.fields['recipient'].queryset = get_user_list(ForumUser, user)
-        # self.fields['recipient'].queryset = ForumUser.objects.exclude(
-        #     username=user).order_by('username')
         self.helper = FormHelper()
         self.helper.layout = Layout(Field('recipient'),
                                     HTML(toolbar),

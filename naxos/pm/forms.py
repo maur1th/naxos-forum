@@ -9,17 +9,23 @@ from user.models import ForumUser
 toolbar = "{% include \"toolbar.html\" %}"  # Text formatting
 
 
+def get_user_list(cls, user):
+    q = cls.objects.extra(select={'username_lower': 'lower(username)'})
+    return q.exclude(username=user).order_by('username_lower')
+
+
 class ConversationForm(forms.ModelForm):
     recipient = forms.ModelChoiceField(label="Destinataire",
                                        queryset=ForumUser.objects.none(),
-                                       initial="",
+                                       initial=0,
                                        widget=forms.Select())
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
-        self.fields['recipient'].queryset = ForumUser.objects.exclude(
-            username=user)
+        self.fields['recipient'].queryset = get_user_list(ForumUser, user)
+        # self.fields['recipient'].queryset = ForumUser.objects.exclude(
+        #     username=user).order_by('username')
         self.helper = FormHelper()
         self.helper.layout = Layout(Field('recipient'),
                                     HTML(toolbar),

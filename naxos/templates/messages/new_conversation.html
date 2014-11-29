@@ -16,10 +16,7 @@
 </div>
 <script>
     $(document).ready(function() {
-        $textArea = $("textarea[id$='content_plain']")
-        $textArea.focus();
-        var length = $textArea.val().length;
-        $textArea[0].setSelectionRange(length, length);
+        $('#id_recipient').focus();
     });
 </script>
 {% endblock %}

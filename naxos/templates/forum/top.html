@@ -38,7 +38,7 @@
                 <td class="text-center vert-align">
                     {% if category.threads.latest %}
                         <small>
-                        <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}#{{ category.threads.latest.posts.latest.pk }}" class="lastMessage">
+                        <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}?page=last#{{ category.threads.latest.posts.latest.pk }}" class="lastMessage">
                         <span class="hidden-xs">{{ category.threads.latest.modified|date:'d/m/y H:i' }}<br></span>
                         <span class="visible-xs">{{ category.threads.latest.modified|date:'d/m H:i' }}</span>
                         <strong>{{ category.threads.latest.posts.latest.author }}</strong>

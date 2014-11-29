@@ -154,7 +154,7 @@ $(document).ready(function() {
             {% endifequal %}
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
         </small>
-        <hr style="margin:5px; border-top: 1px solid #ccc">
+        <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
         <div class="post-content">
             {{ post.content_html|safe }}
         </div>

@@ -118,6 +118,16 @@ $(document).ready(function() {
 </div>
 <hr style="margin:1px; border-top:0">
 {# Posts #}
+<script>
+    var x = setInterval(function() {
+        $('.equal-divs').responsiveEqualHeightGrid();
+        console.log('function called');
+    }, 500);
+    $(window).load(function() {
+        console.log("loaded");
+        clearInterval(x);
+    });
+</script>
 {% for post in object_list %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
@@ -166,9 +176,6 @@ $(document).ready(function() {
 </div>
 <hr style="margin:8px; border-top:0">
 {% endfor %}
-<script>
-    $('.equal-divs').responsiveEqualHeightGrid();
-</script>
 {# Posts footer #}
 <div class="row" style="padding: 5px 0">
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>

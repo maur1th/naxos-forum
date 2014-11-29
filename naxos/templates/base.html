@@ -133,6 +133,18 @@
         {% if user.is_authenticated %}
         <div class="collapse navbar-collapse" id="navbar-collapse">
           <ul class="nav navbar-nav navbar-left">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-chevron-down"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'forum:category' 'materiel' %}">Informatique - Matériel</a></li>
+                <li><a href="{% url 'forum:category' 'logiciel' %}">Informatique - Logiciel</a></li>
+                <li><a href="{% url 'forum:category' 'os' %}">Systèmes d'exploitation</a></li>
+                <li><a href="{% url 'forum:category' 'jv' %}">Jeux vidéo</a></li>
+                <li><a href="{% url 'forum:category' 'ventes-achats' %}">Ventes - Achats</a></li>
+                <li><a href="{% url 'forum:category' 'jep' %}">J'ai envie de parler pour ne rien dire</a></li>
+                <li><a href="{% url 'forum:category' 'a-propos' %}">A propos du FoRuM</a></li>
+              </ul>
+            </li>
             <li><a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Profil</span></a></li>
             <li>
               <a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope hidden-xs"></span><span class="hidden-sm hidden-md hidden-lg">Messages privés</span></a>

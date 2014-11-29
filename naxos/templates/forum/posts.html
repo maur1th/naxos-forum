@@ -169,7 +169,7 @@ $(document).ready(function() {
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
         </small>
         <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
-        <div class="post-content">
+        <div class="post-content" style="word-wrap: break-word">
             {{ post.content_html|safe }}
         </div>
         {% if post.modified %}

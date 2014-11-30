@@ -9,9 +9,6 @@ from .models import ForumUser
 
 MAX_USERNAME_LENGTH = 20
 
-# TODO
-# Add email confirmation
-
 
 class UniqueEmailMixin(object):
 
@@ -34,7 +31,7 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
     email = forms.EmailField(required=True)
 
     def __init__(self, *args, **kwargs):
-        super(RegisterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Enregistrer'))
 
@@ -65,7 +62,7 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
 
 class CrispyAuthForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super(CrispyAuthForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Connexion'))
 
@@ -76,7 +73,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # Used to ensure email is unique
-        super(UpdateUserForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['email'].required = True
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -102,7 +99,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
 
 class CrispyPasswordForm(PasswordChangeForm):
     def __init__(self, user, *args, **kwargs):
-        super(CrispyPasswordForm, self).__init__(user=user, *args, **kwargs)
+        super().__init__(user=user, *args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Modifier'))
 
@@ -110,10 +107,10 @@ class CrispyPasswordForm(PasswordChangeForm):
 class RestrictedImageField(forms.ImageField):
     def __init__(self, *args, **kwargs):
         self.max_upload_size = kwargs.pop('max_upload_size', None)
-        super(RestrictedImageField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
-        data = super(RestrictedImageField, self).clean(*args, **kwargs)
+        data = super().clean(*args, **kwargs)
         try:
             if data.size > self.max_upload_size:
                 raise forms.ValidationError(

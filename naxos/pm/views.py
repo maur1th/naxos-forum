@@ -11,9 +11,9 @@ from .models import Conversation, Message
 from .forms import ConversationForm
 
 
-### Helper ###
+### Helper stuff ###
 def pm_counter(request, c):
-    """Increment conversation recipient pm counter"""
+    """Increment conversation recipient's pm counter"""
     recipient = c.participants.exclude(username=request.user).get()
     recipient.pmUnreadCount += 1
     recipient.save()
@@ -86,8 +86,7 @@ class NewConversation(LoginRequiredMixin, CreateView):
                     participants=recipient)
         if query:
             c = query.get()
-        else:
-            # Create the conversation
+        else:  # Create the conversation
             c = Conversation()
             c.save()
             c.participants.add(self.request.user, recipient)
@@ -95,6 +94,7 @@ class NewConversation(LoginRequiredMixin, CreateView):
         form.instance.conversation = c
         form.instance.author = self.request.user
         m = form.save()
+        # Add read caret for the author
         self.request.user.pmReadCaret.add(m)
         pm_counter(self.request, c)
         return HttpResponseRedirect(self.success_url)
@@ -115,8 +115,11 @@ def NewMessage(request, pk):
     else:
         return HttpResponseRedirect(reverse_lazy('pm:top'))
 
+
+### Search form ###
 @login_required
 def GetConversation(request):
+    """Conversation search form"""
     if request.method == 'POST':
         u = ForumUser.objects.exclude(username=request.user).filter(
                 username__istartswith=request.POST['query'])

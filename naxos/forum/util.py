@@ -13,6 +13,7 @@ from postmarkup import render_bbcode
 from naxos.settings.local import STATICFILES_DIRS as static, DEBUG
 
 
+### Urlize + BBCode filters ###
 class HTMLFilter(HTMLParser):
 
     """
@@ -123,7 +124,7 @@ def convert_text_to_html(text, markup='bbcode'):
     return text
 
 
-# Smiley stuff
+### Smiley stuff ###
 def compileSmileys():
 
     SMILEYS_PATH = ("<img class=\"smiley\" src=\""
@@ -178,7 +179,7 @@ def smilify(html):
     return smiled_html
 
 
-# Misc stuff
+### Misc ###
 def get_title(value):
     title = (
         "<div id='div_id_title' class='form-group'>"

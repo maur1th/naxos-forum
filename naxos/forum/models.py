@@ -9,7 +9,7 @@ from user.models import ForumUser
 SLUG_LENGTH = 50
 
 
-# Forum models
+### Basic Forum models ###
 class Category(models.Model):
 
     """Contains threads."""
@@ -93,7 +93,7 @@ class Post(models.Model):
         return "{:s}: {:d}".format(self.author.username, self.pk)
 
 
-# Poll models
+### Poll models ###
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
     thread = models.OneToOneField(Thread, related_name='question')

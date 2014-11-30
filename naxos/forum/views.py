@@ -265,7 +265,8 @@ def NewPoll(request, category_slug):
             # Complete the post and save it
             thread_form.instance.thread = t
             thread_form.instance.author = request.user
-            thread_form.save()
+            p = thread_form.save()
+            request.user.postsReadCaret.add(p)
             # Complete the poll and save it
             question_form.instance.thread = t
             question = question_form.save()

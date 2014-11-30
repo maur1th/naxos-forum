@@ -29,7 +29,7 @@ class ThreadView(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return super(ThreadView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
@@ -37,7 +37,7 @@ class ThreadView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"
-        context = super(ThreadView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['category'] = self.c
         return context
 
@@ -68,7 +68,7 @@ class PostView(LoginRequiredMixin, ListView):
             self.request.user.postsReadCaret.add(p)
 
         self.t.save()
-        return super(PostView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         "Return list of posts given thread and category slugs"
@@ -76,7 +76,7 @@ class PostView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         "Pass thread from url to context"
-        context = super(PostView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['thread'] = self.t
         return context
 
@@ -88,16 +88,16 @@ class NewThread(LoginRequiredMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return super(NewThread, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         "Pass Category from url to context"
-        context = super(NewThread, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['category'] = self.c
         return context
 
     def get_form_kwargs(self):
-        kwargs = super(NewThread, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug']})
         return kwargs
 
@@ -128,17 +128,17 @@ class NewPost(LoginRequiredMixin, CreateView):
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
-        return super(NewPost, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
-        context = super(NewPost, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['category'] = self.t.category
         context['thread'] = self.t
         return context
 
     def get_form_kwargs(self):
-        kwargs = super(NewPost, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
                        'thread': self.t})
         return kwargs
@@ -176,11 +176,11 @@ class QuotePost(NewPost):
     def dispatch(self, request, *args, **kwargs):
         self.p = Post.objects.get(pk=self.kwargs['pk'])
         self.t = self.p.thread
-        return super(NewPost, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         "Pass quoted post content as initial data for form"
-        initial = super(QuotePost, self).get_initial()
+        initial = super().get_initial()
         text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
             self.p.author.username, self.p.content_plain)
         initial['content_plain'] = text
@@ -197,24 +197,24 @@ class EditPost(LoginRequiredMixin, UpdateView):
         self.p = Post.objects.get(pk=self.kwargs['pk'])
         self.t = self.p.thread
         self.c = self.t.category
-        return super(EditPost, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         "Pass thread title as initial data for form"
-        initial = super(EditPost, self).get_initial()
+        initial = super().get_initial()
         initial['title'] = self.t.title
         return initial
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
-        context = super(EditPost, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['category'] = self.c
         context['thread'] = self.t
         context['post'] = self.p
         return context
 
     def get_form_kwargs(self):
-        kwargs = super(EditPost, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
                        'thread': self.t,
                        'post': self.p})

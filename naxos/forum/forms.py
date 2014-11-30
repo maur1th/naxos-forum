@@ -33,7 +33,7 @@ class ThreadForm(GenericThreadForm):
             new = False
         except:
             new = True
-        super(ThreadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         if new:
             self.helper.form_action = reverse(
@@ -65,7 +65,7 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.c_slug = kwargs.pop('category_slug')
         self.t = kwargs.pop('thread')
-        super(PostForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_action = reverse(
             'forum:new_post', kwargs={'category_slug': self.c_slug,
@@ -84,7 +84,7 @@ class PostForm(forms.ModelForm):
 class PollThreadForm(GenericThreadForm):
 
     def __init__(self, *args, **kwargs):
-        super(PollThreadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(Field('title'),
                                     HTML(toolbar),
@@ -95,7 +95,7 @@ class PollThreadForm(GenericThreadForm):
 class QuestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(QuestionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
 
@@ -110,14 +110,14 @@ class FormSetHelper(FormHelper):
     """Enables crispy forms for ChoicesFormSet"""
 
     def __init__(self, *args, **kwargs):
-        super(FormSetHelper, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.form_tag = False
 
 
 class CustomCleanFormset(BaseInlineFormSet):
 
     def clean(self):
-        super(CustomCleanFormset, self).clean()
+        super().clean()
         choices = list()
         for form in self.forms:
             try:

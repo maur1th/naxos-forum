@@ -51,7 +51,7 @@ class Thread(models.Model):
                                filter_dict={'category': self.category},
                                instance=self,
                                max_length=SLUG_LENGTH)
-        super(Thread, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["-isSticky", "-modified"]
@@ -82,7 +82,7 @@ class Post(models.Model):
         self.thread.save()
         self.thread.category.postCount += 1
         self.thread.category.save()
-        super(Post, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["created"]

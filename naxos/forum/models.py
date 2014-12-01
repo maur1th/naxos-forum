@@ -80,8 +80,6 @@ class Post(models.Model):
         self.content_html = smilify(self.content_html)
         self.thread.contributors.add(self.author)
         self.thread.save()
-        self.thread.category.postCount += 1
-        self.thread.category.save()
         super().save(*args, **kwargs)
 
     class Meta:

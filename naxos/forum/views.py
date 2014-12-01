@@ -110,6 +110,8 @@ class NewThread(LoginRequiredMixin, CreateView):
             category=self.c)
         # Complete the post and save it
         form.instance.thread = t
+        form.instance.thread.category.postCount += 1  # Increment category
+        form.instance.thread.category.save()          # post counter
         form.instance.author = self.request.user
         p = form.save()
         self.request.user.postsReadCaret.add(p)
@@ -160,6 +162,8 @@ class NewPost(LoginRequiredMixin, CreateView):
             form.instance.author = self.request.user
             form.instance.save()
             self.t.modified = form.instance.created
+            self.t.category.postCount += 1  # Increment category
+            self.t.category.save()          # post counter
             self.t.save()
             self.post_pk = form.instance.pk  # Store post pk for success url
             return HttpResponseRedirect(self.get_success_url())

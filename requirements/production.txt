@@ -1,4 +1,4 @@
 -r base.txt # includes the base.txt requirements file
 
-coverage
-django-debug-toolbar
+gunicorn
+setproctitle

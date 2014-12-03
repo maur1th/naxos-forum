@@ -17,6 +17,7 @@
 migration.txt
 secret.txt
 util/
+settings/local.py
 
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files

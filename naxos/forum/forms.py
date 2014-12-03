@@ -58,6 +58,7 @@ class ThreadForm(GenericThreadForm):
                                       'pk': post.pk})
 
         self.helper.add_input(Submit('submit', 'Enregistrer'))
+        self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
 
 class PostForm(forms.ModelForm):
@@ -74,8 +75,7 @@ class PostForm(forms.ModelForm):
                                     HTML(toolbar),
                                     Field('content_plain'))
         self.helper.add_input(Submit('submit', 'Enregistrer'))
-        self.helper.add_input(Submit('preview', 'Prévisualiser',
-            css_class='btn-default'))
+        self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     class Meta:
         model = Post

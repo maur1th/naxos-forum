@@ -1,27 +1,41 @@
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 import datetime
 from braces.views import LoginRequiredMixin
 
-from .models import Category, Thread, Post, PollQuestion
+from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 
 
+### Helpers ###
+def get_preview(author, content):
+    "Redirects to a post preview."
+    p = Preview.objects.create(author=author, content_plain=content)
+    return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
+
+
+class PreviewPostMixin(object):
+    def post(self, request, *args, **kwargs):
+        if "preview" in request.POST:
+            return get_preview(self.request.user,
+                               request.POST['content_plain'])
+        else:
+            return super().post(request, *args, **kwargs)
+
+
 ### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
-
     """Top view with all categories"""
     template_name = "forum/top.html"
     model = Category
 
 
 class ThreadView(LoginRequiredMixin, ListView):
-
     """Display category list of threads"""
     template_name = "forum/threads.html"
     model = Thread
@@ -43,7 +57,6 @@ class ThreadView(LoginRequiredMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-
     """Display thread list of posts"""
     template_name = "forum/posts.html"
     model = Post
@@ -78,8 +91,17 @@ class PostView(LoginRequiredMixin, ListView):
         return context
 
 
+class PreviewView(DetailView):
+    model = Preview
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.user != self.object.author:
+            return HttpResponseForbidden()
+        return super().render_to_response(context, **response_kwargs)
+
+
 ### Thread and Post creation and edit ###
-class NewThread(LoginRequiredMixin, CreateView):
+class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     form_class = ThreadForm
     template_name = 'forum/new_thread.html'
 
@@ -118,7 +140,7 @@ class NewThread(LoginRequiredMixin, CreateView):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
-class NewPost(LoginRequiredMixin, CreateView):
+class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     form_class = PostForm
     template_name = 'forum/new_post.html'
 
@@ -127,13 +149,6 @@ class NewPost(LoginRequiredMixin, CreateView):
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        if "preview" in request.POST:
-            # PREVIEW
-            return HttpResponseRedirect(reverse_lazy('forum:top'))
-        else:
-            return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
@@ -176,7 +191,6 @@ class NewPost(LoginRequiredMixin, CreateView):
 
 
 class QuotePost(NewPost):
-
     """Quote the content of another post"""
 
     def dispatch(self, request, *args, **kwargs):
@@ -193,7 +207,7 @@ class QuotePost(NewPost):
         return initial
 
 
-class EditPost(LoginRequiredMixin, UpdateView):
+class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     form_class = ThreadForm
     model = Post
     template_name = 'forum/edit.html'
@@ -260,27 +274,33 @@ def NewPoll(request, category_slug):
     formset_helper = FormSetHelper()
 
     if request.method == 'POST':
-        thread_form = PollThreadForm(request.POST, prefix="thread")
-        question_form = QuestionForm(request.POST, prefix="question")
-        if thread_form.is_valid() and question_form.is_valid():
-            # Create the thread
-            t = Thread.objects.create(
-                title=request.POST['thread-title'],
-                author=request.user,
-                category=c)
-            # Complete the post and save it
-            thread_form.instance.thread = t
-            thread_form.instance.author = request.user
-            p = thread_form.save()
-            request.user.postsReadCaret.add(p)
-            # Complete the poll and save it
-            question_form.instance.thread = t
-            question = question_form.save()
-            choices_formset = ChoicesFormSet(request.POST, instance=question)
-            if choices_formset.is_valid():
-                choices_formset.save()
-                return HttpResponseRedirect(reverse(
-                    'forum:category', kwargs={'category_slug': category_slug}))
+        if "preview" in request.POST:
+            return get_preview(request.user,
+                               request.POST['thread-content_plain'])
+        else:
+            thread_form = PollThreadForm(request.POST, prefix="thread")
+            question_form = QuestionForm(request.POST, prefix="question")
+            if thread_form.is_valid() and question_form.is_valid():
+                # Create the thread
+                t = Thread.objects.create(
+                    title=request.POST['thread-title'],
+                    author=request.user,
+                    category=c)
+                # Complete the post and save it
+                thread_form.instance.thread = t
+                thread_form.instance.author = request.user
+                p = thread_form.save()
+                request.user.postsReadCaret.add(p)
+                # Complete the poll and save it
+                question_form.instance.thread = t
+                question = question_form.save()
+                choices_formset = ChoicesFormSet(request.POST,
+                                                 instance=question)
+                if choices_formset.is_valid():
+                    choices_formset.save()
+                    return HttpResponseRedirect(reverse(
+                        'forum:category',
+                        kwargs={'category_slug': category_slug}))
 
     return render(request, 'forum/new_poll.html', {
         'question_form': question_form,

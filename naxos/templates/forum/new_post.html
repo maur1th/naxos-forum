@@ -11,16 +11,17 @@
 {# Form #}
 <div class="row">
     <div class="col-xs-12" id="main">
-            {% crispy form %}
+        {% crispy form %}
     </div>
     {% include "smileys.html" %}
 </div>
 <script>
-    $(document).ready(function() {
-        $textArea = $("textarea[id$='content_plain']")
-        $textArea.focus();
-        var length = $textArea.val().length;
-        $textArea[0].setSelectionRange(length, length);
-    });
+    // Preview button
+    $('#submit-id-preview').removeClass("btn-primary").addClass("btn-default");
+    // Focus
+    $textArea = $("textarea[id$='content_plain']")
+    $textArea.focus();
+    var length = $textArea.val().length;
+    $textArea[0].setSelectionRange(length, length);
 </script>
 {% endblock %}

@@ -50,4 +50,9 @@ urlpatterns = patterns(
         view=views.QuotePost.as_view(),
         name='quote'
     ),
+    url(
+        regex=r'^\$(?P<pk>[0-9]+)$',
+        view=views.PreviewView.as_view(),
+        name='preview'
+    ),
 )

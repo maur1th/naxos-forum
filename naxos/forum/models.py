@@ -54,7 +54,7 @@ class Thread(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["-isSticky", "-modified"]
+        ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']
         # Permit thread.posts.latest in template
         get_latest_by = "modified"
@@ -83,7 +83,7 @@ class Post(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["created"]
+        ordering = ["pk"]
         # Permit thread.posts.latest in template
         get_latest_by = "created"
 

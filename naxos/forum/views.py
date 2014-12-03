@@ -126,10 +126,9 @@ class NewPost(LoginRequiredMixin, CreateView):
     template_name = 'forum/new_post.html'
 
     def dispatch(self, request, *args, **kwargs):
-        c_slug = self.kwargs['category_slug']
-        t_slug = self.kwargs['thread_slug']
-        self.t = Thread.objects.get(slug=t_slug,
-                                    category__slug=c_slug)
+        self.t = Thread.objects.get(
+            slug=self.kwargs['thread_slug'],
+            category__slug=self.kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -147,30 +146,29 @@ class NewPost(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         "Handle post creation in the db"
-        # Merge with previous post if same author
-        p = self.t.posts.latest()  # Get the latest post
+        # Update parent category and thread
+        self.t.modified = datetime.datetime.now()
+        self.t.category.postCount += 1
+        self.t.category.save()
+        self.t.save()
+        # Merge with last thread post if same author
+        p = self.t.posts.latest()  # Get last post
         if p.author == self.request.user:
-            p.content_plain += "\n\n{:s}".format(form.instance.content_plain)
-            p.modified = datetime.datetime.now()
-            self.post_pk = p.pk  # Pass to success url
-            p.save()
-            self.t.modified = p.modified
-            self.t.save()
-            return HttpResponseRedirect(self.get_success_url())
-        else:
-            form.instance.thread = self.t
-            form.instance.author = self.request.user
-            form.instance.save()
-            self.t.modified = form.instance.created
-            self.t.category.postCount += 1  # Increment category
-            self.t.category.save()          # post counter
-            self.t.save()
-            self.post_pk = form.instance.pk  # Store post pk for success url
-            return HttpResponseRedirect(self.get_success_url())
+            # Update form accordingly
+            form.instance.content_plain = p.content_plain + "\n\n{:s}".format(
+                form.instance.content_plain)
+            form.instance.created = p.created
+            form.instance.modified = datetime.datetime.now()
+            # Delete last post
+            p.delete()
+        # Update remaining form fields
+        form.instance.thread = self.t
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
     def get_success_url(self):
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '#' + str(self.post_pk))
+                + '#' + str(self.object.pk))
 
 
 class QuotePost(NewPost):

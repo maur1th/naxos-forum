@@ -83,7 +83,7 @@ class Post(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["created"]
+        ordering = ["pk"]
         # Permit thread.posts.latest in template
         get_latest_by = "created"
 

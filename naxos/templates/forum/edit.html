@@ -11,11 +11,7 @@
 {# Form #}
 <div class="row">
     <div class="col-md-12" id="main">
-        {% ifnotequal post.author user %}
-            <h3>Vous ne pouvez pas modifier ce post.</h3>
-        {% else %}
-            {% crispy form form.helper %}
-        {% endifnotequal %}
+        {% crispy form form.helper %}
     </div>
     {% include "smileys.html" %}
 </div>

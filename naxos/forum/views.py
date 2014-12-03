@@ -14,12 +14,13 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
 
 ### Helpers ###
 def get_preview(author, content):
-    "Redirects to a post preview."
+    "Redirects to a post preview"
     p = Preview.objects.create(author=author, content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
 
 class PreviewPostMixin(object):
+    "Checks if form action was preview"
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
             return get_preview(self.request.user,
@@ -30,14 +31,10 @@ class PreviewPostMixin(object):
 
 ### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
-    """Top view with all categories"""
-    template_name = "forum/top.html"
     model = Category
 
 
 class ThreadView(LoginRequiredMixin, ListView):
-    """Display category list of threads"""
-    template_name = "forum/threads.html"
     model = Thread
     paginate_by = 30
 
@@ -57,8 +54,6 @@ class ThreadView(LoginRequiredMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    """Display thread list of posts"""
-    template_name = "forum/posts.html"
     model = Post
     paginate_by = 30
 
@@ -213,8 +208,10 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     template_name = 'forum/edit.html'
 
     def dispatch(self, request, *args, **kwargs):
-        # Get the right post and thread
+        "Get the right post and thread"
         self.p = Post.objects.get(pk=self.kwargs['pk'])
+        if self.p.author != self.request.user:
+            return HttpResponseForbidden()
         self.t = self.p.thread
         self.c = self.t.category
         return super().dispatch(request, *args, **kwargs)
@@ -253,15 +250,13 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             modified = True
         if modified:
             form.instance.modified = datetime.datetime.now()
-        # Save the post
-        form.instance.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)
 
     def get_success_url(self):
-        pk = str(self.kwargs.pop('pk'))
+        self.kwargs.pop('pk')
         self.kwargs['thread_slug'] = self.t.slug
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '#' + pk)
+                + '#' + str(self.object.pk))
 
 
 ### Poll Views ###

@@ -54,9 +54,7 @@ class PostView(LoginRequiredMixin, ListView):
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
-
         self.t.viewCount += 1  # Increment views
-
         # Handle user read caret
         p = self.t.posts.latest()
         try:
@@ -66,7 +64,6 @@ class PostView(LoginRequiredMixin, ListView):
         if caret != p:
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
-
         self.t.save()
         return super().dispatch(request, *args, **kwargs)
 
@@ -130,6 +127,13 @@ class NewPost(LoginRequiredMixin, CreateView):
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if "preview" in request.POST:
+            # PREVIEW
+            return HttpResponseRedirect(reverse_lazy('forum:top'))
+        else:
+            return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"

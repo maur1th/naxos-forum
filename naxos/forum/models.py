@@ -91,6 +91,22 @@ class Post(models.Model):
         return "{:s}: {:d}".format(self.author.username, self.pk)
 
 
+class Preview(models.Model):
+
+    """Contains post previews."""
+    author = models.ForeignKey(ForumUser, related_name='previews')
+    content_plain = models.TextField()
+    content_html = models.TextField()
+
+    def save(self, *args, **kwargs):
+        self.content_html = convert_text_to_html(self.content_plain)
+        self.content_html = smilify(self.content_html)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "{:s}: {:d}".format(self.author.username, self.pk)
+        
+
 ### Poll models ###
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)

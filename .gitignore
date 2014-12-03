@@ -16,7 +16,7 @@
 *.sublime-workspace
 migration.txt
 secret.txt
-util/
+util/members/
 
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files

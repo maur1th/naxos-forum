@@ -133,7 +133,7 @@ def compileSmileys():
     specialSmileys = [(r':\)', SMILEYS_PATH.format('special-smile')),
                       (r';\)', SMILEYS_PATH.format('special-wink')),
                       (r':\(', SMILEYS_PATH.format('special-sad')),
-                      (r':\/', SMILEYS_PATH.format('special-bof')),
+                      (r':\/', SMILEYS_PATH.format('bof')),
                       (r':D', SMILEYS_PATH.format('green')),
                       (r':\?:', SMILEYS_PATH.format('special-question')),
                       (r':\?\?\?:', SMILEYS_PATH.format('special-3question'))]

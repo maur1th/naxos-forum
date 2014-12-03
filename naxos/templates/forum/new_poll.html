@@ -31,6 +31,9 @@
 </div>
 <script>
     $("input[id$='title']").focus();
+    // Smiley-related js
+    $('#all-smileys-panel').removeClass("col-xs-12").addClass("col-xs-5");
+    // Poll-related js
     $('div:regex(id,^div_id_choices-[2-9])').hide();
     $('label:regex(for,^id_choices)').text(function(index) {
         return "Choix " + (index + 1);

@@ -23,8 +23,8 @@
             <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
             <th>Message</th>
             <th class="col-xs-2 text-center">Auteur</th>
-            <th class="text-center col-xs-1 hidden-xs">Rép.</th>
-            <th class="text-center col-xs-1 hidden-xs">Vues</th>
+            <th class="text-center col-xs-1 hidden-sm hidden-xs">Rép.</th>
+            <th class="text-center col-xs-1 hidden-sm hidden-xs">Vues</th>
             <th class="text-center col-xs-2">Dernier message</th>
         </tr>
         </thead>
@@ -58,8 +58,8 @@
                 <td class="text-center vert-align importantData">
                     <small><strong>{{ thread.author }}</strong></small>
                 </td>
-                <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
-                <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+                <td class="text-center vert-align hidden-xs hidden-sm"><small>{{ thread.posts.count|add:"-1" }}</small></td>
+                <td class="text-center vert-align hidden-xs hidden-sm"><small>{{ thread.viewCount }}</small></td>
                 <td class="text-center vert-align importantData" style="line-height:100%">
                     <small>
                     <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.posts.latest.pk }}" class="lastMessage">

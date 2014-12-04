@@ -13,9 +13,9 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
 
 
 ### Helpers ###
-def get_preview(author, content):
+def get_preview(content):
     "Redirects to a post preview"
-    p = Preview.objects.create(author=author, content_plain=content)
+    p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
 
@@ -23,8 +23,7 @@ class PreviewPostMixin(object):
     "Checks if form action was preview"
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
-            return get_preview(self.request.user,
-                               request.POST['content_plain'])
+            return get_preview(request.POST['content_plain'])
         else:
             return super().post(request, *args, **kwargs)
 
@@ -94,11 +93,6 @@ class PreviewView(DetailView):
         context = self.get_context_data(object=self.object)
         self.object.delete()  # Now the object is loaded, delete it
         return self.render_to_response(context)
-
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.user != self.object.author:
-            return HttpResponseForbidden()
-        return super().render_to_response(context, **response_kwargs)
 
 
 ### Thread and Post creation and edit ###
@@ -276,8 +270,7 @@ def NewPoll(request, category_slug):
 
     if request.method == 'POST':
         if "preview" in request.POST:
-            return get_preview(request.user,
-                               request.POST['thread-content_plain'])
+            return get_preview(request.POST['thread-content_plain'])
         else:
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")

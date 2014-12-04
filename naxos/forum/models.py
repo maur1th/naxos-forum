@@ -11,7 +11,6 @@ SLUG_LENGTH = 50
 
 ### Basic Forum models ###
 class Category(models.Model):
-
     """Contains threads."""
     slug = models.SlugField(blank=False, unique=True)
     title = models.CharField(max_length=50, blank=False)
@@ -26,7 +25,6 @@ class Category(models.Model):
 
 
 class Thread(models.Model):
-
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80, verbose_name='Titre')
@@ -64,7 +62,6 @@ class Thread(models.Model):
 
 
 class Post(models.Model):
-
     """A post."""
     created = models.DateTimeField(default=datetime.datetime.now,
                                    editable=False)
@@ -92,19 +89,18 @@ class Post(models.Model):
 
 
 class Preview(models.Model):
-
-    """Contains post previews."""
-    author = models.ForeignKey(ForumUser, related_name='previews')
+    """Contains post previews. Should be empty."""
     content_plain = models.TextField()
     content_html = models.TextField()
 
     def save(self, *args, **kwargs):
+        Preview.objects.all().delete()  # Just in case
         self.content_html = convert_text_to_html(self.content_plain)
         self.content_html = smilify(self.content_html)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "{:s}: {:d}".format(self.author.username, self.pk)
+        return "{:d}".format(self.pk)
         
 
 ### Poll models ###

@@ -119,7 +119,8 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
         "Handle thread and 1st post creation in the db"
         # Create the thread
         t = Thread.objects.create(
-            title=self.request.POST['title'],
+            title=form.cleaned_data['title'],
+            icon=form.cleaned_data['icon'],
             author=self.request.user,
             category=self.c)
         # Complete the post and save it
@@ -217,9 +218,10 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        "Pass thread title as initial data for form"
+        "Pass initial data to form"
         initial = super().get_initial()
         initial['title'] = self.t.title
+        initial['icon'] = self.t.icon[4:][:-4]
         return initial
 
     def get_context_data(self, **kwargs):
@@ -242,11 +244,13 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         modified = False  # Handle modified datetime tag update
         # Edit thread title if indeed the first post
         if (self.p == self.t.posts.first()
-                and self.request.POST['title'] != self.t.title):
-            self.t.title = self.request.POST['title']
+                and (form.cleaned_data['title'] != self.t.title
+                     or form.cleaned_data['icon'] != self.t.icon)):
+            self.t.title = form.cleaned_data['title']
+            self.t.icon = form.cleaned_data['icon']
             modified = True
-        self.t.save()
-        if form.instance.content_plain != self.p.content_plain:
+            self.t.save()
+        if form.cleaned_data['content_plain'] != self.p.content_plain:
             modified = True
         if modified:
             form.instance.modified = datetime.datetime.now()
@@ -277,7 +281,8 @@ def NewPoll(request, category_slug):
             if thread_form.is_valid() and question_form.is_valid():
                 # Create the thread
                 t = Thread.objects.create(
-                    title=request.POST['thread-title'],
+                    title=thread_form.cleaned_data['title'],
+                    icon=thread_form.cleaned_data['icon'],
                     author=request.user,
                     category=c)
                 # Complete the post and save it

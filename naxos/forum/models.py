@@ -32,7 +32,8 @@ class Thread(models.Model):
     contributors = models.ManyToManyField(ForumUser)
     modified = models.DateTimeField(default=datetime.datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
-    icon = models.ImageField(blank=True)
+    icon = models.CharField(
+        max_length=80, default="icon1.gif", verbose_name='Icône')
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)

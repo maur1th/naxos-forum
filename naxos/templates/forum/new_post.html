@@ -5,7 +5,13 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
-    <li><a href="{% url 'forum:thread' category.slug thread.slug %}">{{ thread.title }}</a></li>
+    <li><a href="{% url 'forum:thread' category.slug thread.slug %}">
+    {% if thread.question %}
+        Sondage : {{ thread.title }}
+    {% else %}
+        Sujet : {{ thread.title }} 
+    {% endif %}
+    </a></li>
     <li class="active">Réponse</li>
 </ol>
 {# Form #}

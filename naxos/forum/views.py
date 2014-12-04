@@ -89,6 +89,12 @@ class PostView(LoginRequiredMixin, ListView):
 class PreviewView(DetailView):
     model = Preview
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        self.object.delete()  # Now the object is loaded, delete it
+        return self.render_to_response(context)
+
     def render_to_response(self, context, **response_kwargs):
         if self.request.user != self.object.author:
             return HttpResponseForbidden()

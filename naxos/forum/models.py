@@ -3,7 +3,7 @@ from django.db import models
 import datetime
 from uuslug import uuslug
 
-from .util import convert_text_to_html, smilify
+from .util import convert_text_to_html, smilify, keygen
 from user.models import ForumUser
 
 SLUG_LENGTH = 50
@@ -45,7 +45,7 @@ class Thread(models.Model):
                            filter_dict={'category': self.category},
                            instance=self,
                            max_length=SLUG_LENGTH)
-        if not self.slug:
+        if not self.slug:  # Prevent empty strings as slug
             self.slug = uuslug('sans titre',
                                filter_dict={'category': self.category},
                                instance=self,
@@ -95,14 +95,28 @@ class Preview(models.Model):
     content_html = models.TextField()
 
     def save(self, *args, **kwargs):
-        Preview.objects.all().delete()  # Just in case
         self.content_html = convert_text_to_html(self.content_plain)
         self.content_html = smilify(self.content_html)
         super().save(*args, **kwargs)
 
     def __str__(self):
         return "{:d}".format(self.pk)
-        
+
+
+class ThreadCession(models.Model):
+    thread = models.OneToOneField(Thread)
+    token = models.CharField(max_length=50, unique=True)
+
+    def save(self, *args, **kwargs):
+        queryset = self.__class__.objects.all()
+        self.token = keygen()
+        while queryset.filter(token=self.token).exists():
+            self.token = keygen()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return thread
+
 
 ### Poll models ###
 class PollQuestion(models.Model):

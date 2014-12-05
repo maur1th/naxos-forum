@@ -51,8 +51,14 @@ urlpatterns = patterns(
         name='quote'
     ),
     url(
-        regex=r'^\$(?P<pk>[0-9]+)$',
+        regex=r'^preview/(?P<pk>[0-9]+)$',
         view=views.PreviewView.as_view(),
         name='preview'
+    ),
+    url(
+        regex=(r'^(?P<category_slug>[\w|\-]+)/'
+                '(?P<thread_slug>[\w|\-]+)/cession$'),
+        view=views.ThreadCessionView.as_view(),
+        name='cession'
     ),
 )

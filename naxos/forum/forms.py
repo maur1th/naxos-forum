@@ -52,34 +52,34 @@ class ThreadForm(GenericThreadForm):
             new = True
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        if new:
+        self.helper.add_input(Submit('submit', 'Enregistrer'))
+        self.helper.add_input(Submit('preview', 'Prévisualiser',))
+        if new:  # This is a new thread
             self.helper.form_action = reverse(
                 'forum:new_thread', kwargs={'category_slug': c_slug})
             self.helper.layout = Layout(Field('title'),
                                         InlineRadios('icon'),
                                         HTML(toolbar),
                                         Field('content_plain'))
-        else:
-            if post == thread.posts.first():  # Enable title edit if first post
+        else:  # This is an edit
+            if post == thread.posts.first():
                 self.helper.layout = Layout(Field('title'),
                                             InlineRadios('icon'),
                                             HTML(toolbar),
                                             Field('content_plain'))
-            else:
+                self.helper.add_input(
+                    Submit('cede', 'Céder le contrôle de ce sujet'))
+            else:  # If it's not the first post
                 self.fields['title'].required = False
                 self.fields['icon'].required = False
                 self.helper.layout = Layout(Field('title', disabled=''),
                                             HTML(toolbar),
                                             Field('content_plain'),
                                             Field('icon', type='hidden'),)
-
             self.helper.form_action = reverse(
                 'forum:edit', kwargs={'category_slug': c_slug,
                                       'thread_slug': thread.slug,
                                       'pk': post.pk})
-
-        self.helper.add_input(Submit('submit', 'Enregistrer'))
-        self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
 
 class PostForm(forms.ModelForm):

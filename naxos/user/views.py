@@ -11,6 +11,7 @@ from braces.views import LoginRequiredMixin
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm, \
     CrispyAuthForm
 from .models import ForumUser
+from forum.models import ThreadCession
 
 
 class Register(CreateView):
@@ -50,6 +51,18 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs.update({'user': self.request.user})
         return kwargs
+
+    def form_valid(self, form):
+        token = form.cleaned_data.get('token')
+        if token:
+            obj = ThreadCession.objects.get(token=token)
+            t, p = obj.thread, obj.thread.posts.first()
+            t.author, p.author = self.request.user, self.request.user
+            t.save()
+            p.save()
+            obj.delete()
+        return super().form_valid(form)
+
 
     def get_success_url(self):
         messages.success(self.request, "Paramètres sauvegardés.")

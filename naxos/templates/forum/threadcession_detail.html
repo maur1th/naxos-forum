@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li class="active">Prévisualisation du message</li>
+</ol><br>
+{# Posts #}
+<div class="row">
+    {# Content #}
+    <div class="alert alert-danger">
+    <p>Vous pouvez céder le contrôle de ce sujet en communiquant le code ci-dessous à un autre membre du forum.</p><br>
+    <strong>{{ threadcession.token }}</strong>
+    </div>
+</div>
+<hr style="margin:8px; border-top:0">
+{# Posts footer #}
+<div class="row" style="padding: 5px 0">
+        <a href="#" onclick="window.history.back();return false;"><button class="btn btn-primary pull-left">Retour</button></a>
+</div>
+{% endblock content %}

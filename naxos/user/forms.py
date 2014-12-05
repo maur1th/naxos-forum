@@ -6,6 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
 from .models import ForumUser
+from forum.models import ThreadCession
 
 MAX_USERNAME_LENGTH = 20
 
@@ -68,8 +69,8 @@ class CrispyAuthForm(AuthenticationForm):
 
 
 class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
-    threadPaternityCode = forms.CharField(
-        required=False, label='Obtenir la paternité d\'un sujet')
+    token = forms.CharField(
+                required=False, label='Obtenir la paternité d\'un sujet')
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # Used to ensure email is unique
@@ -87,9 +88,15 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
             Field('subscribeToEmails'),
             Field('mpEmailNotif'),
             Field('showSmileys'),
-            Field('threadPaternityCode',
-                  template="user/threadPaternityInput.html"),
+            Field('token',
+                  template="user/threadCessionInput.html"),
         )
+
+    def clean_token(self, *args, **kwargs):
+        token = self.cleaned_data['token']
+        if token and not ThreadCession.objects.filter(token=token).exists():
+            raise forms.ValidationError('Aucun sujet correspondant.')
+        return token
 
     class Meta:
         model = ForumUser

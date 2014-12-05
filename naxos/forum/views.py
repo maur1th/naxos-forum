@@ -7,20 +7,20 @@ from django.shortcuts import render
 import datetime
 from braces.views import LoginRequiredMixin
 
-from .models import Category, Thread, Post, Preview, PollQuestion
+from .models import Category, Thread, Post, Preview, PollQuestion, \
+    ThreadCession
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 
 
 ### Helpers ###
 def get_preview(content):
-    "Redirects to a post preview"
+    "Redirect to post preview"
     p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
 
 class PreviewPostMixin(object):
-    "Checks if form action was preview"
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
             return get_preview(request.POST['content_plain'])
@@ -83,16 +83,6 @@ class PostView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['thread'] = self.t
         return context
-
-
-class PreviewView(DetailView):
-    model = Preview
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        context = self.get_context_data(object=self.object)
-        self.object.delete()  # Now the object is loaded, delete it
-        return self.render_to_response(context)
 
 
 ### Thread and Post creation and edit ###
@@ -217,6 +207,16 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         self.c = self.t.category
         return super().dispatch(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        if "cede" in request.POST:
+            ThreadCession.objects.get_or_create(thread=self.t)
+            return HttpResponseRedirect(
+                reverse('forum:cession',
+                        kwargs={'category_slug': self.c.slug,
+                                'thread_slug': self.t.slug}))
+        else:
+            return super().post(request, *args, **kwargs)
+
     def get_initial(self):
         "Pass initial data to form"
         initial = super().get_initial()
@@ -261,6 +261,30 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         self.kwargs['thread_slug'] = self.t.slug
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '#' + str(self.object.pk))
+
+
+class PreviewView(LoginRequiredMixin, DetailView):
+    model = Preview
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        self.object.delete()  # Now the object is loaded, delete it
+        return self.render_to_response(context)
+
+
+class ThreadCessionView(LoginRequiredMixin, DetailView):
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.t = Thread.objects.get(
+                    slug=self.kwargs['thread_slug'],
+                    category__slug=self.kwargs['category_slug'])
+        if self.t.author != self.request.user:
+            return HttpResponseForbidden()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return ThreadCession.objects.get(thread=self.t)
 
 
 ### Poll Views ###

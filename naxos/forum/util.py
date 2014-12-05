@@ -200,3 +200,9 @@ def rm_trailing_spaces(s):
         return s
     else:
         return rm_trailing_spaces(s[:-1])
+
+def keygen():
+    import random
+    return ''.join([random.SystemRandom().choice(
+        'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+        for i in range(50)])

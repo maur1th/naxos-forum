@@ -168,7 +168,7 @@
       </div>
     </nav>
     {# Page content #}
-    <div class="container">
+    <div class="container" style="padding:0 20px">
     {% if user.pmUnreadCount == 1 %}
       <div class="alert alert-info"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveau message privé.</a></div>
     {% elif user.pmUnreadCount > 1 %}

@@ -22,11 +22,11 @@
             <tr>
                 <td class="vert-align">
                     {% if category.threads.latest.posts.latest in user.postsReadCaret.all %}
-                        <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                        <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                     {% elif not category.threads.latest.posts.latest %}
-                        <img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                        <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                     {% else %}
-                        <img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+                        <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                     {% endif %}
                 </td>
                 <td class="vert-align">
@@ -59,8 +59,8 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <p class="legend"><img src="{% static 'img/on.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>De nouveaux messages depuis votre dernière visite</small></p>
-        <p class="legend"><img src="{% static 'img/off.gif' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun nouveau message depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>De nouveaux messages depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun nouveau message depuis votre dernière visite</small></p>
     </div>
 </div>
 {% endblock %}

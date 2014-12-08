@@ -17,6 +17,9 @@ class ForumUser(AbstractUser):
     showSmileys = models.BooleanField(
         default=False,
         verbose_name='Affichage des smileys par defaut')
+    fullscreen = models.BooleanField(
+        default=False,
+        verbose_name='Utilisation de la largeur de l\'écran')
     logo = models.ImageField(upload_to="logo",
                              blank=True)
     quote = models.CharField(max_length=50,

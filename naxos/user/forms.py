@@ -88,6 +88,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
             Field('subscribeToEmails'),
             Field('mpEmailNotif'),
             Field('showSmileys'),
+            Field('fullscreen'),
             Field('token',
                   template="user/threadCessionInput.html"),
         )
@@ -101,7 +102,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     class Meta:
         model = ForumUser
         fields = ('email', 'emailVisible', 'subscribeToEmails', 'mpEmailNotif',
-                  'logo', 'quote', 'website', 'showSmileys')
+                  'logo', 'quote', 'website', 'showSmileys', 'fullscreen')
 
 
 class CrispyPasswordForm(PasswordChangeForm):

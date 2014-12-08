@@ -91,6 +91,11 @@
           display: none;
       }
       /* Misc */
+      {% if user.fullscreen %}
+      .container {
+          width:100%;
+      }  
+      {% endif %}
       .smiley {
           vertical-align:bottom;
           padding-bottom:5px;

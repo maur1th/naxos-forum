@@ -6,8 +6,8 @@
     <p>Si un autre membre vous a communiqué un code pour le remplacer comme auteur de l'un de ses sujets, vous pouvez en accepter la paternité en entrant ce code ci-dessous :</p>
     {% crispy_field field 'placeholder' 'Code' %}
     {% if form_show_errors and field.errors %}
-    {% for error in field.errors %}
-    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="help-block"><strong>{{ error }}</strong></p>
-    {% endfor %}
-{% endif %}
+        {% for error in field.errors %}
+            <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="help-block"><strong>{{ error }}</strong></p>
+        {% endfor %}
+    {% endif %}
 </div>

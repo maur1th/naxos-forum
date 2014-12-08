@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm
+from django.template.defaultfilters import filesizeformat
 
+from PIL import Image
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
@@ -9,6 +11,8 @@ from .models import ForumUser
 from forum.models import ThreadCession
 
 MAX_USERNAME_LENGTH = 20
+MAX_UPLOAD_SIZE = 102400
+MAX_LENGTH = 120
 
 
 class UniqueEmailMixin(object):
@@ -98,6 +102,22 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
         if token and not ThreadCession.objects.filter(token=token).exists():
             raise forms.ValidationError('Aucun sujet correspondant.')
         return token
+
+    def clean_logo(self, *args, **kwargs):
+        logo = self.cleaned_data['logo']
+        # Check image size (in pixels)
+        img = Image.open(logo)
+        for length in img.size:
+            if length > MAX_LENGTH:
+                raise forms.ValidationError(
+                    ("Image trop grande. La taille maximale autorisée est de "
+                     "{}x{} pixels.").format(MAX_LENGTH,MAX_LENGTH))
+        # Check image size (in ko)
+        if logo._size > MAX_UPLOAD_SIZE:
+            raise forms.ValidationError(
+                ("Fichier trop volumineux. La taille maximale autorisée "
+                 "est de {}.").format(filesizeformat(MAX_UPLOAD_SIZE)))
+        return logo
 
     class Meta:
         model = ForumUser

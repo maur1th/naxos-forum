@@ -13,6 +13,9 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 
 
+MERGEPOST_INTERVAL = 300
+
+
 ### Helpers ###
 def get_preview(content):
     "Redirect to post preview"
@@ -159,7 +162,9 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         self.t.save()
         # Merge with last thread post if same author
         p = self.t.posts.latest()  # Get last post
-        if p.author == self.request.user:
+        interval = datetime.datetime.now() - p.created
+        if (p.author == self.request.user
+                and interval.seconds < MERGEPOST_INTERVAL):
             # Update form accordingly
             form.instance.content_plain = p.content_plain + "\n\n{:s}".format(
                 form.instance.content_plain)

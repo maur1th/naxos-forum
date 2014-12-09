@@ -49,6 +49,7 @@ class ThreadView(LoginRequiredMixin, ListView):
         "Pass category from url to context"
         context = super().get_context_data(**kwargs)
         context['category'] = self.c
+        context['post_pagination'] = PostView.paginate_by
         return context
 
 
@@ -173,7 +174,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
     def get_success_url(self):
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '#' + str(self.object.pk))
+                + '?page=last#' + str(self.object.pk))
 
 
 class QuotePost(NewPost):
@@ -257,10 +258,11 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        self.kwargs.pop('pk')
+        self.kwargs.pop('pk')  # remove useless pk
         self.kwargs['thread_slug'] = self.t.slug
+        post_page = self.object.position//PostView.paginate_by + 1
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '#' + str(self.object.pk))
+                + '?page=' + str(post_page) + '#' + str(self.object.pk))
 
 
 class PreviewView(LoginRequiredMixin, DetailView):

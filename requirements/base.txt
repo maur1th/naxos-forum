@@ -5,3 +5,4 @@ django-crispy-forms==1.4.0
 django-uuslug==1.0.3
 postmarkup==1.2.1
 psycopg2==2.5.4
+django-mathfilters

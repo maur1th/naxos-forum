@@ -85,6 +85,11 @@ class Post(models.Model):
         # Permit thread.posts.latest in template
         get_latest_by = "created"
 
+    @property
+    def position(self):
+        return Post.objects.filter(thread=self.thread).filter(
+                                   pk__lt=self.pk).count()
+
     def __str__(self):
         return "{:s}: {:d}".format(self.author.username, self.pk)
 

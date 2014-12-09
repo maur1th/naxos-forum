@@ -1,78 +1,84 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
-    <li class="active">{{ category.title }}</li>
+  <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+  <li class="active">{{ category.title }}</li>
 </ol>
 {# Buttons #}
 <div class="row">
-    <div style="padding: 10px 0">
-        <a href="{% url 'forum:new_thread' category.slug %}">
-            <button class="btn btn-default">Nouveau sujet</button></a>
-        <a href="{% url 'forum:new_poll' category.slug %}">
-            <button class="btn btn-default">Nouveau sondage</button></a>
-    </div>
+  <div style="padding: 10px 0">
+    <a href="{% url 'forum:new_thread' category.slug %}">
+      <button class="btn btn-default">Nouveau sujet</button></a>
+    <a href="{% url 'forum:new_poll' category.slug %}">
+      <button class="btn btn-default">Nouveau sondage</button></a>
+  </div>
 </div>
 {# Threads #}
 <div class="row">
-    <table class="table table-condensed table-bordered" id="view">
-        <thead>
-        <tr>
-            <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
-            <th>Message</th>
-            <th class="col-xs-2 text-center">Auteur</th>
-            <th class="text-center col-xs-1 hidden-xs">Rép.</th>
-            <th class="text-center col-xs-1 hidden-xs">Vues</th>
-            <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
-            <th class="text-center col-xs-2 visible-xs">Dernier</th>
-        </tr>
-        </thead>
-        <tbody>
-            {% for thread in object_list %}
-            <tr>
-                <td class="text-center vert-align" style="padding:0">
-                {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}
-                    <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-                  {% elif user in thread.contributors.all %}
-                    <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-                {% elif thread.posts.latest in user.postsReadCaret.all %}
-                    <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-                {% else %}
-                    <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-                {% endif %}
-                </td>
-                <td class="vert-align">
-                    {% with 'img/thread/'|add:thread.icon as icon %}
-                        <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
-                    {% endwith %}
-                    {% if thread.isSticky and thread.question %}
-                        Annonce/Sondage : 
-                    {% elif thread.isSticky %}
-                        Annonce :
-                    {% elif thread.question %}
-                        Sondage :
-                    {% endif %}
-                    <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
-                </td>
-                <td class="text-center vert-align importantData">
-                    <small><strong>{{ thread.author }}</strong></small>
-                </td>
-                <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
-                <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-                <td class="text-center vert-align importantData" style="line-height:100%">
-                    <small>
-                    <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.posts.latest.pk }}" class="lastMessage">
-                    {{ thread.modified|date:'d/m/y H:i' }}
-                    <br><strong>{{ thread.posts.latest.author }}</strong>
-                    </a>
-                    </small>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table table-condensed table-bordered" id="view">
+    <thead>
+    <tr>
+      <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+      <th>Message</th>
+      <th class="col-xs-2 text-center">Auteur</th>
+      <th class="text-center col-xs-1 hidden-xs">Rép.</th>
+      <th class="text-center col-xs-1 hidden-xs">Vues</th>
+      <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
+      <th class="text-center col-xs-2 visible-xs">Dernier</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for thread in object_list %}
+      <tr>
+        <td class="text-center vert-align" style="padding:0">
+          {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}
+              <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+          {% elif user in thread.contributors.all %}
+            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
+              <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            </a>
+          {% elif thread.posts.latest in user.postsReadCaret.all %}
+            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+          {% else %}
+            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
+              <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            </a>
+          {% endif %}
+        
+        </td>
+        <td class="vert-align">
+          {% with 'img/thread/'|add:thread.icon as icon %}
+            <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
+          {% endwith %}
+          {% if thread.isSticky and thread.question %}
+            Annonce/Sondage : 
+          {% elif thread.isSticky %}
+            Annonce :
+          {% elif thread.question %}
+            Sondage :
+          {% endif %}
+          <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+        </td>
+        <td class="text-center vert-align importantData">
+          <small><strong>{{ thread.author }}</strong></small>
+        </td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        <td class="text-center vert-align importantData" style="line-height:100%">
+          <small>
+          <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.posts.latest.pk }}" class="lastMessage">
+          {{ thread.modified|date:'d/m/y H:i' }}
+          <br><strong>{{ thread.posts.latest.author }}</strong>
+          </a>
+          </small>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {# Caption #}
 <div class="row">

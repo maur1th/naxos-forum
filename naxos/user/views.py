@@ -53,6 +53,7 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
+        print(form.cleaned_data.get('logo'))
         token = form.cleaned_data.get('token')
         if token:
             obj = ThreadCession.objects.get(token=token)

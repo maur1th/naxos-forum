@@ -29,9 +29,9 @@
                         <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                     {% endif %}
                 </td>
-                <td class="vert-align">
+                <td class="vert-align" style="height:45px">
                     <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
-                    <small>{{ category.subtitle }}</small>
+                    <small class="hidden-xs">{{ category.subtitle }}</small>
                 </td>
                 <td class="text-center vert-align hidden-xs"><small>{{ category.threads.count }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ category.postCount }}</small></td>

@@ -53,7 +53,10 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        print(form.cleaned_data.get('logo'))
+        # Take care of deleting logo on the server if modified
+        if form.cleaned_data.get('logo') != self.request.user.logo:
+            self.request.user.logo.delete()
+        # Change thread owner if a token has been entered
         token = form.cleaned_data.get('token')
         if token:
             obj = ThreadCession.objects.get(token=token)

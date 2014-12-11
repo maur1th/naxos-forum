@@ -8,7 +8,16 @@
   <li class="active">Recherche : {{ query_string }}</li>
 </ol>
 {# Threads #}
-<div class="row">
+<div class="row" style="padding-top:40px">
+{% if not found_entries %}
+    {# Content #}
+    <div class="col-sm-8 col-sm-offset-2">
+      <div class="alert alert-danger">
+        <p>Aucun résultat ne correspond à cette recherche.</p>
+      </div>
+      <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
+    </div>
+{% else %}
   <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
@@ -102,6 +111,7 @@
         <p class="legend"><img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
     </div>
 </div>
+{% endif %}
 {# Pagination #}
 <div class="col-md-12 text-center">
 {% if is_paginated %}

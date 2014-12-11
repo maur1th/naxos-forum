@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm
 from django.template.defaultfilters import filesizeformat
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
 from crispy_forms.helper import FormHelper
@@ -106,7 +107,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     def clean_logo(self, *args, **kwargs):
         logo = self.cleaned_data['logo']
         # Check image size (in pixels)
-        if not logo:
+        if type(logo) is not InMemoryUploadedFile:
             return logo
         img = Image.open(logo)
         for length in img.size:

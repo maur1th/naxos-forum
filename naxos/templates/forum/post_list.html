@@ -9,10 +9,11 @@
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
     <li class="active">
     {% if question %}
-        Sondage : {{ thread.title }}
+        Sondage : 
     {% else %}
-        Sujet : {{ thread.title }} 
+        Sujet : 
     {% endif %}
+    {{ thread.title }}
     </li>
 </ol><br>
 {# Poll results #}
@@ -148,20 +149,10 @@ $(document).ready(function() {
         {% endif %}
         <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
     </div>
-    {# Small display author #}
-    <div class="col-sm-2 hidden-sm hidden-md hidden-lg post-author" style="padding-top: 5px;">
-        <strong>{{ post.author }}</strong>
-        <small>
-            | Posté le {{ post.created|date:"j F Y à H:i:s" }}
-            {% ifequal post.author user %}
-                 | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
-            {% endifequal %}
-            | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
-        </small>
-    </div>
     {# Content #}
     <div class="col-sm-10 post equal-divs">
-        <small class="hidden-xs">
+        <span class="visible-xs" style="display:inline!important"><strong>{{ post.author }}</strong> | </span>
+        <small>
             Posté le {{ post.created|date:"j F Y à H:i:s" }}
             {% ifequal post.author user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>

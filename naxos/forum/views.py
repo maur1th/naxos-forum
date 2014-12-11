@@ -17,22 +17,6 @@ from .util import get_query
 MERGEPOST_INTERVAL = 300
 
 
-### Search View ###
-class SearchView(LoginRequiredMixin, ListView):
-    template_name = 'forum/search_results.html'
-
-    def get_queryset(self):
-        query_string = self.request.GET['q']
-        if not query_string:  # Empty string
-            return
-        elif re.findall(r'^user:', query_string):
-            entry_query = get_query(query_string[5:], ['author__username'])
-        else:
-            entry_query = get_query(query_string, ['title'])
-        return Thread.objects.filter(entry_query)\
-                             .order_by("-isSticky", "-modified", "pk")
-
-
 ### Helpers ###
 def get_preview(content):
     "Redirect to post preview"
@@ -374,3 +358,28 @@ def VotePoll(request, category_slug, thread_slug):
         return HttpResponseRedirect(reverse(
             'forum:thread', kwargs={'category_slug': category_slug,
                                     'thread_slug': thread_slug}))
+
+
+### Search View ###
+class SearchView(LoginRequiredMixin, ListView):
+    template_name = 'forum/search_results.html'
+
+    def get_queryset(self):
+        self.query = self.request.GET['q']
+        cls = Thread
+        if not self.query:  # An empty string was submitted
+            return
+        elif re.findall(r'^user:', self.query):
+            entry_query = get_query(self.query[5:], ['author__username'])
+        elif re.findall(r'^post:', self.query):
+            cls = Post
+            entry_query = get_query(self.query[5:], ['content_plain'])
+        else:
+            entry_query = get_query(self.query, ['title'])
+        return cls.objects.filter(entry_query)\
+                             .order_by("-modified", "pk")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model'] = self.object_list.model._meta.model_name
+        return context

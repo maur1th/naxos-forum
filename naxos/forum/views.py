@@ -2,8 +2,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 import re
 import datetime

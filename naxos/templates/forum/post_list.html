@@ -151,7 +151,7 @@ $(document).ready(function() {
     </div>
     {# Content #}
     <div class="col-sm-10 post equal-divs">
-        <span class="visible-xs" style="display:inline!important"><strong>{{ post.author }}</strong> | </span>
+        <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.author }}</strong> | </span>
         <small>
             Posté le {{ post.created|date:"j F Y à H:i:s" }}
             {% ifequal post.author user %}

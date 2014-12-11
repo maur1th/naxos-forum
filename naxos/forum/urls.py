@@ -11,6 +11,11 @@ urlpatterns = patterns(
         name='top'
     ),
     url(
+        regex=r'^search/$',
+        view=views.search,
+        name='search',
+    ),
+    url(
         regex=r'^(?P<category_slug>[\w|\-]+)/$',
         view=views.ThreadView.as_view(),
         name='category'

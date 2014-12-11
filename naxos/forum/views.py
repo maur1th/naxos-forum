@@ -2,8 +2,10 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
 
+import re
 import datetime
 from braces.views import LoginRequiredMixin
 
@@ -17,14 +19,20 @@ MERGEPOST_INTERVAL = 300
 
 
 ### Search stuff ###
+@login_required
 def search(request):
     query_string = ''
     found_entries = None
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
-        entry_query = get_query(query_string, ['title',])
+        if re.findall(r'^user:', query_string):
+            entry_query = get_query(query_string[5:], ['author__username'])    
+        else:
+            entry_query = get_query(query_string, ['title',])
+        print(entry_query)
         found_entries = Thread.objects.filter(entry_query)\
-                                     .order_by('-pub_date')
+                                      .order_by("-isSticky", "-modified",
+                                                "pk")
 
     return render_to_response('forum/search_results.html',
                               {'query_string': query_string,

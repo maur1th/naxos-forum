@@ -9,7 +9,7 @@
 </ol>
 {# Threads #}
 <div class="row" style="padding-top:40px">
-{% if not found_entries %}
+{% if not object_list %}
   <div class="alert alert-danger">
     <p>Aucun résultat ne correspond à cette recherche.</p>
   </div>
@@ -32,7 +32,7 @@
     </tr>
     </thead>
     <tbody>
-      {% for thread in found_entries %}
+      {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
           {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}

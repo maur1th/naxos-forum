@@ -12,7 +12,7 @@ urlpatterns = patterns(
     ),
     url(
         regex=r'^search/$',
-        view=views.search,
+        view=views.SearchView.as_view(),
         name='search',
     ),
     url(

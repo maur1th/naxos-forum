@@ -18,26 +18,20 @@ from .util import get_query
 MERGEPOST_INTERVAL = 300
 
 
-### Search stuff ###
-@login_required
-def search(request):
-    query_string = ''
-    found_entries = None
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
-        if re.findall(r'^user:', query_string):
-            entry_query = get_query(query_string[5:], ['author__username'])    
-        else:
-            entry_query = get_query(query_string, ['title',])
-        print(entry_query)
-        found_entries = Thread.objects.filter(entry_query)\
-                                      .order_by("-isSticky", "-modified",
-                                                "pk")
+### Search View ###
+class SearchView(LoginRequiredMixin, ListView):
+    template_name = 'forum/search_results.html'
 
-    return render_to_response('forum/search_results.html',
-                              {'query_string': query_string,
-                               'found_entries': found_entries},
-                              context_instance=RequestContext(request))
+    def get_queryset(self):
+        query_string = self.request.GET['q']
+        if not query_string:  # Empty string
+            return
+        elif re.findall(r'^user:', query_string):
+            entry_query = get_query(query_string[5:], ['author__username'])
+        else:
+            entry_query = get_query(query_string, ['title'])
+        return Thread.objects.filter(entry_query)\
+                             .order_by("-isSticky", "-modified", "pk")
 
 
 ### Helpers ###
@@ -61,7 +55,6 @@ class TopView(LoginRequiredMixin, ListView):
 
 
 class ThreadView(LoginRequiredMixin, ListView):
-    model = Thread
     paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
@@ -81,7 +74,6 @@ class ThreadView(LoginRequiredMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    model = Post
     paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):

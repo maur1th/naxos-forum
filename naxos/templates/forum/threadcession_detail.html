@@ -2,20 +2,20 @@
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
-    <li class="active">Céder un sujet</li>
+  <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+  <li class="active">Céder un sujet</li>
 </ol><br>
 {# Message #}
 <div class="row">
-    {# Content #}
-    <div class="alert alert-danger">
-    <p>Vous pouvez céder le contrôle de ce sujet en communiquant le code ci-dessous à un autre membre.</p><br>
-    <strong>{{ threadcession.token }}</strong>
-    </div>
+  {# Content #}
+  <div class="alert alert-danger">
+  <p>Vous pouvez céder le contrôle de ce sujet en communiquant le code ci-dessous à un autre membre.</p><br>
+  <strong>{{ threadcession.token }}</strong>
+  </div>
 </div>
 <hr style="margin:8px; border-top:0">
 {# Posts footer #}
 <div class="row" style="padding: 5px 0">
-        <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
+  <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
 </div>
 {% endblock content %}

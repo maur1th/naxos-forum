@@ -10,13 +10,14 @@
 {# Threads #}
 <div class="row" style="padding-top:40px">
 {% if not found_entries %}
-    {# Content #}
-    <div class="col-sm-8 col-sm-offset-2">
-      <div class="alert alert-danger">
-        <p>Aucun résultat ne correspond à cette recherche.</p>
-      </div>
-      <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
-    </div>
+  <div class="alert alert-danger">
+    <p>Aucun résultat ne correspond à cette recherche.</p>
+  </div>
+</div>
+<hr style="margin:8px; border-top:0">
+<div class="row" style="padding: 5px 0">
+  <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
+</div>
 {% else %}
   <table class="table table-condensed table-bordered" id="view">
     <thead>

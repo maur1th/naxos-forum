@@ -113,6 +113,9 @@
           padding-left: 0;
           margin: 0;
       }
+      .tooltip-inner {
+          width: 200px;
+      }
     </style>
     <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -157,6 +160,9 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            <li class="hidden-xs">
+              <a href="#" data-toggle="tooltip" data-placement="bottom" title='"user:" rechercher un utilisateur' style="padding:15px 0"><span class="glyphicon glyphicon-info-sign"></span></a>
+            </li>
             <form class="navbar-form navbar-left" role="search" action="{% url 'forum:search' %}">
             {% csrf_token %}
               <div class="input-group">
@@ -174,7 +180,7 @@
               </ul>
             </li>
             {# Disconnect for small displays #}
-            <li class="hidden-sm hidden-md hidden-lg"><a href="{% url 'user:logout' %}">Déconnexion</a></li>
+            <li class="visible-xs"><a href="{% url 'user:logout' %}">Déconnexion</a></li>
           </ul>
         </div>
         {% endif %}
@@ -200,5 +206,8 @@
         </small>
     </footer>
     {% endif %}
+    <script type="text/javascript">
+      $('[data-toggle="tooltip"]').tooltip({html: true})
+    </script>
   </body>
 </html>

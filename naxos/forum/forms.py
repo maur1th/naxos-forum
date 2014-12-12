@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Field, HTML, Submit
 from crispy_forms.bootstrap import InlineRadios
 
 from .models import Post, PollQuestion, PollChoice
-from .util import get_title, rm_trailing_spaces
+from .util import get_title, normalize_query
 
 toolbar = "{% include \"toolbar.html\" %}"  # Text format
 
@@ -145,7 +145,7 @@ class CustomCleanFormset(BaseInlineFormSet):
         choices = list()
         for form in self.forms:
             try:
-                choice_text = rm_trailing_spaces(
+                choice_text = normalize_query(
                     form.cleaned_data['choice_text'])
             except:
                 continue  # Skip empty choice fields

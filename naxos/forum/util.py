@@ -257,13 +257,6 @@ def get_title(value):
     return title
 
 
-def rm_trailing_spaces(s):
-    "Helper function, removes trailing spaces in a string"
-    if s[-1] != ' ':
-        return s
-    else:
-        return rm_trailing_spaces(s[:-1])
-
 def keygen():
     import random
     return ''.join([random.SystemRandom().choice(

@@ -308,7 +308,9 @@ def NewPoll(request, category_slug):
         else:
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")
-            if thread_form.is_valid() and question_form.is_valid():
+            choices_formset = ChoicesFormSet(request.POST)
+            if (thread_form.is_valid() and question_form.is_valid()
+                    and choices_formset.is_valid()):
                 # Create the thread
                 t = Thread.objects.create(
                     title=thread_form.cleaned_data['title'],

@@ -24,7 +24,7 @@
 {% for msg in object_list %}
 <div class="row">
     <a name="{{ msg.pk }}"></a>
-    {# Large display author #}
+    {# Author panel #}
     <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
         <p style="word-wrap: break-word">
             <strong>{{ msg.author }}</strong><br>
@@ -37,16 +37,10 @@
         {% endif %}
         <p style="font-size:10px">depuis le {{ msg.author.date_joined|date:'d/m/Y' }}</p>
     </div>
-    {# Small display author #}
-    <div class="col-sm-2 hidden-sm hidden-md hidden-lg post-author" style="padding-top: 5px;">
-        <strong>{{ msg.author }}</strong>
-        <small>
-            | Posté le {{ msg.created|date:"j F Y à H:i:s" }}
-        </small>
-    </div>
     {# Content #}
     <div class="col-sm-10 post equal-divs">
-        <small class="hidden-xs">
+        <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ msg.author }}</strong> | </span>
+        <small>
             Posté le {{ msg.created|date:"j F Y à H:i:s" }}
         </small>
         <hr style="margin:5px; border-top: 1px solid #ccc">

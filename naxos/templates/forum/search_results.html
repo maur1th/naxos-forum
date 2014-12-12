@@ -58,7 +58,7 @@
           {% elif thread.question %}
             Sondage :
           {% endif %}
-          <a href="{% url 'forum:category' thread.category.slug %}">{{ thread.category.slug }}</a> / 
+          <a href="{% url 'forum:category' thread.category.slug %}">{{ thread.category.slug|title }}</a> / 
           <a href="{% url 'forum:thread' thread.category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
         </td>
         <td class="text-center vert-align importantData">
@@ -108,7 +108,7 @@
     {% for post in object_list %}
     <div class="row">
         <a name="{{ post.pk }}"></a>
-        {# Large display author #}
+        {# Author panel #}
         <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
           <p style="word-wrap: break-word">
               <strong>{{ post.author }}</strong><br>
@@ -131,7 +131,7 @@
             {% else %}
                 Sujet : 
             {% endif %}
-            <strong><a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
+            <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
           </small>
           <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
           <div class="post-content" style="word-wrap: break-word">

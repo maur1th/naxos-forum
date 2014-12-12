@@ -2,6 +2,7 @@
 
 from django.utils.six.moves.html_parser import HTMLParser, HTMLParseError
 from django.template.defaultfilters import urlize as django_urlize
+from django.db.models import Q
 
 import re
 from postmarkup import render_bbcode
@@ -13,11 +14,8 @@ from postmarkup import render_bbcode
 from naxos.settings.local import STATICFILES_DIRS as static, DEBUG
 
 
-### Search stuff ###
-import re
-
-from django.db.models import Q
-
+### Process search queries ###
+# Code from Julien Phalip: http://goo.gl/EctTVy
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):

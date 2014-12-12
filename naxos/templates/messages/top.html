@@ -6,6 +6,7 @@
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li class="active">Messages privés</li>
 </ol>
+{% include "pagination.html" %}
 <div class="row">
 {# Error messages #}
 {% for message in messages %}
@@ -70,6 +71,7 @@
     {% endfor %}
     </tbody>
 </table>
+{% include "pagination.html" %}
 {# Caption #}
 <div class="col-xs-12">
     <h6>Légende</h6>
@@ -77,24 +79,6 @@
 <div class="col-md-4">
     <p class="legend"><img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
     <p class="legend"><img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-</div>
-{# Pagination #}
-<div class="col-md-12 text-center">
-{% if is_paginated %}
-<div class="pagination">
-    <span class="page-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&lt;&lt; </a>
-            <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-        {% endif %}
-        <span class="page-current">
-            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
-            <a href="?page=last">&gt;&gt;</a>
-        {% endif %}
-    </span>
 </div>
 {% endif %}
 </div>

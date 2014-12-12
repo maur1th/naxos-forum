@@ -7,6 +7,7 @@
   <li><a href="{% url 'forum:top' %}">Accueil</a></li>
   <li class="active">{{ category.title }}</li>
 </ol>
+{% include "pagination.html" %}
 {# Buttons #}
 <div class="row">
   <div style="padding: 10px 0">
@@ -80,6 +81,7 @@
     </tbody>
   </table>
 </div>
+{% include "pagination.html" %}
 {# Caption #}
 <div class="row">
     <div class="col-xs-12">

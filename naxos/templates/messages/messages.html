@@ -7,6 +7,7 @@
     <li><a href="{% url 'pm:top' %}">Messages privés</a></li>
     <li class="active">Discussion avec {{ recipient }}</li>
 </ol><br>
+{% include "pagination.html" %}
 {# Header #}
 <hr style="margin:8px; border-top:0">
 <div class="row">
@@ -49,6 +50,7 @@
         </div>
     </div>
 </div>
+{% include "pagination.html" %}
 <hr style="margin:8px; border-top:0">
 {% endfor %}
 {# Quick reply #}
@@ -70,25 +72,6 @@
             $('#smileys-panel').removeClass("col-xs-5").addClass("col-xs-12");
             $('#smileys-panel > div > div > br').remove()
         </script>
-    </div>
-</div>
-{# Pagination #}
-{% if is_paginated %}
-<div class="col-sm-12 text-center">
-    <div class="pagination">
-        <span class="page-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&lt;&lt; </a>
-                <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-            {% endif %}
-            <span class="page-current">
-                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-            </span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
-                <a href="?page=last">&gt;&gt;</a>
-            {% endif %}
-        </span>
     </div>
 </div>
 {% endif %}

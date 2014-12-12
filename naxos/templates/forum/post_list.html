@@ -98,6 +98,7 @@ $(document).ready(function() {
 {% endif %}
 {# Header #}
 {% if object_list.count > 5 %} 
+{% include "pagination.html" %}
 <div class="row" style="padding: 5px 0">
     <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
 </div>
@@ -161,8 +162,9 @@ $(document).ready(function() {
 <div class="row" style="padding: 5px 0">
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>
 </div>
-{# Quick reply #}
+{% include "pagination.html" %}
 <hr style="margin:20px; border-top: 1px solid #ccc">
+{# Quick reply #}
 <div class="row">
     <div class="col-lg-10 col-lg-offset-1">
         {% include "toolbar.html" %}
@@ -182,26 +184,6 @@ $(document).ready(function() {
         </script>
     </div>
 </div>
-{# Pagination #}
-{% if is_paginated %}
-<div class="col-sm-12 text-center">
-    <div class="pagination">
-        <span class="page-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&lt;&lt; </a>
-                <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-            {% endif %}
-            <span class="page-current">
-                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-            </span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
-                <a href="?page=last">&gt;&gt;</a>
-            {% endif %}
-        </span>
-    </div>
-</div>
-{% endif %}
 {# Path #}
 <br><br>
 <ol class="breadcrumb">

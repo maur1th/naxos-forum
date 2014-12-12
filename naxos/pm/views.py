@@ -23,6 +23,7 @@ def pm_counter(request, c):
 class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
     template_name = "messages/top.html"
+    paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
         self.request.user.pmUnreadCount = 0

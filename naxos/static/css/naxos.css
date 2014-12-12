@@ -1,0 +1,93 @@
+/* Footer */
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+}
+/* Main (Category+Thread) views */
+table#view thead {
+    background: linear-gradient(#425e8e, #5171ae);
+    color: white;
+    font-size: 12px;
+    padding: 20px;
+}
+table#view tbody td {
+    background-color: #efefef;
+    border-color: #f9f9f9;
+    padding:2px 5px;
+}
+table#view tbody td.importantData {
+    background-color: #ececec;
+}
+table#view tbody tr:hover td {
+    background-color: #e8e8e8;
+}
+table.table tbody>tr>td.vert-align{
+    vertical-align: middle;
+}
+/* Post specific view */
+div.post-header {
+    background: linear-gradient(#425e8e, #5171ae);
+    padding: 6px;
+    font-size: 12px;
+    color: white;
+}
+div.post-author {
+    background-color: #f2f2f2;
+}
+div.post {
+    background-color: #ececec;
+    height: 100%;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+.post blockquote {
+    background-color: #f9f9f9;
+}
+/* django-crispy-forms customization */
+.asteriskField {
+    display: none;
+}
+/* Smiley alignment + appearance */
+.smiley {
+    vertical-align:bottom;
+    padding-bottom:5px;
+}
+.fake-link {
+    cursor: pointer;
+}
+/* Spoiler stuff */
+.spoiler-hidden {
+  background-color: black;
+  color: black;
+}
+.spoiler-shown {
+  background-color: #F9F9F9
+}
+/* Force some links appearance */
+a.lastMessage:link {
+    color: #333333;
+}
+a.lastMessage:visited {
+    color: #333333;
+}
+/* Caption alignment */
+p.legend {
+    padding-left: 0;
+    margin: 0;
+}
+/* Search bar tooltip size */
+.tooltip-inner {
+    width: 200px;
+    text-align:left;
+}

@@ -1,5 +1,3 @@
-# Forked from https://github.com/slav0nic/DjangoBB/
-
 from django.utils.six.moves.html_parser import HTMLParser, HTMLParseError
 from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
@@ -49,6 +47,7 @@ def get_query(query_string, search_fields):
 
 
 ### Urlize + BBCode filters ###
+# Forked from https://github.com/slav0nic/DjangoBB/
 class HTMLFilter(HTMLParser):
 
     """
@@ -172,7 +171,8 @@ def compileSmileys():
                       (r':o', SMILEYS_PATH.format('-o')),
                       (r':D', SMILEYS_PATH.format('green')),
                       (r':\?:', SMILEYS_PATH.format('special-question')),
-                      (r':\?\?\?:', SMILEYS_PATH.format('special-3question'))]
+                      (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
+                      (r':jap:', SMILEYS_PATH.format('respect')),]
 
     def get_smileys(path):
         "Get all smileys"

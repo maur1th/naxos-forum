@@ -148,19 +148,31 @@ def rm_legacy_tags(text):
     return text
 
 
+spoiler_tag = ("<div class=\"panel panel-default spoiler-container\">"
+               "<div class=\"panel-heading\" role=\"tab\" id=\"heading\">"
+               "<h5 class=\"panel-title\">"
+               "<a data-toggle=\"collapse\""
+               "href=\"#spoiler-panel\" aria-expanded=\"false\" "
+               "aria-controls=\"spoiler-panel\">Spoiler</a></h5></div>"
+               "<div id=\"spoiler-panel\" class=\"panel-collapse collapse\" "
+               "role=\"tabpanel\" aria-labelledby=\"heading\">"
+               "<div class=\"panel-body\">")
+
+
 class SpoilerTag(postmarkup.TagBase):
     def __init__(self, name, **kwargs):
-        super().__init__(self, name, inline=True)
+        super().__init__(name)
 
     def render_open(self, parser, node_index):
-        return '<span class="spoiler spoiler-hidden">'
+        return spoiler_tag
 
     def render_close(self, parser, node_index):
-        return '</span>'
+        return '</div></div></div>'
 
 
 render_bbcode = postmarkup.create(use_pygments=False)
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
+
 
 def convert_text_to_html(text, markup='bbcode'):
     if markup == 'bbcode':

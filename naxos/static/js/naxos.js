@@ -30,3 +30,40 @@ function scrollToPosition($textarea, caret) {
     $textarea.val(text);
     $textarea[0].setSelectionRange(caret, caret);
 };
+// Posts presentation
+$(document).ready(function() {
+  // Ensure presentation is ok on DOM ready().
+  $('.equal-divs').responsiveEqualHeightGrid();
+})
+var x = setInterval(function() {
+  // Ensure presentation is ok while media still loading.
+  $('.equal-divs').responsiveEqualHeightGrid();
+}, 500);
+$(window).load(function() {
+  // Stops presentation refresh when everything loaded.
+  clearInterval(x);
+});
+// Ensure presentation is ok while spoiler animation is playing.
+$(document).ready(function(){
+  // Give spoiler tags unique ids
+  $("div[id^='spoiler-panel']").attr("id", function(index) {
+    return 'spoiler-panel-' + (index+1);
+  });
+  $("a[href^='#spoiler-panel']").attr("href", function(index) {
+    return '#spoiler-panel-' + (index+1);
+  });
+  $("a[href^='#spoiler-panel-']").click(function() {
+    $spoiler = $(this);
+    var spoiler_anim = setInterval(function() {
+      $container = $spoiler.parents('.spoiler-container');
+      $container.children("div[id^='spoiler-panel-']").on('shown.bs.collapse', function() {
+        clearInterval(spoiler_anim);
+      });
+      $container.children("div[id^='spoiler-panel-']").on('hidden.bs.collapse', function() {
+        clearInterval(spoiler_anim);
+      });
+      $row = $spoiler.parents('.row');
+      $row.children('.equal-divs').responsiveEqualHeightGrid();
+    }, 20);
+  });
+});

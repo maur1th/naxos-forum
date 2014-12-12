@@ -66,14 +66,6 @@ div.post {
 .fake-link {
     cursor: pointer;
 }
-/* Spoiler stuff */
-.spoiler-hidden {
-  background-color: black;
-  color: black;
-}
-.spoiler-shown {
-  background-color: #F9F9F9
-}
 /* Force some links appearance */
 a.lastMessage:link {
     color: #333333;
@@ -90,4 +82,8 @@ p.legend {
 .tooltip-inner {
     width: 200px;
     text-align:left;
+}
+/* Panel title size */
+.panel-title {
+    font-size: inherit;
 }

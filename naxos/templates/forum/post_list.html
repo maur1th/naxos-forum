@@ -119,20 +119,6 @@ $(document).ready(function() {
 </div>
 <hr style="margin:1px; border-top:0">
 {# Posts #}
-<script>
-    $(document).ready(function() {
-        // Ensure presentation is ok on DOM ready().
-        $('.equal-divs').responsiveEqualHeightGrid();
-    })
-    var x = setInterval(function() {
-        // Ensure presentation is ok while media still loading.
-        $('.equal-divs').responsiveEqualHeightGrid();
-    }, 500);
-    $(window).load(function() {
-        // Stops presentation refresh when everything loaded.
-        clearInterval(x);
-    });
-</script>
 {% for post in object_list %}
 <div class="row">
     <a name="{{ post.pk }}"></a>

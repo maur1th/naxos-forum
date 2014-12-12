@@ -151,9 +151,9 @@ def rm_legacy_tags(text):
 spoiler_tag = ("<div class=\"panel panel-default spoiler-container\">"
                "<div class=\"panel-heading\" role=\"tab\" id=\"heading\">"
                "<h5 class=\"panel-title\">"
-               "<a data-toggle=\"collapse\""
-               "href=\"#spoiler-panel\" aria-expanded=\"false\" "
-               "aria-controls=\"spoiler-panel\">Spoiler</a></h5></div>"
+               "<a data-toggle=\"collapse\" href=\"#spoiler-panel\" "
+               "aria-expanded=\"false\" aria-controls=\"spoiler-panel\" "
+               "style=\"display:block\">Spoiler</a></h5></div>"
                "<div id=\"spoiler-panel\" class=\"panel-collapse collapse\" "
                "role=\"tabpanel\" aria-labelledby=\"heading\">"
                "<div class=\"panel-body\">")

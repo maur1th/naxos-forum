@@ -3,7 +3,7 @@ from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 
 import re
-from postmarkup import render_bbcode
+import postmarkup
 # try:
 #     import markdown
 # except ImportError:
@@ -147,6 +147,20 @@ def rm_legacy_tags(text):
         text = old_match.sub(new, text)
     return text
 
+
+class SpoilerTag(postmarkup.TagBase):
+    def __init__(self, name, **kwargs):
+        super().__init__(self, name, inline=True)
+
+    def render_open(self, parser, node_index):
+        return '<span class="spoiler spoiler-hidden">'
+
+    def render_close(self, parser, node_index):
+        return '</span>'
+
+
+render_bbcode = postmarkup.create(use_pygments=False)
+render_bbcode.add_tag(SpoilerTag, 'spoiler')
 
 def convert_text_to_html(text, markup='bbcode'):
     if markup == 'bbcode':

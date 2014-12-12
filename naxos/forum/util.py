@@ -198,7 +198,8 @@ def compileSmileys():
                       (r':D', SMILEYS_PATH.format('green')),
                       (r':\?:', SMILEYS_PATH.format('special-question')),
                       (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
-                      (r':jap:', SMILEYS_PATH.format('respect')),]
+                      (r':jap:', SMILEYS_PATH.format('respect')),
+                      (r':clap:', SMILEYS_PATH.format('bravo')),]
 
     def get_smileys(path):
         "Get all smileys"

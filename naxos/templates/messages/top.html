@@ -3,83 +3,82 @@
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
-    <li class="active">Messages privés</li>
+  <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+  <li class="active">Messages privés</li>
 </ol>
 {% include "pagination.html" %}
 <div class="row">
-{# Error messages #}
-{% for message in messages %}
+  {# Error messages #}
+  {% for message in messages %}
     <div class="alert alert-danger"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ message }}</div>
-{% endfor %}
-{# Buttons #}
-<div class="row" style="padding: 10px 0">
-  <div class="col-xs-6">
+  {% endfor %}
+  {# Buttons #}
+  <div class="row" style="padding: 10px 0">
+    <div class="col-xs-6">
       <a href="{% url 'pm:new_conv' %}"><button class="btn btn-default">Nouveau</button></a>
-  </div>
-  <div class="col-xs-6">
-    <form method="post" action="{% url 'pm:search' %}">
-    {% csrf_token %}
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Rechercher une conversation" name="query">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        </span>
-      </div><!-- /input-group -->
-    </form>
-  </div><!-- /.col-lg-6 -->
-</div><!-- /.row -->
-{# Conversations #}
-<table class="table table-condensed table-bordered" id="view">
+    </div>
+    <div class="col-xs-6">
+      <form method="post" action="{% url 'pm:search' %}">
+      {% csrf_token %}
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Rechercher une conversation" name="query">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-chevron-right"></span></button>
+          </span>
+        </div><!-- /input-group -->
+      </form>
+    </div><!-- /.col-lg-6 -->
+  </div><!-- /.row -->
+  {# Conversations #}
+  <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
-        <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
-        <th>Membre</th>
-        <th class="text-center col-xs-1">Messages</th>
-        <th class="text-center col-xs-2">Dernier message</th>
+      <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+      <th>Membre</th>
+      <th class="text-center col-xs-1">Messages</th>
+      <th class="text-center col-xs-2">Dernier message</th>
     </tr>
     </thead>
     <tbody>
     {% for conv in object_list %}
         <tr>
-            <td class="text-center vert-align" style="padding:0">
-            {% if conv.messages.latest in user.pmReadCaret.all %}
-                <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-            {% else %}
-                <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-            {% endif %}
-            </td>
-            <td class="vert-align importantData">
-                <a href="{% url 'pm:msg' conv.pk %}">
-                {% for p in conv.participants.all %}
-                    {% ifnotequal p user  %}
-                        {{ p }}
-                    {% endifnotequal %}
-                {% endfor %}
-                </a>
-            </td>
-            <td class="text-center vert-align"><small>{{ conv.messages.count }}</small></td>
-            <td class="text-center vert-align importantData" style="line-height:100%">
-                <small>
-                <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.messages.latest.pk }}" class="lastMessage">
-                {{ conv.modified|date:'d/m/y H:i' }}
-                <br><strong>{{ conv.messages.latest.author }}</strong>
-                </a>
-                </small>
-            </td>
+          <td class="text-center vert-align" style="padding:0">
+          {% if conv.messages.latest in user.pmReadCaret.all %}
+            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+          {% else %}
+            <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+          {% endif %}
+          </td>
+          <td class="vert-align importantData">
+            <a href="{% url 'pm:msg' conv.pk %}">
+            {% for p in conv.participants.all %}
+                {% ifnotequal p user  %}
+                    {{ p }}
+                {% endifnotequal %}
+            {% endfor %}
+            </a>
+          </td>
+          <td class="text-center vert-align"><small>{{ conv.messages.count }}</small></td>
+          <td class="text-center vert-align importantData" style="line-height:100%">
+            <small>
+            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.messages.latest.pk }}" class="lastMessage">
+            {{ conv.modified|date:'d/m/y H:i' }}
+            <br><strong>{{ conv.messages.latest.author }}</strong>
+            </a>
+            </small>
+          </td>
         </tr>
     {% endfor %}
     </tbody>
-</table>
-{% include "pagination.html" %}
-{# Caption #}
-<div class="col-xs-12">
+  </table>
+  {% include "pagination.html" %}
+  {# Caption #}
+  <div class="col-xs-12">
     <h6>Légende</h6>
-</div>
-<div class="col-md-4">
+  </div>
+  <div class="col-md-4">
     <p class="legend"><img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
     <p class="legend"><img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-</div>
-{% endif %}
+  </div>
 </div>
 {% endblock %}

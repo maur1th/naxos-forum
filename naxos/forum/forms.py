@@ -52,7 +52,7 @@ class ThreadForm(GenericThreadForm):
             new = True
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Enregistrer'))
+        self.helper.add_input(Submit('submit', 'Enregistrer', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
         if new:  # This is a new thread
             self.helper.form_action = reverse(
@@ -95,7 +95,7 @@ class PostForm(forms.ModelForm):
         self.helper.layout = Layout(HTML(get_title(self.t.title)),
                                     HTML(toolbar),
                                     Field('content_plain'))
-        self.helper.add_input(Submit('submit', 'Enregistrer'))
+        self.helper.add_input(Submit('submit', 'Enregistrer', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     class Meta:

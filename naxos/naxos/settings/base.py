@@ -72,17 +72,13 @@ ROOT_URLCONF = 'naxos.urls'
 
 WSGI_APPLICATION = 'naxos.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
+        'NAME': 'naxos',
+        'USER': 'naxos',
+        'PASSWORD': 'crimson',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }

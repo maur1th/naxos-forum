@@ -34,7 +34,7 @@ class UniqueEmailMixin(object):
 
 
 class RegisterForm(UniqueEmailMixin, UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, help_text="Requis.")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,7 +75,12 @@ class CrispyAuthForm(AuthenticationForm):
 
 class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     token = forms.CharField(
-                required=False, label='Obtenir la paternité d\'un sujet')
+        required=False,
+        label='Obtenir la paternité d\'un sujet',
+        help_text=("Si un autre membre vous a communiqué un code pour le "
+                   "remplacer comme auteur de l'un de ses sujets, vous pouvez"
+                   " en accepter la paternité en saisissant ce code.")
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # Used to ensure email is unique
@@ -94,8 +99,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
             Field('mpEmailNotif'),
             Field('showSmileys'),
             Field('fullscreen'),
-            Field('token',
-                  template="user/threadCessionInput.html"),
+            Field('token'),
         )
 
     def clean_token(self, *args, **kwargs):

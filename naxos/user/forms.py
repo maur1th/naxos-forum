@@ -8,7 +8,7 @@ from PIL import Image
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
-from .models import ForumUser
+from .models import ForumUser, TokenPool
 from forum.models import ThreadCession
 
 MAX_USERNAME_LENGTH = 20
@@ -35,6 +35,9 @@ class UniqueEmailMixin(object):
 
 class RegisterForm(UniqueEmailMixin, UserCreationForm):
     email = forms.EmailField(required=True, help_text="Requis.")
+    token = forms.CharField(
+        max_length=50,
+        help_text="Code unique requis pour créer un compte.")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,6 +67,13 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
         raise forms.ValidationError(
             self.error_messages['duplicate_username']
         )
+
+    def clean_token(self):
+        token = TokenPool.objects.filter(token=self.cleaned_data["token"])
+        if not token.exists():
+            raise forms.ValidationError("Cette clé n'existe pas.")
+        else:
+            token.delete()
 
 
 class CrispyAuthForm(AuthenticationForm):

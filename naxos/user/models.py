@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from forum.util import keygen
+
 
 class ForumUser(AbstractUser):
 
@@ -33,3 +35,17 @@ class ForumUser(AbstractUser):
 
     class Meta:
         ordering = ["pk"]
+
+
+class TokenPool(models.Model):
+    token = models.CharField(unique=True, max_length=50)
+
+    def save(self, *args, **kwargs):
+        queryset = self.__class__.objects.all()
+        self.token = keygen()
+        while queryset.filter(token=self.token).exists():
+            self.token = keygen()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.token

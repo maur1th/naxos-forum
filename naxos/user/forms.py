@@ -37,6 +37,7 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
     email = forms.EmailField(required=True, help_text="Requis.")
     token = forms.CharField(
         max_length=50,
+        label='Clé',
         help_text="Code unique requis pour créer un compte.")
 
     def __init__(self, *args, **kwargs):

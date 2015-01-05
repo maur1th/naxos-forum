@@ -1,3 +1,3 @@
-Bulletin board project undertook in order replace a [CoolForum](https://github.com/dsoriano/coolforum) solution.
+Bulletin board project which aims to replace a [CoolForum](https://github.com/dsoriano/coolforum) solution.
 
-Based on a Django+PostgreSQL backend with a BootStrap+JQuery frontend.
+Made in python3. Based on a Django+PostgreSQL backend with a BootStrap+JQuery frontend.

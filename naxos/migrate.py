@@ -6,7 +6,8 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.local")
 django.setup()
 
-from user.models import ForumUser
+from .models import ForumUser
+from forum.util import keygen
 
 
 def import_users(source):
@@ -38,7 +39,7 @@ def import_users(source):
             quote=HTMLParser().unescape(str(user['usercitation'])),
             website=HTMLParser().unescape(str(user['usersite'])),
         )
-        u.set_password('crimson')  # gen random password
+        u.set_password(keygen())
         u.save()
         # send email with password
 

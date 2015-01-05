@@ -1,3 +1,5 @@
+# CoolForum database migration scripts
+# Feed it JSON
 import os
 import json
 import django
@@ -11,9 +13,23 @@ from user.models import ForumUser
 from forum.util import keygen
 
 
-def import_users(source):
+def fix_json(f):
+    """Fixes phpmyadmin json exports"""
+    print('Repairing JSON')
+    f = open(f)
+    lines = f.readlines()
+    # Remove comments at the top (illegal in json)
+    while lines[0][0] != '[':
+        lines.pop(0)
+    s = ''.join(lines)
+    s = s.replace('\\\'', '\'')  # Esc single quotes inside double is illegal
+    s = s.replace('\t', '')
+    return s
+
+
+def import_users(f):
     """Import users from a CoolForum json db extract"""
-    f = open(source)
+    f = open(f)
     users = json.loads(f.read())
 
     for i, user in enumerate(users):
@@ -45,7 +61,13 @@ def import_users(source):
             i, len(users), u.username, password))
         u.set_password(password)
         u.save()
-        # send email with password
+        # TODO: send email with new password
 
 
-import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
+def import_threads(f):
+    f = open(f)
+    threads = json.loads(f.read())
+
+
+# import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
+json.loads(fix_json(here('..', '..', '..', 'util', 'data', 'CF_topics.json')))

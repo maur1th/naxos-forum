@@ -6,7 +6,8 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.local")
 django.setup()
 
-from .models import ForumUser
+from naxos.settings.local import here
+from user.models import ForumUser
 from forum.util import keygen
 
 
@@ -15,7 +16,7 @@ def import_users(source):
     f = open(source)
     users = json.loads(f.read())
 
-    for user in users:
+    for i, user in enumerate(users):
         user['login'] = user['login'].replace(' ', '_')[:30]
         try:
             m = ForumUser.objects.get(pk=user['userid'])
@@ -30,6 +31,7 @@ def import_users(source):
             m.delete()
         except:
             pass
+        password = keygen()
         u = ForumUser.objects.create(
             pk=user['userid'],
             username=HTMLParser().unescape(user['login']),
@@ -39,9 +41,11 @@ def import_users(source):
             quote=HTMLParser().unescape(str(user['usercitation'])),
             website=HTMLParser().unescape(str(user['usersite'])),
         )
-        u.set_password(keygen())
+        print("Creating {:d}/{:d}: {:s} with password {:s}".format(
+            i, len(users), u.username, password))
+        u.set_password(password)
         u.save()
         # send email with password
 
 
-import_users('new.json')
+import_users(here('..', '..', '..', 'util', 'data', 'new.json'))

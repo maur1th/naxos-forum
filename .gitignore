@@ -16,7 +16,7 @@
 *.sublime-workspace
 migration.txt
 secret.txt
-util/members/
+util/data/
 naxos/naxos/settings/local.py
 
 ## GitHub .gitignore for Python

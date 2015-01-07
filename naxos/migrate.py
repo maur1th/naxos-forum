@@ -11,7 +11,7 @@ django.setup()
 
 from naxos.settings.local import here
 from user.models import ForumUser
-from forum.models import Category, Thread
+from forum.models import Category, Thread, Post
 from forum.util import keygen
 
 
@@ -19,7 +19,9 @@ def fix_json(f):
     """Fixes phpmyadmin json exports"""
 
     def double_quote(match_obj):
-        return match_obj.group(1) + "\"" + match_obj.group(2) + "\","
+        quote = match_obj.group(2)
+        # if r'"' in quote: quote = quote.replace('\"', 'hey')
+        return match_obj.group(1) + "\"" + quote + "\","
 
     print('Repairing JSON')
     f = open(f)
@@ -28,14 +30,11 @@ def fix_json(f):
     while lines[0][0] != '[':
         lines.pop(0)
     s = ''.join(lines)
-    s = s.replace('\\\'', '\'')  # Esc single quotes inside double is illegal
-    s = s.replace('\t', '').replace('\n', '')
-    s = s.replace('<br />', '\\n')
-    # Add double quotes when missing
-    s = re.sub(r'[^\x20-\x7e]', '', s)
-    s = re.sub(r'("msg": )([^"]*[^\\]),', double_quote, s)
-    # print(re.findall(r'"msg": ([^"]*[^\\]),', s))
-    print(repr(s[15479985:15479995]))
+    s = s.replace('<br />', '\\n')  # User proper new line character
+    s = s.replace('\\\'', '\'')  # Remove illegal escapes for squotes
+    s = re.sub(r'[^\x20-\x7e]', '', s)  # remove hex characters
+    s = re.sub(r'("msg": )([^"]*),', double_quote, s)  # +missing dquotes
+    print("All right, good to go.")
     return s
 
 
@@ -90,8 +89,15 @@ def import_threads(f):
         # print("Creating {:d}/{:d}".format(i+1, len(threads)))
 
 
+# def import_posts(f):
+#     posts = json.loads(fix_json(f))
+#     for i, post in enumerate(posts):
+#         m = Post.objects.filter(pk=post['idpost']).first()
+#         if m: m.delete()
+        
+
 # TODO: override thread.modified with latest topic datetime
 
-import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
+# import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
 # import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
-# json.loads(fix_json(here('..', '..', '..', 'util', 'data', 'CF_posts.json')))
+# import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))

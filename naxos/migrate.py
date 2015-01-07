@@ -1,6 +1,7 @@
 # CoolForum database migration scripts
 # Feed it JSON
 import os
+import re
 import json
 import django
 from html.parser import HTMLParser
@@ -16,6 +17,10 @@ from forum.util import keygen
 
 def fix_json(f):
     """Fixes phpmyadmin json exports"""
+
+    def double_quote(match_obj):
+        return match_obj.group(1) + "\"" + match_obj.group(2) + "\","
+
     print('Repairing JSON')
     f = open(f)
     lines = f.readlines()
@@ -24,7 +29,13 @@ def fix_json(f):
         lines.pop(0)
     s = ''.join(lines)
     s = s.replace('\\\'', '\'')  # Esc single quotes inside double is illegal
-    s = s.replace('\t', '')
+    s = s.replace('\t', '').replace('\n', '')
+    s = s.replace('<br />', '\\n')
+    # Add double quotes when missing
+    s = re.sub(r'[^\x20-\x7e]', '', s)
+    s = re.sub(r'("msg": )([^"]*[^\\]),', double_quote, s)
+    # print(re.findall(r'"msg": ([^"]*[^\\]),', s))
+    print(repr(s[15479985:15479995]))
     return s
 
 
@@ -40,17 +51,11 @@ def import_users(f):
 
     for i, user in enumerate(users):
         user['login'] = convert_username(user['login'])
-        try:
-            m = ForumUser.objects.get(pk=user['userid'])
-            m.delete()
-        except:
-            pass
-        try:
-            m = ForumUser.objects.get(
-                username=HTMLParser().unescape(user['login']))
-            m.delete()
-        except:
-            pass
+        m = ForumUser.objects.filter(pk=user['userid']).first()
+        if m: m.delete()
+        m = ForumUser.objects.filter(
+            username=HTMLParser().unescape(user['login'])).first()
+        if m: m.delete()
         password = keygen()
         u = ForumUser.objects.create(
             pk=int(user['userid']),
@@ -69,14 +74,11 @@ def import_users(f):
 
 
 def import_threads(f):
-    cat = {1:1, 2:2, 3:3, 4:4, 5:6, 6:7, 7:5}
+    cat = {1:1, 2:2, 3:3, 4:4, 5:6, 6:7, 7:5}  # mapping categories
     threads = json.loads(fix_json(f))
     for i, thread in enumerate(threads):
-        try:
-            m = Thread.objects.get(pk=thread['idtopic'])
-            m.delete()
-        except:
-            pass
+        m = Thread.objects.filter(pk=thread['idtopic']).first()
+        if m: m.delete()
         t = Thread.objects.create(
             pk=int(thread['idtopic']),
             category=Category.objects.get(pk=cat[thread['idforum']]),
@@ -90,6 +92,6 @@ def import_threads(f):
 
 # TODO: override thread.modified with latest topic datetime
 
-# import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
+import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
 # import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
-json.loads(fix_json(here('..', '..', '..', 'util', 'data', 'CF_topics.json')))
+# json.loads(fix_json(here('..', '..', '..', 'util', 'data', 'CF_posts.json')))

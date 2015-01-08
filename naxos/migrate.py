@@ -65,7 +65,7 @@ def import_users(f):
             quote=HTMLParser().unescape(str(user['usercitation'])),
             website=HTMLParser().unescape(str(user['usersite'])),
         )
-        print("Creating {:d}/{:d}: {:s} with password {:s}".format(
+        print("Creating {:d}/{:d}: {:s} with pwd {:s}".format(
             i+1, len(users), u.username, password))
         u.set_password(password)
         u.save()
@@ -83,21 +83,54 @@ def import_threads(f):
             category=Category.objects.get(pk=cat[thread['idforum']]),
             title=HTMLParser().unescape(str(thread['sujet']))[:80],
             author=ForumUser.objects.get(pk=thread['idmembre']),
+            icon=str(thread['icone'])+'.gif',
             viewCount=int(thread['nbvues']),
-            # modified=datetime.fromtimestamp(thread['date']),
         )
-        # print("Creating {:d}/{:d}".format(i+1, len(threads)))
+        print("Creating {:d}/{:d}".format(i+1, len(threads)))
 
 
-# def import_posts(f):
-#     posts = json.loads(fix_json(f))
-#     for i, post in enumerate(posts):
-#         m = Post.objects.filter(pk=post['idpost']).first()
-#         if m: m.delete()
-        
+def import_posts(f):
+    posts = json.loads(fix_json(f))
+    users = {}
+    print('Loading users...')
+    for user in ForumUser.objects.all():
+        users[user.pk] = user
+    print('done')
+    threads = {}
+    print('Loading threads...')
+    for thread in Thread.objects.all():
+        threads[thread.pk] = thread
+    print('done')
+    # for cat in Category.objects.all():
+    #     cat.postCount = 0  # reset cat post counter
+    #     cat.save()
+    for i, post in enumerate(posts):
+        # m = Post.objects.filter(pk=post['idpost']).first()
+        # if m: m.delete()
+        t = threads.get(post['parent'])
+        if not t: continue  # pass if thread does not exist
+        t.category.postCount += 1  # increment cat post counter
+        t.category.save()
+        p = Post.objects.create(
+            pk=int(post['idpost']),
+            thread=t,
+            author=users.get(post['idmembre']),
+            created=datetime.fromtimestamp(post['date']),
+            content_plain=str(post['msg']),
+        )   
+        print("Creating {:d}/{:d}".format(i+1, len(posts)))
+        if i == 1000:
+            return
+    threads = Thread.objects.all()
+    for i, thread in enumerate(threads):
+        thread.modified = thread.posts.latest.modified
+        thread.save()
+        print('Updating thread modified datetime: {:d}/{:d}'.format(
+            i+1, len(threads)))
+
 
 # TODO: override thread.modified with latest topic datetime
 
 # import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
 # import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
-# import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))
+import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))

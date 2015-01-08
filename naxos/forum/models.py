@@ -37,6 +37,7 @@ class Thread(models.Model):
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
+    postCount = models.IntegerField(default=0)
     viewCount = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):

@@ -14,8 +14,6 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
 
-MERGEPOST_INTERVAL = 300
-
 
 ### Helpers ###
 def get_preview(content):
@@ -154,23 +152,12 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
     def form_valid(self, form):
         "Handle post creation in the db"
-        # Update parent thread
+        # Update category and thread
         self.t.modified = datetime.datetime.now()
+        self.t.postCount += 1
+        self.t.category.postCount += 1
         self.t.save()
-        # Merge with last post if the author is the same
-        p = self.t.posts.latest()
-        interval = datetime.datetime.now() - p.created
-        if (p.author == self.request.user
-                and interval.seconds < MERGEPOST_INTERVAL):
-            # Add previous post content + creation date to the current form
-            form.instance.content_plain = p.content_plain + "\n\n{:s}".format(
-                form.instance.content_plain)
-            form.instance.created = p.created
-            form.instance.modified = datetime.datetime.now()
-            p.delete()  # Then delete the previous post
-        else:
-            self.t.category.postCount += 1
-            self.t.category.save()
+        self.t.category.save()
         # Update remaining form fields
         form.instance.thread = self.t
         form.instance.author = self.request.user

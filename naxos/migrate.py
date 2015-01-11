@@ -20,7 +20,6 @@ def fix_json(f):
 
     def double_quote(match_obj):
         quote = match_obj.group(2)
-        # if r'"' in quote: quote = quote.replace('\"', 'hey')
         return match_obj.group(1) + "\"" + quote + "\","
 
     print('Repairing JSON')
@@ -129,9 +128,8 @@ def import_posts(f):
             i+1, len(threads)))
 
 
-
 # TODO: override thread.modified with latest topic datetime
 
 # import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
 # import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
-import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))
+# import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))

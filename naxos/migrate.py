@@ -110,24 +110,27 @@ def import_posts(f):
     for thread in Thread.objects.all():
         threads[thread.pk] = thread
     print('done')
+    print('Loading posts...')
+    existing_posts = set()
+    for post in Post.objects.all():
+        existing_posts.add(post.pk)
     post_counter = {}
+    print('done')
     for i, post in enumerate(posts):
+        print("Creating {:d}/{:d}".format(i+1, len(posts)), end="\r")
         t = threads.get(post['parent'])
         if not t: continue  # pass if thread does not exist
         # increment category post counter
         post_counter[t.category] = post_counter.get(t.category, 0) + 1
-        # m = Post.objects.filter(pk=post['idpost']).first()
-        # if m: continue  # skip if post already exists
+        # skip if post already exists
+        if post['idpost'] in existing_posts: continue
         p = Post.objects.create(
             pk=int(post['idpost']),
             thread=t,
             author=users.get(post['idmembre']),
             created=datetime.fromtimestamp(post['date']),
             content_plain=str(post['msg']),
-        )   
-        print("Creating {:d}/{:d}".format(i+1, len(posts)), end="\r")
-        # if i == 1000:
-        #     return
+        )
     threads = Thread.objects.all()
     for i, thread in enumerate(threads):
         print('Updating thread modified datetime: {:d}/{:d}'.format(

@@ -15,6 +15,10 @@ from forum.models import Category, Thread, Post
 from forum.util import keygen
 
 
+# PLEASE NOTE THAT CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map'
+# ACCORDINGLY
+
+
 def fix_json(f):
     """Fixes phpmyadmin json exports"""
 
@@ -72,14 +76,14 @@ def import_users(f):
 
 
 def import_threads(f):
-    cat = {1:1, 2:2, 3:3, 4:4, 5:6, 6:7, 7:5}  # mapping categories
+    cat_map = {1:1, 2:2, 3:3, 4:4, 5:6, 6:7, 7:5}  # mapping categories
     threads = json.loads(fix_json(f))
     for i, thread in enumerate(threads):
         m = Thread.objects.filter(pk=thread['idtopic']).first()
         if m: m.delete()
         t = Thread.objects.create(
             pk=int(thread['idtopic']),
-            category=Category.objects.get(pk=cat[thread['idforum']]),
+            category=Category.objects.get(pk=cat_map[thread['idforum']]),
             title=HTMLParser().unescape(str(thread['sujet']))[:80],
             author=ForumUser.objects.get(pk=thread['idmembre']),
             icon=str(thread['icone'])+'.gif',
@@ -100,16 +104,14 @@ def import_posts(f):
     for thread in Thread.objects.all():
         threads[thread.pk] = thread
     print('done')
-    # for cat in Category.objects.all():
-    #     cat.postCount = 0  # reset cat post counter
-    #     cat.save()
+    post_counter = {}
     for i, post in enumerate(posts):
-        # m = Post.objects.filter(pk=post['idpost']).first()
-        # if m: m.delete()
         t = threads.get(post['parent'])
         if not t: continue  # pass if thread does not exist
-        t.category.postCount += 1  # increment cat post counter
-        t.category.save()
+        # increment category post counter
+        post_counter[t.category] = post_counter.get(t.category, 0) + 1
+        m = Post.objects.filter(pk=post['idpost']).first()
+        if m: continue  # skip loop if post already exists
         p = Post.objects.create(
             pk=int(post['idpost']),
             thread=t,
@@ -122,14 +124,20 @@ def import_posts(f):
             return
     threads = Thread.objects.all()
     for i, thread in enumerate(threads):
-        thread.modified = thread.posts.latest.modified
-        thread.save()
         print('Updating thread modified datetime: {:d}/{:d}'.format(
             i+1, len(threads)))
+        thread.modified = thread.posts.latest.modified
+        thread.save()
+    for key, value in post_counter:
+        print('Updating post counter')
+        c = Category.objects.get(pk=key)
+        c.postCount = value
+        c.save()
 
 
-# TODO: override thread.modified with latest topic datetime
+# TODO: add count posts
+# TODO: override thread.modified with last topic datetime
 
-# import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
-# import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
+import_users(here('..', '..', '..', 'util', 'data', 'new.json'))
+import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
 # import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))

@@ -101,33 +101,31 @@ def import_threads(f):
 def import_posts(f):
     posts = json.loads(fix_json(f))
     users = {}
-    print('Loading users...')
-    for user in ForumUser.objects.all():
-        users[user.pk] = user
-    print('done')
-    threads = {}
     print('Loading threads...')
+    existing_threads = {}
     for thread in Thread.objects.all():
-        threads[thread.pk] = thread
+        existing_threads[thread.pk] = thread.category_id
     print('done')
     print('Loading posts...')
     existing_posts = set()
     for post in Post.objects.all():
         existing_posts.add(post.pk)
-    post_counter = {}
     print('done')
+    post_counter = {}  # stores the number of posts per cat
+    for category in Category.objects.all():  # initializing dict values
+        post_counter[category.pk] = 0
     for i, post in enumerate(posts):
         print("Creating {:d}/{:d}".format(i+1, len(posts)), end="\r")
-        t = threads.get(post['parent'])
-        if not t: continue  # pass if thread does not exist
+        # skip if thread does not exist
+        if post['parent'] not in existing_threads: continue
         # increment category post counter
-        post_counter[t.category] = post_counter.get(t.category, 0) + 1
+        post_counter[existing_threads[post['parent']]] += 1
         # skip if post already exists
         if post['idpost'] in existing_posts: continue
         p = Post.objects.create(
             pk=int(post['idpost']),
-            thread=t,
-            author=users.get(post['idmembre']),
+            thread_id=int(post['parent']),
+            author_id=int(post['idmembre']),
             created=datetime.fromtimestamp(post['date']),
             content_plain=str(post['msg']),
         )

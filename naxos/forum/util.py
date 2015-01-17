@@ -3,13 +3,14 @@ from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 
 import re
+import os
 import postmarkup
 # try:
 #     import markdown
 # except ImportError:
 #     pass
 
-from naxos.settings.local import STATICFILES_DIRS as static, DEBUG
+from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
 
 
 ### Process search queries ###

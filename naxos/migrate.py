@@ -9,6 +9,8 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.dev")
 django.setup()
 
+from django.utils.html import strip_tags
+
 from naxos.settings.base import here
 from user.models import ForumUser
 from forum.models import Category, Thread, Post
@@ -49,6 +51,7 @@ def fix_json(f):
         new.append(re.sub(r': "([\s|\S]*?)",', clean_invalid_char, item))
     s = "}, {".join(new)
     # Good to go
+    f.close()
     print("Repairing {:s}... done".format(filename))
     return s
 
@@ -66,7 +69,7 @@ def import_users(f):
     for i, user in enumerate(users):
         user['login'] = convert_username(user['login'])
         m = ForumUser.objects.filter(pk=user['userid']).first()
-        if m: m.delete()  # delete the user if it already exists
+        if m: continue
         password = keygen()  # generate password
         new_users[user['login']] = password
         u = ForumUser.objects.create(
@@ -107,41 +110,48 @@ def import_threads(f):
             icon=str(thread['icone'])+'.gif',
             viewCount=int(thread['nbvues']),
         )
-    print()
+    print("Creating threads... done{:s}".format(" "*20))
 
 def import_posts(f):
-    posts = json.loads(fix_json(f))
-    users = {}
-    # loading threads
-    existing_threads = {}
-    for thread in Thread.objects.all():
-        existing_threads[thread.pk] = thread.category_id
-    # loading posts
-    existing_posts = set()
-    for post in Post.objects.all():
-        existing_posts.add(post.pk)
-    post_counter = {}  # stores the number of posts per cat
-    for category in Category.objects.all():  # initializing dict values
-        post_counter[category.pk] = 0
-    prepared_posts = []
-    for i, post in enumerate(posts):
-        print("Preparing... {:d}/{:d}".format(i+1, len(posts)), end="\r")
-        if post['parent'] not in existing_threads: continue
-        # increment category post counter
-        post_counter[existing_threads[post['parent']]] += 1
-        if post['idpost'] in existing_posts: continue
-        # store prepared posts
-        prepared_posts.append(Post(
-            pk=int(post['idpost']),
-            thread_id=int(post['parent']),
-            author_id=int(post['idmembre']),
-            created=datetime.fromtimestamp(post['date']),
-            content_plain=HTMLParser().unescape(str(post['msg'])),
-        ))
-    print("\nCreating posts in the database...")
-    Post.objects.bulk_create(prepared_posts, batch_size=50000)
-    print("done")
+
+    def prepare_bulk(f):
+        posts = json.loads(fix_json(f))
+        # loading threads
+        existing_threads = {}
+        for thread in Thread.objects.all():
+            existing_threads[thread.pk] = thread.category_id
+        # loading posts
+        existing_posts = set()
+        for post in Post.objects.all():
+            existing_posts.add(post.pk)
+        post_counter = {}  # stores the number of posts per cat
+        for category in Category.objects.all():  # initializing dict values
+            post_counter[category.pk] = 0
+        bulk = []
+        for i, post in enumerate(posts):
+            print("Preparing... {:d}/{:d}".format(i+1, len(posts)), end="\r")
+            if post['parent'] not in existing_threads: continue
+            # increment category post counter
+            post_counter[existing_threads[post['parent']]] += 1
+            if post['idpost'] in existing_posts: continue
+            # store prepared posts
+            bulk.append(Post(
+                pk=int(post['idpost']),
+                thread_id=int(post['parent']),
+                author_id=int(post['idmembre']),
+                created=datetime.fromtimestamp(post['date']),
+                content_plain=strip_tags(
+                    HTMLParser().unescape(str(post['msg']))),
+            ))
+        return bulk
+
+    bulk = prepare_bulk(f)
+    print("\nCreating posts in the database...", end="\r")
+    if bulk: Post.objects.bulk_create(bulk)
+    print("Creating posts in the database... done")
+
     return
+
     threads = Thread.objects.all()
     for i, thread in enumerate(threads):
         print('Updating thread modified datetime: {:d}/{:d}'.format(

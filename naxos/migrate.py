@@ -39,7 +39,6 @@ def fix_json(f):
     s = ''.join(lines)
     s = s.replace('<br />', '\n')  # User proper new line character
     s = s.replace('\\\'', '\'')  # Remove illegal escapes for squotes
-    # s = re.sub(r'([^\x20-\x7e])', decode, s)  # remove hex characters
     # add double quotes where missing
     s = re.sub(r'("msg": )([^"]*),', double_quote, s)
     s = re.sub(r'("usercitation": )([^"]*),', double_quote, s)
@@ -61,11 +60,7 @@ def import_users(f):
         return HTMLParser().unescape(name.replace(' ', '_'))[:30]
 
     s = fix_json(f)
-    # print(s[0:4000])
-    # return
     users = json.loads(s)
-    # print(users)
-    # return
     n = len(users)
     new_users = {}
     for i, user in enumerate(users):
@@ -163,6 +158,6 @@ def import_posts(f):
 # TODO: add count posts
 # TODO: override thread.modified with last topic datetime
 
-# import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))
+import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))
 import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
 import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))

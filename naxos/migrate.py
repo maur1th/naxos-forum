@@ -9,6 +9,7 @@ from datetime import datetime
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.dev")
 django.setup()
 
+from django.db import connection
 from django.utils.html import strip_tags
 
 from naxos.settings.base import here
@@ -39,7 +40,6 @@ def fix_json(f):
     while lines[0][0] != '[':
         lines.pop(0)
     s = ''.join(lines)
-    s = s.replace('<br />', '\n')  # User proper new line character
     s = s.replace('\\\'', '\'')  # Remove illegal escapes for squotes
     # add double quotes where missing
     s = re.sub(r'("msg": )([^"]*),', double_quote, s)
@@ -67,6 +67,8 @@ def import_users(f):
     n = len(users)
     new_users = {}
     for i, user in enumerate(users):
+        print("Creating users... {:d}/{:d}".format(
+            i+1, n), end="\r")
         user['login'] = convert_username(user['login'])
         m = ForumUser.objects.filter(pk=user['userid']).first()
         if m: continue
@@ -81,10 +83,9 @@ def import_users(f):
             quote=HTMLParser().unescape(str(user['usercitation'])),
             website=HTMLParser().unescape(str(user['usersite'])),
         )
-        print("Creating users... {:d}/{:d}".format(
-            i+1, n), end="\r")
         u.set_password(password)
         u.save()
+    print("Creating users... done{:s}".format(" "*20))
     f = open('new_users.json', 'w')
     json.dump(new_users, f)
     f.close()
@@ -112,9 +113,14 @@ def import_threads(f):
         )
     print("Creating threads... done{:s}".format(" "*20))
 
+
 def import_posts(f):
 
     def prepare_bulk(f):
+
+        def clean_size(match_obj):
+            return "[size=" + str(int(match_obj.group(1))+9) + "]"
+
         posts = json.loads(fix_json(f))
         # loading threads
         existing_threads = {}
@@ -129,45 +135,56 @@ def import_posts(f):
             post_counter[category.pk] = 0
         bulk = []
         for i, post in enumerate(posts):
-            print("Preparing... {:d}/{:d}".format(i+1, len(posts)), end="\r")
+            print("Preparing posts... {:d}/{:d}".format(
+                i+1, len(posts)), end="\r")
             if post['parent'] not in existing_threads: continue
             # increment category post counter
             post_counter[existing_threads[post['parent']]] += 1
             if post['idpost'] in existing_posts: continue
+            # perpare message
+            content_plain = strip_tags(
+                    HTMLParser().unescape(str(post['msg'])))
+            # fix text size tags
+            content_plain = re.sub(r'\[size=(\d)\]', clean_size, content_plain)
             # store prepared posts
             bulk.append(Post(
                 pk=int(post['idpost']),
                 thread_id=int(post['parent']),
                 author_id=int(post['idmembre']),
                 created=datetime.fromtimestamp(post['date']),
-                content_plain=strip_tags(
-                    HTMLParser().unescape(str(post['msg']))),
+                content_plain=content_plain,
             ))
-        return bulk
+        return bulk, post_counter
 
-    bulk = prepare_bulk(f)
+    bulk, post_counter = prepare_bulk(f)
     print("\nCreating posts in the database...", end="\r")
     if bulk: Post.objects.bulk_create(bulk)
     print("Creating posts in the database... done")
 
-    return
-
     threads = Thread.objects.all()
     for i, thread in enumerate(threads):
-        print('Updating thread modified datetime: {:d}/{:d}'.format(
+        print('Updating threads... {:d}/{:d}'.format(
             i+1, len(threads)), end="\r")
-        thread.modified = thread.posts.latest.modified
+        thread.modified = thread.posts.latest().created
+        thread.postCount = thread.posts.count()
         thread.save()
-    for key, value in post_counter:
-        print('Updating post counter')
+    print("Updating threads... done{:s}".format(" "*20))
+    for key, value in post_counter.items():
+        print('Updating post counter...', end="\r")
         c = Category.objects.get(pk=key)
         c.postCount = value
         c.save()
+    print('Updating post counter... done')
 
-
-# TODO: add count posts
-# TODO: override thread.modified with last topic datetime
 
 import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))
 import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
 import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))
+
+cursor = connection.cursor()
+cursor.execute('ALTER SEQUENCE user_forumuser_id_seq RESTART WITH {}'.format(
+    ForumUser.objects.latest('pk').pk+1))
+cursor.execute('ALTER SEQUENCE forum_thread_id_seq RESTART WITH {}'.format(
+    Thread.objects.latest('pk').pk+1))
+cursor.execute('ALTER SEQUENCE forum_post_id_seq RESTART WITH {}'.format(
+    Post.objects.latest('pk').pk+1))

@@ -56,7 +56,7 @@ class Thread(models.Model):
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']
-        # Permit thread.posts.latest in template
+        # Permit category.threads.latest in template
         get_latest_by = "modified"
 
     def __str__(self):
@@ -78,21 +78,21 @@ class Post(models.Model):
         self.thread.save()
         super().save(*args, **kwargs)
 
-    def _get_html(self):
+    @property
+    def html(self):
         content_html = convert_text_to_html(self.content_plain)
         content_html = smilify(content_html)
         return content_html
-    html = property(_get_html)
-
-    class Meta:
-        ordering = ["pk"]
-        # Permit thread.posts.latest in template
-        get_latest_by = "created"
 
     @property
     def position(self):
         return Post.objects.filter(thread=self.thread).filter(
                                    pk__lt=self.pk).count()
+
+    class Meta:
+        ordering = ["pk"]
+        # Permit thread.posts.latest in template
+        get_latest_by = "created"
 
     def __str__(self):
         return "{:s}: {:d}".format(self.author.username, self.pk)

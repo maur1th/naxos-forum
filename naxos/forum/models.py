@@ -69,17 +69,20 @@ class Post(models.Model):
                                    editable=False)
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField(verbose_name='Message')
-    content_html = models.TextField()
     markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='posts')
     thread = models.ForeignKey(Thread, related_name='posts')
 
     def save(self, *args, **kwargs):
-        self.content_html = convert_text_to_html(self.content_plain)
-        self.content_html = smilify(self.content_html)
         self.thread.contributors.add(self.author)
         self.thread.save()
         super().save(*args, **kwargs)
+
+    def _get_html(self):
+        content_html = convert_text_to_html(self.content_plain)
+        content_html = smilify(content_html)
+        return content_html
+    html = property(_get_html)
 
     class Meta:
         ordering = ["pk"]

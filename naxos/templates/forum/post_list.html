@@ -148,7 +148,7 @@ $(document).ready(function() {
         </small>
         <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
         <div class="post-content" style="word-wrap: break-word">
-            {{ post.content_html|safe }}
+            {{ post.html|safe }}
         </div>
         {% if post.modified %}
             <br><br>

@@ -34,8 +34,8 @@ def fix_json(f):
 
     filename = os.path.basename(f)
     print('Repairing {:s}...'.format(filename), end="\r")
-    f = open(f)
-    lines = f.readlines()
+    with open(f) as f:
+        lines = f.readlines()
     # Remove comments at the top (illegal in json)
     while lines[0][0] != '[':
         lines.pop(0)
@@ -51,7 +51,6 @@ def fix_json(f):
         new.append(re.sub(r': "([\s|\S]*?)",', clean_invalid_char, item))
     s = "}, {".join(new)
     # Good to go
-    f.close()
     print("Repairing {:s}... done".format(filename))
     return s
 
@@ -86,9 +85,8 @@ def import_users(f):
         u.set_password(password)
         u.save()
     print("Creating users... done{:s}".format(" "*20))
-    f = open('new_users.json', 'w')
-    json.dump(new_users, f)
-    f.close()
+    with open('new_users.json', 'w') as f:
+        json.dump(new_users, f)
     # TODO: send email with new password
 
 

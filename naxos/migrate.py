@@ -12,7 +12,7 @@ django.setup()
 from naxos.settings.base import here
 from user.models import ForumUser
 from forum.models import Category, Thread, Post
-from forum.util import convert_text_to_html, smilify, keygen
+from forum.util import keygen
 
 
 # PLEASE NOTE THAT CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map'

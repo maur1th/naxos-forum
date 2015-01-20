@@ -39,7 +39,8 @@ def fix_json(f):
     while lines[0][0] != '[':
         lines.pop(0)
     s = ''.join(lines)
-    s = s.replace('\\\'', '\'')  # Remove illegal escapes for squotes
+    # Remove illegal escapes for squotes
+    s = s.replace('\\\'', '\'')
     # add double quotes where missing
     s = re.sub(r'("msg": )([^"]*),', double_quote, s)
     s = re.sub(r'("usercitation": )([^"]*),', double_quote, s)

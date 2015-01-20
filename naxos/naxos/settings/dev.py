@@ -15,6 +15,8 @@ DATABASES = {
     }
 }
 
+INSTALLED_APPS += ('debug_toolbar',)
+
 # Enable template caching
 # TEMPLATE_LOADERS = (
 #     ('django.template.loaders.cached.Loader', (

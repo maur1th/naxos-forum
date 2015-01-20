@@ -18,8 +18,7 @@ from forum.models import Category, Thread, Post
 from forum.util import keygen
 
 
-# PLEASE NOTE THAT CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map'
-# ACCORDINGLY
+# CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map' ACCORDINGLY
 
 
 def fix_json(f):

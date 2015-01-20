@@ -85,7 +85,7 @@ def import_users(f):
         u.set_password(password)
         u.save()
     print("Creating users... done{:s}".format(" "*20))
-    with open('new_users.json', 'w') as f:
+    with open('new_users.json', 'a') as f:
         json.dump(new_users, f)
     # TODO: send email with new password
 

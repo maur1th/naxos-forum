@@ -39,6 +39,7 @@ class Thread(models.Model):
     isRemoved = models.BooleanField(default=False)
     postCount = models.IntegerField(default=0)
     viewCount = models.IntegerField(default=0)
+    latest_post = models.ForeignKey('Post', related_name='+', null=True)
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
@@ -74,9 +75,13 @@ class Post(models.Model):
     thread = models.ForeignKey(Thread, related_name='posts')
 
     def save(self, *args, **kwargs):
+        new_post = True if self.pk is None else False
         self.thread.contributors.add(self.author)
         self.thread.save()
         super().save(*args, **kwargs)
+        if new_post:
+            self.thread.latest_post = self
+            self.thread.save()
 
     @property
     def html(self):

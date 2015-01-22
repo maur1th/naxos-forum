@@ -165,6 +165,7 @@ def import_posts(f):
             i+1, len(threads)), end="\r")
         thread.modified = thread.posts.latest().created
         thread.postCount = thread.posts.count()
+        thread.latest_post = thread.posts.lastest()
         thread.save()
     print("Updating threads... done{:s}".format(" "*20))
     for key, value in post_counter.items():
@@ -173,6 +174,7 @@ def import_posts(f):
         c.postCount = value
         c.save()
     print('Updating post counter... done')
+
 
 
 import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))

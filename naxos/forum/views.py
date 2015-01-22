@@ -38,13 +38,13 @@ class TopView(LoginRequiredMixin, ListView):
 class ThreadView(LoginRequiredMixin, ListView):
     paginate_by = 30
 
-    def dispatch(self, request, *args, **kwargs):
-        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        return self.c.threads.all()
+        self.request.user.postsReadCaret
+        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        return self.c.threads.select_related(
+            'author').prefetch_related(
+            'contributors').all()
 
     def get_context_data(self, **kwargs):
         "Pass category from url to context"

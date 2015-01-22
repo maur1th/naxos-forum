@@ -70,9 +70,9 @@
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
-          <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.posts.latest.pk }}" class="lastMessage">
+          <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
           {{ thread.modified|date:'d/m/y H:i' }}
-          <br><strong>{{ thread.posts.latest.author }}</strong>
+          <br><strong>{{ thread.latest_post.author }}</strong>
           </a>
           </small>
         </td>

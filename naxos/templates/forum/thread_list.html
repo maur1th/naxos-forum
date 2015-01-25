@@ -32,7 +32,6 @@
     </tr>
     </thead>
     <tbody>
-    {% with user.postsReadCaret.all as readCaret %}
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
@@ -79,7 +78,6 @@
         </td>
       </tr>
       {% endfor %}
-    {% endwith %}
     </tbody>
   </table>
 </div>

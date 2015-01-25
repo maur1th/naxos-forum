@@ -50,7 +50,7 @@ class ThreadView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         # for t in self.object_list:
         #     if
-        context['readCaret'] = self.request.user.postsReadCaret.all
+        context['readCaret'] = self.request.user.postsReadCaret.all()
         context['category'] = self.c
         context['post_pagination'] = PostView.paginate_by
         return context

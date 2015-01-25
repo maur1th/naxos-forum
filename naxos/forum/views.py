@@ -35,7 +35,6 @@ class TopView(LoginRequiredMixin, ListView):
     model = Category
 
     def get_context_data(self, **kwargs):
-        "Pass category from url to context"
         context = super().get_context_data(**kwargs)
         context['readCaret'] = self.request.user.postsReadCaret.all()
         return context

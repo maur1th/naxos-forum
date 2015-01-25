@@ -40,7 +40,6 @@ class ThreadView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        self.request.user.postsReadCaret
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
         return self.c.threads.select_related(
             'author').prefetch_related(

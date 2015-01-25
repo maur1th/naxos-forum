@@ -32,19 +32,20 @@
     </tr>
     </thead>
     <tbody>
+    {% with user.postsReadCaret.all as readCaret %}
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
-          {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}
+          {% if user in thread.contributors.all and thread.latest_post in readCaret %}
               <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
           {% elif user in thread.contributors.all %}
-            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
+            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in readCaret %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
               <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
             </a>
-          {% elif thread.posts.latest in user.postsReadCaret.all %}
+          {% elif thread.latest_post in readCaret %}
             <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
           {% else %}
-            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
+            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in readCaret %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
               <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
             </a>
           {% endif %}
@@ -78,6 +79,7 @@
         </td>
       </tr>
       {% endfor %}
+    {% endwith %}
     </tbody>
   </table>
 </div>

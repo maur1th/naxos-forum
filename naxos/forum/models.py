@@ -12,7 +12,7 @@ SLUG_LENGTH = 50
 ### Basic Forum models ###
 class Category(models.Model):
     """Contains threads."""
-    slug = models.SlugField(blank=False, unique=True)
+    slug = models.SlugField(blank=False, unique=True, db_index=True)
     title = models.CharField(max_length=50, blank=False)
     subtitle = models.CharField(max_length=200)
     postCount = models.IntegerField(default=0)

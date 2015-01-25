@@ -30,7 +30,6 @@ class ForumUser(AbstractUser):
     website = models.URLField(blank=True,
                               verbose_name='Site web')
     postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
-    # participatedIn = models.ManyToManyField('forum.Thread', blank=True)
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
 

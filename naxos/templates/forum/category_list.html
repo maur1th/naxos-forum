@@ -19,11 +19,10 @@
         </thead>
         <tbody>
             {% for category in object_list %}
+            {% with category.threads.latest as latest_thread %}
             <tr>
                 <td class="vert-align">
-                    {% if category.threads.latest.posts.latest in user.postsReadCaret.all %}
-                        <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-                    {% elif not category.threads.latest.posts.latest %}
+                    {% if latest_thread.latest_post in readCaret %}
                         <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
                     {% else %}
                         <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
@@ -36,17 +35,18 @@
                 <td class="text-center vert-align hidden-xs"><small>{{ category.threads.count }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ category.postCount }}</small></td>
                 <td class="text-center vert-align">
-                    {% if category.threads.latest %}
+                    {% if latest_thread %}
                         <small>
-                        <a href="{% url 'forum:thread' category.slug category.threads.latest.slug %}?page=last#{{ category.threads.latest.posts.latest.pk }}" class="lastMessage">
-                        <span class="hidden-xs">{{ category.threads.latest.modified|date:'d/m/y H:i' }}<br></span>
-                        <span class="visible-xs">{{ category.threads.latest.modified|date:'d/m H:i' }}</span>
-                        <strong>{{ category.threads.latest.posts.latest.author }}</strong>
+                        <a href="{% url 'forum:thread' category.slug latest_thread.slug %}?page=last#{{ latest_thread.latest_post.pk }}" class="lastMessage">
+                        <span class="hidden-xs">{{ latest_thread.modified|date:'d/m/y H:i' }}<br></span>
+                        <span class="visible-xs">{{ latest_thread.modified|date:'d/m H:i' }}</span>
+                        <strong>{{ latest_thread.latest_post.author }}</strong>
                         </a>
                         </small>
                     {% endif %}
                 </td>
             </tr>
+            {% endwith %}
             {% endfor %}
         </tbody>
     </table>

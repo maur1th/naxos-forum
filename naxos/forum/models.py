@@ -53,6 +53,7 @@ class Thread(models.Model):
                                filter_dict={'category': self.category},
                                instance=self,
                                max_length=SLUG_LENGTH)
+        # Next line must be commented when running migrate.py
         self.modified = datetime.now()
         super().save(*args, **kwargs)
 

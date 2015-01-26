@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load mathfilters %}
+{% load cache %}
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
@@ -45,6 +46,7 @@
         
         </td>
         <td class="vert-align">
+        {% cache 0 thread thread.cache_key %}
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
@@ -69,6 +71,7 @@
           <br><strong>{{ thread.latest_post.author }}</strong>
           </a>
           </small>
+        {% endcache %}
         </td>
       </tr>
       {% endfor %}

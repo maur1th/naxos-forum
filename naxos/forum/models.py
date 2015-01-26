@@ -11,6 +11,21 @@ SLUG_LENGTH = 50
 DATA_SCHEMA_REVISION = 2
 
 
+### Abstract base class ###
+class CachedModel(models.Model):
+
+    @property
+    def cache_key(self):
+        return 'naxos/{}/{}/item-{}-{}'.format(
+            DATA_SCHEMA_REVISION,
+            self.__class__.__name__,
+            self.id,
+            self.modified)
+
+    class Meta:
+        abstract = True
+
+
 ### Basic Forum models ###
 class Category(models.Model):
     """Contains threads."""
@@ -26,7 +41,7 @@ class Category(models.Model):
         return self.slug
 
 
-class Thread(models.Model):
+class Thread(CachedModel):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80, verbose_name='Titre')
@@ -69,7 +84,7 @@ class Thread(models.Model):
         return "{:s}/{:s}".format(self.category.slug, self.slug)
 
 
-class Post(models.Model):
+class Post(CachedModel):
     """A post."""
     created = models.DateTimeField(default=datetime.now,
                                    editable=False)
@@ -93,16 +108,11 @@ class Post(models.Model):
         content_html = convert_text_to_html(self.content_plain)
         content_html = smilify(content_html)
         return content_html
-
+    
     @property
     def position(self):
         return Post.objects.filter(thread=self.thread).filter(
                                    pk__lt=self.pk).count()
-
-    @property
-    def cache_key(self):
-        return 'myproject/{}/item-{}-{}'.format(
-            DATA_SCHEMA_REVISION, self.id, self.modified)
 
     class Meta:
         ordering = ["pk"]

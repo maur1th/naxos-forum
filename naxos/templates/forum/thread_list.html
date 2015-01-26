@@ -36,7 +36,11 @@
       <tr>
         <td class="text-center vert-align" style="padding:0">
         {% if thread.readCaret %}
+          {% ifequal thread.readCaret 'not_visited'  %}
+            <a href="{% url 'forum:thread' category.slug thread.slug %}">
+          {% else %}
             <a href="{% url 'forum:thread' category.slug thread.slug %}?page={{ thread.readCaret.page }}#{{ thread.readCaret.pk }}">
+          {% endifequal %}
               <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
             </a>
         {% else %}

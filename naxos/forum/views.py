@@ -74,9 +74,9 @@ class ThreadView(LoginRequiredMixin, ListView):
                 status = "on"
                 try:
                     t.readCaret = readCaret.get(thread=t)
+                    t.readCaret.page = get_post_page(t.readCaret)
                 except:
-                    t.readCaret = t.first_post
-                t.readCaret.page = get_post_page(t.readCaret)
+                    t.readCaret = "not_visited"
             t.status = 'img/{:s}.png'.format(status)
 
         context['category'] = self.c

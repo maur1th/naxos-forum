@@ -8,6 +8,8 @@ from user.models import ForumUser
 
 SLUG_LENGTH = 50
 
+DATA_SCHEMA_REVISION = 1
+
 
 ### Basic Forum models ###
 class Category(models.Model):
@@ -96,6 +98,11 @@ class Post(models.Model):
     def position(self):
         return Post.objects.filter(thread=self.thread).filter(
                                    pk__lt=self.pk).count()
+
+    @property
+    def cache_key(self):
+        return 'myproject/{}/item-{}-{}'.format(
+            DATA_SCHEMA_REVISION, self.id, self.modified)
 
     class Meta:
         ordering = ["pk"]

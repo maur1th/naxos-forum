@@ -1,5 +1,6 @@
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -75,7 +76,7 @@ class ThreadView(LoginRequiredMixin, ListView):
                 try:
                     t.readCaret = readCaret.get(thread=t)
                     t.readCaret.page = get_post_page(t.readCaret)
-                except:
+                except ObjectDoesNotExist:
                     t.readCaret = "not_visited"
             t.status = 'img/{:s}.png'.format(status)
 

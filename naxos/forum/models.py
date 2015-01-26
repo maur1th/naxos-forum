@@ -1,6 +1,6 @@
 from django.db import models
 
-import datetime
+from datetime import datetime
 from uuslug import uuslug
 
 from .util import convert_text_to_html, smilify, keygen
@@ -30,7 +30,7 @@ class Thread(models.Model):
     title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='threads')
     contributors = models.ManyToManyField(ForumUser)
-    modified = models.DateTimeField(default=datetime.datetime.now)
+    modified = models.DateTimeField(default=datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
     icon = models.CharField(
         max_length=80, default="icon1.gif", verbose_name='Icône')
@@ -53,6 +53,7 @@ class Thread(models.Model):
                                filter_dict={'category': self.category},
                                instance=self,
                                max_length=SLUG_LENGTH)
+        self.modified = datetime.now()
         super().save(*args, **kwargs)
 
     class Meta:
@@ -67,7 +68,7 @@ class Thread(models.Model):
 
 class Post(models.Model):
     """A post."""
-    created = models.DateTimeField(default=datetime.datetime.now,
+    created = models.DateTimeField(default=datetime.now,
                                    editable=False)
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField(verbose_name='Message')
@@ -80,7 +81,7 @@ class Post(models.Model):
         self.thread.contributors.add(self.author)
         self.thread.save()
         super().save(*args, **kwargs)
-        if new_post:
+        if new_post:  # set parent thread's latest post
             self.thread.latest_post = self
             self.thread.save()
 

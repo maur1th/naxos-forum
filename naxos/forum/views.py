@@ -182,7 +182,6 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def form_valid(self, form):
         "Handle post creation in the db"
         # Update category and thread
-        self.t.modified = datetime.datetime.now()
         self.t.postCount += 1
         self.t.category.postCount += 1
         self.t.save()
@@ -262,19 +261,12 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 
     def form_valid(self, form):
         "Handle thread and 1st post creation in the db"
-        modified = False  # Handle modified datetime tag update
         # Edit thread title if indeed the first post
-        if (self.p == self.t.posts.first()
-                and (form.cleaned_data['title'] != self.t.title
-                     or form.cleaned_data['icon'] != self.t.icon)):
+        if self.p == self.t.posts.first():
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
-            modified = True
             self.t.save()
-        if form.cleaned_data['content_plain'] != self.p.content_plain:
-            modified = True
-        if modified:
-            form.instance.modified = datetime.datetime.now()
+        form.instance.modified = datetime.datetime.now()
         return super().form_valid(form)
 
     def get_success_url(self):

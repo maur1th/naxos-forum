@@ -45,7 +45,7 @@
         
         </td>
         <td class="vert-align">
-        {% cache 0 thread thread.cache_key %}
+        {% cache 3600 thread thread.cache_key %}
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}

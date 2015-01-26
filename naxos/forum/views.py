@@ -51,13 +51,35 @@ class ThreadView(LoginRequiredMixin, ListView):
             'contributors').all()
 
     def get_context_data(self, **kwargs):
-        "Pass category from url to context"
+        
+        def get_post_page(post):
+            return  post.position // PostView.paginate_by + 1
+
         context = super().get_context_data(**kwargs)
-        # for t in self.object_list:
-        #     if
-        context['readCaret'] = self.request.user.postsReadCaret.all()
+
+        user = self.request.user
+        readCaret = user.postsReadCaret.all()
+        for t in context['object_list']:
+            contributors = t.contributors.all()
+            uptodate_caret = t.latest_post in readCaret
+            if user in contributors and uptodate_caret:
+                status = "added"
+            elif user in contributors:
+                status = "added+on"
+                t.readCaret = readCaret.get(thread=t)
+                t.readCaret.page = get_post_page(t.readCaret)
+            elif uptodate_caret:
+                status = "off"
+            else:
+                status = "on"
+                try:
+                    t.readCaret = readCaret.get(thread=t)
+                except:
+                    t.readCaret = t.first_post
+                t.readCaret.page = get_post_page(t.readCaret)
+            t.status = 'img/{:s}.png'.format(status)
+
         context['category'] = self.c
-        context['post_pagination'] = PostView.paginate_by
         return context
 
 

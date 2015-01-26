@@ -165,6 +165,7 @@ def import_posts(f):
             i+1, len(threads)), end="\r")
         thread.modified = thread.posts.latest().created
         thread.postCount = thread.posts.count()
+        thread.first_post = thread.posts.first()
         thread.latest_post = thread.posts.lastest()
         thread.save()
     print("Updating threads... done{:s}".format(" "*20))

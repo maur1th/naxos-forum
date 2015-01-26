@@ -35,19 +35,13 @@
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
-          {% if user in thread.contributors.all and thread.latest_post in readCaret %}
-              <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-          {% elif user in thread.contributors.all %}
-            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in readCaret %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
-              <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+        {% if thread.readCaret %}
+            <a href="{% url 'forum:thread' category.slug thread.slug %}?page={{ thread.readCaret.page }}#{{ thread.readCaret.pk }}">
+              <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
             </a>
-          {% elif thread.latest_post in readCaret %}
-            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-          {% else %}
-            <a href="{% url 'forum:thread' category.slug thread.slug %}{% for post in readCaret %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
-              <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-            </a>
-          {% endif %}
+        {% else %}
+            <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
+        {% endif %}
         
         </td>
         <td class="vert-align">

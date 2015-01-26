@@ -39,6 +39,7 @@ class Thread(models.Model):
     isRemoved = models.BooleanField(default=False)
     postCount = models.IntegerField(default=0)
     viewCount = models.IntegerField(default=0)
+    first_post = models.ForeignKey('Post', related_name='+', null=True)
     latest_post = models.ForeignKey('Post', related_name='+', null=True)
 
     def save(self, *args, **kwargs):

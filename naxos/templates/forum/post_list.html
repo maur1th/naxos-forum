@@ -122,6 +122,7 @@ $(document).ready(function() {
 <hr style="margin:1px; border-top:0">
 {# Posts #}
 {% for post in object_list %}
+{% cache 9999999 post post.cache_key %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
     {# Large display author #}
@@ -138,7 +139,6 @@ $(document).ready(function() {
         <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
     </div>
     {# Content #}
-    {% cache 9999999 post post.cache_key %}
     <div class="col-sm-10 post equal-divs">
         <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.author }}</strong> | </span>
         <small>
@@ -156,10 +156,10 @@ $(document).ready(function() {
             <br><br>
             <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
         {% endif %}
-        {% endcache %}
     </div>
 </div>
 <hr style="margin:8px; border-top:0">
+{% endcache %}
 {% endfor %}
 {# Posts footer #}
 <div class="row" style="padding: 5px 0">

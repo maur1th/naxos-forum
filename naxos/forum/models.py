@@ -100,7 +100,10 @@ class Post(models.Model):
         if new_post:  # update thread
             self.thread.modified = self.created
             self.thread.latest_post = self
-        else:  # the post has been modified, remove it from cache
+            # latest post has changed, remove template fragment from cache
+            key = make_template_fragment_key('thread_latest_post', [self.pk])
+            cache.delete(key)
+        else:  # modified, remove template fragment from cache
             key = make_template_fragment_key('post', [self.pk])
             cache.delete(key)
         self.thread.save()

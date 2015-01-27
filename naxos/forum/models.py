@@ -41,7 +41,6 @@ class Thread(models.Model):
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
-    postCount = models.IntegerField(default=0)
     viewCount = models.IntegerField(default=0)
     latest_post = models.ForeignKey('Post', related_name='+', null=True)
 
@@ -87,6 +86,9 @@ class Post(models.Model):
             self.thread.latest_post = self
             # latest post has changed, remove template fragment from cache
             key = make_template_fragment_key('thread_latest_post',
+                                             [self.thread.pk])
+            cache.delete(key)
+            key = make_template_fragment_key('thread_post_count',
                                              [self.thread.pk])
             cache.delete(key)
             # caches thread's contributors

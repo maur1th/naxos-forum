@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from datetime import datetime
 from uuslug import uuslug
@@ -81,7 +83,7 @@ class Thread(CachedModel):
         return "{:s}/{:s}".format(self.category.slug, self.slug)
 
 
-class Post(CachedModel):
+class Post(models.Model):
     """A post."""
     created = models.DateTimeField(default=datetime.now,
                                    editable=False)
@@ -95,9 +97,12 @@ class Post(CachedModel):
         new_post = True if self.pk is None else False
         self.thread.contributors.add(self.author)
         super().save(*args, **kwargs)
-        if new_post:
+        if new_post:  # update thread
             self.thread.modified = self.created
             self.thread.latest_post = self
+        else:  # the post has been modified, remove it from cache
+            key = make_template_fragment_key('post', [p.pk])
+            cache.delete(key)
         self.thread.save()
 
     @property

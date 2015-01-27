@@ -48,8 +48,8 @@
         {% endif %}
         
         </td>
+        {% cache 9999999 thread thread.cache_key %}
         <td class="vert-align">
-        {% cache 3600 thread thread.cache_key %}
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
@@ -67,6 +67,9 @@
         </td>
         <td class="text-center vert-align hidden-xs"><small>{{ thread.postCount }}</small></td>
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        {% endcache %}
+        {# Latest post #}
+        {% cache 9999999 thread_latest_post thread.cache_key %}
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
           <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
@@ -74,8 +77,8 @@
           <br><strong>{{ thread.latest_post.author }}</strong>
           </a>
           </small>
-        {% endcache %}
         </td>
+        {% endcache %}
       </tr>
       {% endfor %}
     </tbody>

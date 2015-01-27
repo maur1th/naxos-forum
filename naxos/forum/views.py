@@ -283,9 +283,6 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-            # modified, remove template fragment from cache
-            key = make_template_fragment_key('thread', [self.t.pk])
-            cache.delete(key)
         form.instance.modified = datetime.datetime.now()
         return super().form_valid(form)
 

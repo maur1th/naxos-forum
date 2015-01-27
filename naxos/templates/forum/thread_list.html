@@ -47,7 +47,6 @@
             <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% endif %}
         </td>
-        {% cache 9999999 thread thread.pk %}
         <td class="vert-align">
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
@@ -64,7 +63,6 @@
         <td class="text-center vert-align importantData">
           <small><strong>{{ thread.author }}</strong></small>
         </td>
-        {% endcache %}
         {% cache 9999999 thread_post_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
         {% endcache %}

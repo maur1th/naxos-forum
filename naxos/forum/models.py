@@ -16,9 +16,8 @@ class CachedModel(models.Model):
 
     @property
     def cache_key(self):
-        return 'naxos/{}/{}/item-{}-{}'.format(
+        return 'naxos/{}/item-{}-{}'.format(
             DATA_SCHEMA_REVISION,
-            self.__class__.__name__,
             self.id,
             self.modified)
 

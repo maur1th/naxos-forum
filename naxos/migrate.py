@@ -160,14 +160,14 @@ def import_posts(f):
     print("Creating posts in the database... done")
 
     threads = Thread.objects.all()
-    for i, thread in enumerate(threads):
+    for i, t in enumerate(threads):
         print('Updating threads... {:d}/{:d}'.format(
             i+1, len(threads)), end="\r")
-        thread.modified = thread.posts.latest().created
-        thread.postCount = thread.posts.count()
-        thread.first_post = thread.posts.first()
-        thread.latest_post = thread.posts.lastest()
-        thread.save()
+        latest_post = t.posts.latest()
+        t.latest_post, t.modified = latest_post, latest_post.created
+        for p in t.posts.all():
+            t.contributors.add(p.author)
+        t.save()
     print("Updating threads... done{:s}".format(" "*20))
     for key, value in post_counter.items():
         print('Updating post counter...', end="\r")

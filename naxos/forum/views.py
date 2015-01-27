@@ -201,7 +201,6 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def form_valid(self, form):
         "Handle post creation in the db"
         # Update category and thread
-        self.t.postCount += 1
         self.t.category.postCount += 1
         self.t.save()
         self.t.category.save()

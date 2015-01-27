@@ -96,8 +96,9 @@ class PostView(LoginRequiredMixin, ListView):
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
         self.t.viewCount += 1  # Increment views
+        self.t.save()
         # Handle user read caret
-        p = self.t.posts.latest()
+        p = self.t.latest_post
         try:
             caret = self.request.user.postsReadCaret.get(thread=self.t)
         except:
@@ -105,7 +106,6 @@ class PostView(LoginRequiredMixin, ListView):
         if caret != p:
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
-        self.t.save()
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):

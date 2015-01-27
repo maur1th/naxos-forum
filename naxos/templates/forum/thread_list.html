@@ -64,11 +64,11 @@
         <td class="text-center vert-align importantData">
           <small><strong>{{ thread.author }}</strong></small>
         </td>
+        {% endcache %}
         {% cache 9999999 thread_post_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
         {% endcache %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-        {% endcache %}
         {# Latest post #}
         {% cache 9999999 thread_latest_post thread.pk %}
         <td class="text-center vert-align importantData" style="line-height:100%">

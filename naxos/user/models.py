@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import m2m_changed
+from django.core.cache import cache
 
 from forum.util import keygen
 
@@ -54,7 +55,7 @@ class TokenPool(models.Model):
 
 
 ### Model signal handlers ###
-def postsReadCaret_changed(sender, **kwargs):
+def postsReadCaret_changed(sender, action, instance, **kwargs):
     """Updates cached data each time a post is added to postsReadCaret"""
     if action == "post_add":
         cache.set("{:d}/readCaret".format(instance.pk),

@@ -63,7 +63,12 @@ class ThreadView(LoginRequiredMixin, ListView):
         user = self.request.user
         readCaret = user.postsReadCaret.all()
         for t in context['object_list']:
-            contributors = t.contributors.all()
+            contributors = cache.get("{:d}/contributors".format(t.pk))
+            if not contributors:
+                contributors = t.contributors.all()
+                cache.set("{:d}/contributors".format(t.pk),
+                  contributors,
+                  None)
             uptodate_caret = t.latest_post in readCaret
             if user in contributors and uptodate_caret:
                 status = "added"

@@ -90,6 +90,10 @@ class Post(models.Model):
             key = make_template_fragment_key('thread_latest_post',
                                              [self.thread.pk])
             cache.delete(key)
+            # caches thread's contributors
+            cache.set("{:d}/contributors".format(self.thread.pk),
+                  self.thread.contributors.all(),
+                  None)
         else:  # modified, remove template fragment from cache
             key = make_template_fragment_key('post', [self.pk])
             cache.delete(key)

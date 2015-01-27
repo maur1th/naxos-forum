@@ -69,8 +69,6 @@ class Thread(CachedModel):
                                filter_dict={'category': self.category},
                                instance=self,
                                max_length=SLUG_LENGTH)
-        # Next line must be commented when running migrate.py
-        self.modified = datetime.now()
         super().save(*args, **kwargs)
 
     class Meta:
@@ -96,11 +94,11 @@ class Post(CachedModel):
     def save(self, *args, **kwargs):
         new_post = True if self.pk is None else False
         self.thread.contributors.add(self.author)
-        self.thread.save()
         super().save(*args, **kwargs)
-        if new_post:  # set parent thread's latest post
+        if new_post:
+            self.thread.modified = self.created
             self.thread.latest_post = self
-            self.thread.save()
+        self.thread.save()
 
     @property
     def html(self):

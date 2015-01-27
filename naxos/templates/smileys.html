@@ -212,7 +212,7 @@
         var start = $textArea[0].selectionStart;
         var end = $textArea[0].selectionEnd;
         $textArea.val($textArea.val().substring(0, start) + " " + smiley + $textArea.val().substring(end, len));
-        return start + smiley.length + "  ".length;
+        return start + smiley.length + 1;
     };
     $('span.fake-link > img.smiley').click(function() {
         var $text = $("textarea[id$='content_plain']");

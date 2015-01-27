@@ -67,8 +67,11 @@ class ThreadView(LoginRequiredMixin, ListView):
                 status = "added"
             elif user in contributors:
                 status = "added+on"
-                t.readCaret = readCaret.get(thread=t)
-                t.readCaret.page = get_post_page(t.readCaret)
+                try:
+                    t.readCaret = readCaret.get(thread=t)
+                    t.readCaret.page = get_post_page(t.readCaret)
+                except ObjectDoesNotExist:
+                    t.readCaret = "not_visited"
             elif uptodate_caret:
                 status = "off"
             else:

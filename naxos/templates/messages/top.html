@@ -69,6 +69,11 @@
           </td>
         </tr>
     {% endfor %}
+    {% if not conv %}
+        <tr>
+          <td class="vert-align" style="padding:0" colspan="4" height="40"><span style="padding-left:20px">Aucun message privé</span></td>
+        </tr>
+    {% endif %}
     </tbody>
   </table>
   {% include "pagination.html" %}

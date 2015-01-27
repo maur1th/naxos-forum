@@ -4,9 +4,9 @@
   <ul class="pagination">
     {% if page_obj.has_previous %}
     <li><a href="?page=1"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
-    {% if page_obj.previous_page_number != 1 %}
-    <li><a href="?page={{ page_obj.number|add:'-2' }}">{{ page_obj.number|add:'-2' }}</a></li>
-    {% endif %}
+        {% if page_obj.previous_page_number != 1 %}
+        <li><a href="?page={{ page_obj.number|add:'-2' }}">{{ page_obj.number|add:'-2' }}</a></li>
+        {% endif %}
     <li><a href="?page={{ page_obj.number|add:'-1' }}">{{ page_obj.number|add:'-1' }}</a></li>
     {% else %}
     <li class="disabled"><a><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
@@ -14,10 +14,14 @@
     <li class="active"><a>{{ page_obj.number }}</a></li>
     {% if page_obj.has_next %}
     <li><a href="?page={{ page_obj.number|add:'1' }}">{{ page_obj.number|add:'1' }}</a></li>
-    {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
-    <li><a href="?page={{ page_obj.number|add:'2' }}">{{ page_obj.number|add:'2' }}</a></li>
-    {% endif %}
-    <li><a href="?page=last"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
+        {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
+        <li><a href="?page={{ page_obj.number|add:'2' }}">{{ page_obj.number|add:'2' }}</a></li>
+        {% endif %}
+        <li><a href="?page=last">
+        {% if page_obj.next_page_number != page_obj.paginator.num_pages|add:'-1' and page_obj.next_page_number != page_obj.paginator.num_pages %}
+        {{ page_obj.paginator.num_pages }}
+        {% endif %}
+        <span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
     {% else %}
     <li class="disabled"><a><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
     {% endif %}

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
-{% load mathfilters %}
+{% load cache %}
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
   <li><a href="{% url 'forum:top' %}">Accueil</a></li>
   <li class="active">Recherche : {{ query }}</li>
 </ol><br>
+{% include "pagination.html" %}
 {# Threads #}
 <div class="row">
 {% if not object_list %}
@@ -33,47 +34,51 @@
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
-          {% if user in thread.contributors.all and thread.posts.latest in user.postsReadCaret.all %}
-              <img src="{% static 'img/added.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-          {% elif user in thread.contributors.all %}
-            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
-              <img src="{% static 'img/added+on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
-            </a>
-          {% elif thread.posts.latest in user.postsReadCaret.all %}
-            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+        {% if thread.readCaret %}
+          {% ifequal thread.readCaret 'not_visited'  %}
+            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}">
           {% else %}
-            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}{% for post in user.postsReadCaret.all %}{% ifequal post.thread thread  %}?page={{ post.position|intdiv:post_pagination|add:1 }}#{{ post.pk }}{% endifequal %}{% endfor %}">
-              <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page={{ thread.readCaret.page }}#{{ thread.readCaret.pk }}">
+          {% endifequal %}
+              <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
             </a>
-          {% endif %}
+        {% else %}
+            <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
+        {% endif %}
         </td>
+        {% cache 9999999 thread thread.pk %}
         <td class="vert-align">
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
           {% if thread.isSticky and thread.question %}
-            Annonce/Sondage :
+            Annonce/Sondage : 
           {% elif thread.isSticky %}
             Annonce :
           {% elif thread.question %}
             Sondage :
           {% endif %}
-          <a href="{% url 'forum:category' thread.category.slug %}">{{ thread.category.slug|title }}</a> / 
           <a href="{% url 'forum:thread' thread.category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
         </td>
         <td class="text-center vert-align importantData">
           <small><strong>{{ thread.author }}</strong></small>
         </td>
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
+        {% cache 9999999 thread_post_count thread.pk %}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
+        {% endcache %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        {% endcache %}
+        {# Latest post #}
+        {% cache 9999999 thread_latest_post thread.pk %}
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
-          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page=last#{{ thread.posts.latest.pk }}" class="lastMessage">
+          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
           {{ thread.modified|date:'d/m/y H:i' }}
-          <br><strong>{{ thread.posts.latest.author }}</strong>
+          <br><strong>{{ thread.latest_post.author }}</strong>
           </a>
           </small>
         </td>
+        {% endcache %}
       </tr>
       {% endfor %}
     </tbody>
@@ -121,7 +126,7 @@
           </small>
           <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
           <div class="post-content" style="word-wrap: break-word">
-              {{ post.content_html|safe }}
+              {{ post.html|safe }}
           </div>
           {% if post.modified %}
               <br><br>
@@ -171,23 +176,5 @@
   </div>
 {% endifequal %}
 {# Pagination #}
-<div class="col-md-12 text-center">
-{% if is_paginated %}
-<div class="pagination">
-    <span class="page-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&lt;&lt; </a>
-            <a href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-        {% endif %}
-        <span class="page-current">
-            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">Suivante</a>
-            <a href="?page=last">&gt;&gt;</a>
-        {% endif %}
-    </span>
-</div>
-{% endif %}
-</div>
+{% include "pagination.html" %}
 {% endblock %}

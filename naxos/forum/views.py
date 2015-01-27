@@ -24,40 +24,15 @@ def get_preview(content):
     p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
-
-class PreviewPostMixin(object):
-    def post(self, request, *args, **kwargs):
-        if "preview" in request.POST:
-            return get_preview(request.POST['content_plain'])
-        else:
-            return super().post(request, *args, **kwargs)
-
-
-### Main Forum Views ###
-class TopView(LoginRequiredMixin, ListView):
-    model = Category
+class ThreadStatusMixin(object):
+    "Populate thread status and readCaret where needed"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['readCaret'] = self.request.user.postsReadCaret.all()
-        return context
-
-
-class ThreadView(LoginRequiredMixin, ListView):
-    paginate_by = 30
-
-    def get_queryset(self):
-        "Return threads of the current category ordered by latest post"
-        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return self.c.threads.select_related('author').all()
-
-    def get_context_data(self, **kwargs):
-        
+           
         def get_post_page(post):
             return  post.position // PostView.paginate_by + 1
 
         context = super().get_context_data(**kwargs)
-
         user = self.request.user
         readCaret = cache.get("{:d}/readCaret".format(user.pk))
         if not readCaret:
@@ -92,7 +67,37 @@ class ThreadView(LoginRequiredMixin, ListView):
                 except ObjectDoesNotExist:
                     t.readCaret = "not_visited"
             t.status = 'img/{:s}.png'.format(status)
+        return context
 
+
+class PreviewPostMixin(object):
+    def post(self, request, *args, **kwargs):
+        if "preview" in request.POST:
+            return get_preview(request.POST['content_plain'])
+        else:
+            return super().post(request, *args, **kwargs)
+
+
+### Main Forum Views ###
+class TopView(LoginRequiredMixin, ListView):
+    model = Category
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['readCaret'] = self.request.user.postsReadCaret.all()
+        return context
+
+
+class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
+    paginate_by = 30
+
+    def get_queryset(self):
+        "Return threads of the current category ordered by latest post"
+        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        return self.c.threads.select_related('author').all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context['category'] = self.c
         return context
 
@@ -388,7 +393,8 @@ def VotePoll(request, category_slug, thread_slug):
 
 
 ### Search View ###
-class SearchView(LoginRequiredMixin, ListView):
+class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
+    paginate_by = 30
     template_name = 'forum/search_results.html'
 
     def get_queryset(self):

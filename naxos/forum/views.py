@@ -49,9 +49,7 @@ class ThreadView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return self.c.threads.select_related(
-            'author').prefetch_related(
-            'contributors').all()
+        return self.c.threads.select_related('author').all()
 
     def get_context_data(self, **kwargs):
         
@@ -61,10 +59,15 @@ class ThreadView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         user = self.request.user
-        readCaret = user.postsReadCaret.all()
+        readCaret = cache.get("{:d}/readCaret".format(user.pk))
+        if not readCaret:
+            readCaret = user.postsReadCaret.all()
+            cache.set("{:d}/readCaret".format(user.pk),
+                  readCaret,
+                  None)
         for t in context['object_list']:
             contributors = cache.get("{:d}/contributors".format(t.pk))
-            if not contributors:
+            if not contributors:  # caches thread's contributors
                 contributors = t.contributors.all()
                 cache.set("{:d}/contributors".format(t.pk),
                   contributors,

@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import m2m_changed
 
 from forum.util import keygen
 
 
+### Model classes ###
 class ForumUser(AbstractUser):
 
     """Custom user model"""
@@ -49,3 +51,15 @@ class TokenPool(models.Model):
 
     def __str__(self):
         return self.token
+
+
+### Model signal handlers ###
+def postsReadCaret_changed(sender, **kwargs):
+    """Updates cached data each time a post is added to postsReadCaret"""
+    if action == "post_add":
+        cache.set("{:d}/readCaret".format(instance.pk),
+                  instance.postsReadCaret.all(),
+                  None)
+
+m2m_changed.connect(postsReadCaret_changed,
+    sender=ForumUser.postsReadCaret.through)

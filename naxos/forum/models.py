@@ -13,20 +13,6 @@ SLUG_LENGTH = 50
 DATA_SCHEMA_REVISION = 2
 
 
-### Abstract base class ###
-class CachedModel(models.Model):
-
-    @property
-    def cache_key(self):
-        return 'naxos/{}/item-{}-{}'.format(
-            DATA_SCHEMA_REVISION,
-            self.id,
-            self.modified)
-
-    class Meta:
-        abstract = True
-
-
 ### Basic Forum models ###
 class Category(models.Model):
     """Contains threads."""
@@ -42,7 +28,7 @@ class Category(models.Model):
         return self.slug
 
 
-class Thread(CachedModel):
+class Thread(models.Model):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80, verbose_name='Titre')
@@ -101,7 +87,8 @@ class Post(models.Model):
             self.thread.modified = self.created
             self.thread.latest_post = self
             # latest post has changed, remove template fragment from cache
-            key = make_template_fragment_key('thread_latest_post', [self.pk])
+            key = make_template_fragment_key('thread_latest_post',
+                                             [self.thread.pk])
             cache.delete(key)
         else:  # modified, remove template fragment from cache
             key = make_template_fragment_key('post', [self.pk])

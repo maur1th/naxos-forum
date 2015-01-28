@@ -66,6 +66,10 @@ div.post {
 .fake-link {
     cursor: pointer;
 }
+/* Image alignment in posts */
+.post-content > img {
+    vertical-align:bottom;
+}
 /* Force some links appearance */
 a.lastMessage:link {
     color: #333333;

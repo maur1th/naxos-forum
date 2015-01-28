@@ -34,7 +34,13 @@ function scrollToPosition($textarea, caret) {
 $(document).ready(function() {
   // Ensure presentation is ok on DOM ready().
   $('.equal-divs').responsiveEqualHeightGrid();
-})
+  // Responsive images in posts
+  $('.post-content > img').load(function() {
+      if ($(this).width() > 100) {
+        $(this).addClass("img-responsive");
+      }
+  });
+});
 var x = setInterval(function() {
   // Ensure presentation is ok while media still loading.
   $('.equal-divs').responsiveEqualHeightGrid();
@@ -43,17 +49,9 @@ $(window).load(function() {
   // Stops presentation refresh when everything loaded.
   clearInterval(x);
 });
-// Responsive images in posts
-$(document).ready(function() {
-  $('.post-content > img').addClass(function(){
-    if (this.clientWidth > 100) {
-      return "img-responsive"
-    };
-  });
-})
 // Ensure presentation is ok while spoiler animation is playing.
 $(document).ready(function(){
-  // Give spoiler tags unique ids
+  // Give spoiler tags unique ids and hyperlink adresses
   $("div[id^='spoiler-panel']").attr("id", function(index) {
     return 'spoiler-panel-' + (index+1);
   });

@@ -201,9 +201,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def form_valid(self, form):
         "Handle post creation in the db"
         # Update category and thread
-        self.t.postCount += 1
         self.t.category.postCount += 1
-        self.t.save()
         self.t.category.save()
         # Update remaining form fields
         form.instance.thread = self.t
@@ -285,9 +283,6 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-            # modified, remove template fragment from cache
-            key = make_template_fragment_key('thread', [self.t.pk])
-            cache.delete(key)
         form.instance.modified = datetime.datetime.now()
         return super().form_valid(form)
 

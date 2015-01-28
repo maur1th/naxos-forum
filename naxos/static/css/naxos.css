@@ -83,7 +83,7 @@ p.legend {
     margin: 0;
 }
 /* Search bar tooltip size */
-.tooltip-inner {
+#search-helper .tooltip-inner {
     width: 200px;
     text-align:left;
 }

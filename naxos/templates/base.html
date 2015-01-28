@@ -76,7 +76,8 @@
               </ul>
             </li>
             <li>
-              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21"><span class="glyphicon glyphicon-gift"></span><span class="hidden-sm hidden-md hidden-lg"> amazon.fr</span></a>
+              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" data-toggle="tooltip" data-placement="bottom" title="amazon.fr" class="hidden-xs"><span class="glyphicon glyphicon-gift"></span></a>
+              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" class="visible-xs"><span class="glyphicon glyphicon-gift"></span> amazon.fr</a>
             </li>
             <li>
               <a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
@@ -85,7 +86,7 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="hidden-xs">
+            <li id="search-helper" class="hidden-xs">
               <a href="#" data-toggle="tooltip" data-placement="bottom" title='Par défaut, recherche le titre des sujets. Options :<br>"user:" rechercher un utilisateur<br>"post:" rechercher un post' style="padding:15px 0"><span class="glyphicon glyphicon-info-sign"></span></a>
             </li>
             <form class="navbar-form navbar-left" role="search" action="{% url 'forum:search' %}">

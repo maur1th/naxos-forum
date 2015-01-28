@@ -32,7 +32,7 @@ def fix_json(f):
         return ': ' + json.dumps(match_obj.group(1)) +','
 
     filename = os.path.basename(f)
-    print('Repairing {:s}...'.format(filename), end="\r")
+    print('Repairing {}...'.format(filename), end="\r")
     with open(f) as f:
         lines = f.readlines()
     # Remove comments at the top (illegal in json)
@@ -51,7 +51,7 @@ def fix_json(f):
         new.append(re.sub(r': "([\s|\S]*?)",', clean_invalid_char, item))
     s = "}, {".join(new)
     # Good to go
-    print("Repairing {:s}... done".format(filename))
+    print("Repairing {}... done".format(filename))
     return s
 
 
@@ -66,7 +66,7 @@ def import_users(f):
     n = len(users)
     new_users = {}
     for i, user in enumerate(users):
-        print("Creating users... {:d}/{:d}".format(
+        print("Creating users... {}/{}".format(
             i+1, n), end="\r")
         user['login'] = convert_username(user['login'])
         m = ForumUser.objects.filter(pk=user['userid']).first()
@@ -81,13 +81,13 @@ def import_users(f):
             username=user['login'],
             email=HTMLParser().unescape(user['usermail']),
             date_joined=datetime.fromtimestamp(user['registerdate']),
-            logo="logo/{:s}".format(user['userlogo']),
+            logo="logo/{}".format(user['userlogo']),
             quote=HTMLParser().unescape(str(user['usercitation'])),
             website=HTMLParser().unescape(str(user['usersite'])),
         )
         u.set_password(password)
         u.save()
-    print("Creating users... done{:s}".format(" "*20))
+    print("Creating users... done{}".format(" "*20))
     with open('new_users.json', 'a') as f:
         json.dump(new_users, f)
     # TODO: SEND EMAILS WITH NEW PASSWORDS
@@ -101,7 +101,7 @@ def import_threads(f):
     for thread in Thread.objects.iterator():
         existing_threads[thread.pk] = thread.category_id
     for i, thread in enumerate(threads):
-        print("Creating threads... {:d}/{:d}".format(
+        print("Creating threads... {}/{}".format(
             i+1, len(threads)), end="\r")
         isSticky = True if thread['postit'] == 1 else False
         if thread['idtopic'] in existing_threads: continue
@@ -114,7 +114,7 @@ def import_threads(f):
             viewCount=int(thread['nbvues']),
             isSticky=isSticky,
         )
-    print("Creating threads... done{:s}".format(" "*20))
+    print("Creating threads... done{}".format(" "*20))
 
 
 def import_posts(f):
@@ -138,7 +138,7 @@ def import_posts(f):
             post_counter[category.pk] = 0
         bulk = []
         for i, post in enumerate(posts):
-            print("Preparing posts... {:d}/{:d}".format(
+            print("Preparing posts... {}/{}".format(
                 i+1, len(posts)), end="\r")
             if post['parent'] not in existing_threads: continue
             # increment category post counter
@@ -167,14 +167,14 @@ def import_posts(f):
     threads = Thread.objects.iterator()
     count = Thread.objects.count()
     for i, t in enumerate(threads):
-        print('Updating threads... {:d}/{:d}'.format(
+        print('Updating threads... {}/{}'.format(
             i+1, count), end="\r")
         latest_post = t.posts.latest()
         t.latest_post, t.modified = latest_post, latest_post.created
         for p in t.posts.iterator():
             t.contributors.add(p.author)
         t.save()
-    print("Updating threads... done{:s}".format(" "*20))
+    print("Updating threads... done{}".format(" "*20))
     for key, value in post_counter.items():
         print('Updating post counter...', end="\r")
         c = Category.objects.get(pk=key)
@@ -183,10 +183,19 @@ def import_posts(f):
     print('Updating post counter... done')
 
 
+def delete_inactive_users():
+    count = 0
+    for u in ForumUser.objects.iterator():
+        if not u.posts.exists():
+            u.delete()
+            count += 1
+    print("Deleted {} inactive users".format(count))
+
 
 import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))
 import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
 import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))
+delete_inactive_users()
 
 cursor = connection.cursor()
 cursor.execute('ALTER SEQUENCE user_forumuser_id_seq RESTART WITH {}'.format(

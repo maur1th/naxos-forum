@@ -71,8 +71,10 @@ def import_users(f):
         user['login'] = convert_username(user['login'])
         m = ForumUser.objects.filter(pk=user['userid']).first()
         if m: continue
+        ### TEMPORARY FIX WHILE HOST BLOCKS SMTP ###
         # password = keygen()  # generate password
         password = HTMLParser().unescape(user['usermail'])
+        ### END ###
         new_users[user['login']] = password
         u = ForumUser.objects.create(
             pk=int(user['userid']),
@@ -88,7 +90,7 @@ def import_users(f):
     print("Creating users... done{:s}".format(" "*20))
     with open('new_users.json', 'a') as f:
         json.dump(new_users, f)
-    # TODO: send email with new password
+    # TODO: SEND EMAILS WITH NEW PASSWORDS
 
 
 def import_threads(f):

@@ -7,6 +7,7 @@
   <li><a href="{% url 'forum:top' %}">Accueil</a></li>
   <li class="active">{{ category.title }}</li>
 </ol>
+{% include "ads.html" %}
 {% include "pagination.html" %}
 {# Buttons #}
 <div class="row">
@@ -64,7 +65,7 @@
           <small><strong>{{ thread.author }}</strong></small>
         </td>
         {% cache 9999999 thread_post_count thread.pk %}
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
         {% endcache %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         {# Latest post #}

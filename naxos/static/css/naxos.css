@@ -61,7 +61,7 @@ div.post {
 /* Smiley alignment + appearance */
 .smiley {
     vertical-align:bottom;
-    padding-bottom:4px;
+    padding-bottom:3px;
 }
 .fake-link {
     cursor: pointer;
@@ -69,7 +69,7 @@ div.post {
 /* Image alignment in posts */
 .post-content > img {
     vertical-align:bottom;
-    padding-bottom:4px;
+    padding-bottom:3px;
 }
 /* Force some links appearance */
 a.lastMessage:link {

@@ -43,6 +43,10 @@ $(window).load(function() {
   // Stops presentation refresh when everything loaded.
   clearInterval(x);
 });
+// Responsive images in posts
+$(document).ready(function() {
+  $('.post-content > img').addClass("img-responsive");
+})
 // Ensure presentation is ok while spoiler animation is playing.
 $(document).ready(function(){
   // Give spoiler tags unique ids

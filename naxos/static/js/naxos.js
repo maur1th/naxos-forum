@@ -45,7 +45,11 @@ $(window).load(function() {
 });
 // Responsive images in posts
 $(document).ready(function() {
-  $('.post-content > img').addClass("img-responsive");
+  $('.post-content > img').addClass(function(){
+    if (this.clientWidth > 100) {
+      return "img-responsive"
+    };
+  });
 })
 // Ensure presentation is ok while spoiler animation is playing.
 $(document).ready(function(){

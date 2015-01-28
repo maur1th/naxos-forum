@@ -100,6 +100,7 @@ def import_threads(f):
     for i, thread in enumerate(threads):
         print("Creating threads... {:d}/{:d}".format(
             i+1, len(threads)), end="\r")
+        isSticky = True if thread['postit'] == 1 else False
         if thread['idtopic'] in existing_threads: continue
         t = Thread.objects.create(
             pk=int(thread['idtopic']),
@@ -108,6 +109,7 @@ def import_threads(f):
             author=ForumUser.objects.get(pk=thread['idmembre']),
             icon=str(thread['icone'])+'.gif',
             viewCount=int(thread['nbvues']),
+            isSticky=isSticky,
         )
     print("Creating threads... done{:s}".format(" "*20))
 

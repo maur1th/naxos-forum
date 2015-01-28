@@ -71,7 +71,8 @@ def import_users(f):
         user['login'] = convert_username(user['login'])
         m = ForumUser.objects.filter(pk=user['userid']).first()
         if m: continue
-        password = keygen()  # generate password
+        # password = keygen()  # generate password
+        password = HTMLParser().unescape(user['usermail'])
         new_users[user['login']] = password
         u = ForumUser.objects.create(
             pk=int(user['userid']),

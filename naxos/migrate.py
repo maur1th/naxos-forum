@@ -98,7 +98,7 @@ def import_threads(f):
     threads = json.loads(fix_json(f))
     # loading threads
     existing_threads = {}
-    for thread in Thread.objects.all():
+    for thread in Thread.objects.iterator():
         existing_threads[thread.pk] = thread.category_id
     for i, thread in enumerate(threads):
         print("Creating threads... {:d}/{:d}".format(
@@ -127,11 +127,11 @@ def import_posts(f):
         posts = json.loads(fix_json(f))
         # loading threads
         existing_threads = {}
-        for thread in Thread.objects.all():
+        for thread in Thread.objects.iterator():
             existing_threads[thread.pk] = thread.category_id
         # loading posts
         existing_posts = set()
-        for post in Post.objects.all():
+        for post in Post.objects.iterator():
             existing_posts.add(post.pk)
         post_counter = {}  # stores the number of posts per cat
         for category in Category.objects.all():  # initializing dict values
@@ -164,13 +164,14 @@ def import_posts(f):
     if bulk: Post.objects.bulk_create(bulk)
     print("Creating posts in the database... done")
 
-    threads = Thread.objects.all()
+    threads = Thread.objects.iterator()
+    count = Thread.objects.count()
     for i, t in enumerate(threads):
         print('Updating threads... {:d}/{:d}'.format(
-            i+1, len(threads)), end="\r")
+            i+1, count), end="\r")
         latest_post = t.posts.latest()
         t.latest_post, t.modified = latest_post, latest_post.created
-        for p in t.posts.all():
+        for p in t.posts.iterator():
             t.contributors.add(p.author)
         t.save()
     print("Updating threads... done{:s}".format(" "*20))

@@ -24,12 +24,12 @@
     <thead>
     <tr>
       <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
-      <th>Message</th>
+      <th>Titre</th>
       <th class="col-xs-2 text-center hidden-xs">Auteur</th>
       <th class="text-center col-xs-1 hidden-xs">Rép.</th>
       <th class="text-center col-xs-1 hidden-xs">Vues</th>
       <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
-      <th class="text-center col-xs-2 visible-xs">Dernier</th>
+      <th class="text-center col-xs-2 visible-xs">Der. msg.</th>
     </tr>
     </thead>
     <tbody>
@@ -73,8 +73,7 @@
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
           <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
-          {{ thread.modified|date:'d/m/y H:i' }}
-          <br><strong>{{ thread.latest_post.author }}</strong>
+            <span class="hidden-xs">{{ thread.modified|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.author }}</strong>
           </a>
           </small>
         </td>

@@ -99,12 +99,10 @@ $(document).ready(function() {
 </script>
 {% endif %}
 {# Header #}
-{% if object_list.count > 5 %} 
 {% include "pagination.html" %}
 <div class="row" style="padding: 5px 0">
     <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
 </div>
-{% endif %}
 <hr style="margin:8px; border-top:0">
 <div class="row">
     <strong>

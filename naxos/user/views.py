@@ -47,6 +47,11 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return ForumUser.objects.get(username=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['donate'] = True
+        return context
+
     def get_form_kwargs(self):
         """Pass user to form."""
         kwargs = super().get_form_kwargs()
@@ -67,7 +72,6 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
             p.save()
             obj.delete()
         return super().form_valid(form)
-
 
     def get_success_url(self):
         messages.success(self.request, "Paramètres sauvegardés.")

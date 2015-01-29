@@ -17,7 +17,7 @@
 migration.txt
 secret.txt
 util/data/
-naxos/template/ads/
+naxos/templates/ads/
 naxos/naxos/settings/local.py
 
 ## GitHub .gitignore for Python

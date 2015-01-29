@@ -76,10 +76,6 @@
               </ul>
             </li>
             <li>
-              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" target="_blank" data-toggle="tooltip" data-placement="bottom" title="amazon.fr" class="hidden-xs"><span class="glyphicon glyphicon-gift"></span></a>
-              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" target="_blank" class="visible-xs"><span class="glyphicon glyphicon-gift"></span> amazon.fr</a>
-            </li>
-            <li>
               <a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
             <li>
               <a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope"></span><span class="hidden-sm hidden-md hidden-lg"> Messages privés</span></a>
@@ -98,6 +94,11 @@
                 </span>
               </div>
             </form>
+            {# Sponsored link #}
+            <li>
+              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" target="_blank" data-toggle="tooltip" data-placement="bottom" title="amazon.fr" class="hidden-xs"><span class="glyphicon glyphicon-gift"></span></a>
+              <a href="http://www.amazon.fr/?_encoding=UTF8&tag=geekattitudeo-21" target="_blank" class="visible-xs"><span class="glyphicon glyphicon-gift"></span> amazon.fr</a>
+            </li>
             {# Disconnect for large diplays #}
             <li class="dropdown hidden-xs">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-lock"></span><span class="caret"></span></a>

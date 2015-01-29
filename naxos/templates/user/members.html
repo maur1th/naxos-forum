@@ -31,6 +31,9 @@
                     {% if member.last_login > creation %}
                         <span class="glyphicon glyphicon-ok-circle"></span>
                     {% endif %}
+                    {% if not member.is_active %}
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                    {% endif %}
                 </td>
                 <td class="text-center">
                     {{ member.date_joined|date:'d/m/Y' }}

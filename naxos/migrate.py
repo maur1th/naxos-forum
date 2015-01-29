@@ -18,6 +18,8 @@ from forum.models import Category, Thread, Post
 from forum.util import keygen
 
 
+CUT_OFF_DATE = datetime(2010, 1, 1)
+
 # CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map' ACCORDINGLY
 
 
@@ -184,12 +186,18 @@ def import_posts(f):
 
 
 def delete_inactive_users():
-    count = 0
+    delete_count = 0
+    inactive_count = 0
     for u in ForumUser.objects.iterator():
         if not u.posts.exists():
             u.delete()
-            count += 1
-    print("Deleted {} inactive users".format(count))
+            delete_count += 1
+        elif FIVE_YEARS_FROM_NOW > u.latest_post_date:
+            u.is_active = False
+            u.save()
+            inactive_count += 1
+    print("Deleted {} users which never posted".format(delete_count))
+    print("Deactivated {} users".format(inactive_count))
 
 
 import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cache %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+  <li><a href="{% url 'blog:top' %}">Accueil</a></li>
+</ol>
+{% include "pagination.html" %}
+{% if user.is_authenticated %}
+{# Buttons #}
+<div class="row text-center">
+  <div style="padding: 10px 0">
+    <a href="{% url 'blog:new_post' %}">
+      <button class="btn btn-default">Nouveau Post</button></a>
+  </div>
+</div>
+{% endif %}
+{# Posts #}
+    {% for p in object_list %}
+    <div class="row">
+      <div class="col-sm-10"><hr></div>
+      <div class="col-sm-5 col-sm-offset-2">
+        <h3>{{ p.title }}</h3>
+        <p><em>{{ p.created_at }}</em></p>
+        <p>{{ p.content }}</p>
+        <br />
+      </div>
+      {% if p.image %}
+        <div class="col-sm-3">
+          <img src="{{ media }}{{ p.image }}" class="img-responsive" style="max-height:400px" alt="">
+        </div>        
+      {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{# Footer #}
+{% include "pagination.html" %}
+{% endblock %}

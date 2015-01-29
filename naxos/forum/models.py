@@ -10,8 +10,6 @@ from user.models import ForumUser
 
 SLUG_LENGTH = 50
 
-DATA_SCHEMA_REVISION = 2
-
 
 ### Basic Forum models ###
 class Category(models.Model):

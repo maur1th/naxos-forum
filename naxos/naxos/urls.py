@@ -12,6 +12,7 @@ urlpatterns = patterns(
     url(r'^forum/', include('forum.urls', namespace='forum')),
     url(r'^user/', include('user.urls', namespace='user')),
     url(r'^messages/', include('pm.urls', namespace='pm')),
+    url(r'^blog/', include('blog.urls', namespace='blog')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.MEDIA_ROOT}),
 

@@ -19,6 +19,7 @@ secret.txt
 util/data/
 naxos/templates/ads/
 naxos/naxos/settings/local.py
+naxos/naxos/settings/dev.py
 
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files

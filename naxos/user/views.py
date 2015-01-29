@@ -5,6 +5,7 @@ from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import messages
+from datetime import datetime
 
 from braces.views import LoginRequiredMixin
 
@@ -96,3 +97,8 @@ class MemberList(LoginRequiredMixin, ListView):
         q = ForumUser.objects.extra(
             select={'username_lower': 'lower(username)'})
         return q.order_by('username_lower')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['creation'] = datetime(2015, 1, 28, 15, 5)
+        return context

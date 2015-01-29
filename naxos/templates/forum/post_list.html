@@ -121,7 +121,6 @@ $(document).ready(function() {
 <hr style="margin:1px; border-top:0">
 {# Posts #}
 {% for post in object_list %}
-{% cache 9999999 post post.pk %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
     {# Large display author #}

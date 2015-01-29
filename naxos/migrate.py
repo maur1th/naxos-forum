@@ -192,7 +192,7 @@ def delete_inactive_users():
         if not u.posts.exists():
             u.delete()
             delete_count += 1
-        elif FIVE_YEARS_FROM_NOW > u.latest_post_date:
+        elif CUT_OFF_DATE > u.posts.latest().created:
             u.is_active = False
             u.save()
             inactive_count += 1

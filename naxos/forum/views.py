@@ -411,8 +411,12 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
                              .order_by("-modified", "pk")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['model'] = self.object_list.model._meta.model_name
+        model = self.object_list.model._meta.model_name
+        if model == 'Thread':
+            context = super().get_context_data(**kwargs)
+        else:
+            context = ListView.get_context_data(self, **kwargs)
+        context['model'] = model
         context['query'] = self.query
         context['query_url'] = 'q=' + self.query + '&amp;'
         return context

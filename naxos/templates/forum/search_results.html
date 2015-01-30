@@ -84,6 +84,7 @@
     </tbody>
   </table>
 </div>
+{% include "pagination.html" %}
   {% endifequal %}
   {% ifequal model 'post' %}
         <strong>
@@ -137,11 +138,9 @@
     <hr style="margin:8px; border-top:0">
     {% endfor %}
     <hr style="margin:8px; border-top:0">
+  {% include "pagination.html" %}
   {% endifequal %}
 {% endif %}
-<div class="row" style="padding: 5px 0">
-  <a href="#" onclick="window.history.back();return false;"><button class="btn btn-default pull-left">Retour</button></a>
-</div>
 {% ifequal model 'thread' %} 
   {# Caption #}
   <hr style="margin:8px; border-top:0">
@@ -175,6 +174,4 @@
       </div>
   </div>
 {% endifequal %}
-{# Pagination #}
-{% include "pagination.html" %}
 {% endblock %}

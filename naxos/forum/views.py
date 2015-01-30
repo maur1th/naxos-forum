@@ -393,8 +393,6 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     template_name = 'forum/search_results.html'
 
     def dispatch(self, request, *args, **kwargs):
-        print(request.method)
-        print(request.method == 'POST')
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):

@@ -22,7 +22,7 @@
       <div class="col-sm-10"><hr></div>
       <div class="col-sm-5 col-sm-offset-2">
         <h3>{{ p.title }}</h3>
-        <p><em>{{ p.created_at }}</em></p>
+        <p><em>{{ p.created_at }} par {{ p.author.username }}</em></p>
         <p>{{ p.content }}</p>
         <br />
       </div>
@@ -34,7 +34,6 @@
     </div>
     {% endfor %}
 </div>
-
 {# Footer #}
 {% include "pagination.html" %}
 {% endblock %}

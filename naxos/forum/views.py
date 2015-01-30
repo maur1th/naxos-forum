@@ -392,6 +392,11 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_by = 30
     template_name = 'forum/search_results.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        print(request.method)
+        print(request.method == 'POST')
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         self.query = self.request.GET['q']
         cls = Thread
@@ -411,4 +416,5 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['model'] = self.object_list.model._meta.model_name
         context['query'] = self.query
+        context['query_url'] = 'q=' + self.query + '&amp;'
         return context

@@ -96,13 +96,21 @@ def UpdatePassword(request):
 
 class MemberList(LoginRequiredMixin, ListView):
     template_name = "user/members.html"
+    context_object_name = "active_users"
+
+    def dispatch(self, request, *args, **kwargs):
+        qs = ForumUser.objects.extra(
+            select={'username_lower': 'lower(username)'}).order_by(
+            'username_lower')
+        self.active_users = qs.filter(is_active=True)
+        self.inactive_users = qs.filter(is_active=False)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        q = ForumUser.objects.extra(
-            select={'username_lower': 'lower(username)'})
-        return q.order_by('username_lower')
+        return self.active_users
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['inactive_users'] = self.inactive_users
         context['creation'] = datetime(2015, 1, 28, 15, 5)
         return context

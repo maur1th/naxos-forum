@@ -14,6 +14,7 @@
 </ul>
 {# Content #}
 <div style="padding-top:20px">
+    <h3>Utilisateurs actifs</h3>
     <table class="table table-condensed">
         <thead>
         <tr>
@@ -24,16 +25,52 @@
         </tr>
         </thead>
         <tbody>
-        {% for member in object_list %}
+        {% for member in active_users %}
             <tr>
                 <td>
                     <strong>{{ member }}</strong>
                     {% if member.last_login > creation %}
                         <span class="glyphicon glyphicon-ok-circle" style="color:#d9534f"></span>
                     {% endif %}
-                    {% if not member.is_active %}
-                        <span class="glyphicon glyphicon-ban-circle" style="color:gray"></span>
+                </td>
+                <td class="text-center">
+                    {{ member.date_joined|date:'d/m/Y' }}
+                </td>
+                <td class="text-center">
+                {% if member.emailVisible %}
+                    {{ member.email }}
+                {% endif %}
+                </td>
+                <td class="text-center">
+                {% if member.website %}
+                    <a href="{{ member.website }}"><span class="glyphicon glyphicon-home"></span></a>
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div style="padding-top:20px">
+    <h3>Utilisateurs inactifs</h3>
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th>Pseudonyme</th>
+            <th class="text-center">Enregistré depuis le</th>
+            <th class="text-center">E-mail</th>
+            <th class="text-center">Site web</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for member in inactive_users %}
+            <tr>
+                <td>
+                    <strong>{{ member }}</strong>
+                    {% if member.last_login > creation %}
+                        <span class="glyphicon glyphicon-ok-circle" style="color:#d9534f"></span>
                     {% endif %}
+                    <span class="glyphicon glyphicon-ban-circle" style="color:gray"></span>
                 </td>
                 <td class="text-center">
                     {{ member.date_joined|date:'d/m/Y' }}

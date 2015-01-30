@@ -82,6 +82,9 @@ class Post(models.Model):
         if new_post:  # update thread
             self.thread.modified = self.created
             self.thread.latest_post = self
+            # latest post has changed, update cache
+            cache.set("{:d}/latest_post".format(self.thread.pk),
+                      self, None)
             # latest post has changed, remove template fragment from cache
             key = make_template_fragment_key('thread_latest_post',
                                              [self.thread.pk])
@@ -91,8 +94,7 @@ class Post(models.Model):
             cache.delete(key)
             # caches thread's contributors
             cache.set("{:d}/contributors".format(self.thread.pk),
-                  self.thread.contributors.all(),
-                  None)
+                  self.thread.contributors.all(), None)
         else:  # modified, remove template fragment from cache
             key = make_template_fragment_key('post', [self.pk])
             cache.delete(key)

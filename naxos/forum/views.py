@@ -38,16 +38,20 @@ class ThreadStatusMixin(object):
         if not readCaret:
             readCaret = user.postsReadCaret.all()
             cache.set("{:d}/readCaret".format(user.pk),
-                  readCaret,
-                  None)
+                  readCaret, None)
         for t in context['object_list']:
             contributors = cache.get("{:d}/contributors".format(t.pk))
             if not contributors:  # caches thread's contributors
                 contributors = t.contributors.all()
                 cache.set("{:d}/contributors".format(t.pk),
-                  contributors,
-                  None)
-            uptodate_caret = t.latest_post in readCaret
+                  contributors, None)
+            # Get latest_post from cache or create it
+            latest_post = cache.get("{:d}/latest_post".format(t.pk))
+            if not latest_post:
+                latest_post = t.latest_post
+                cache.set("{:d}/latest_post".format(t.pk),
+                          latest_post, None)
+            uptodate_caret = latest_post in readCaret
             if user in contributors and uptodate_caret:
                 status = "added"
             elif user in contributors:
@@ -94,7 +98,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return self.c.threads.select_related('author').all()
+        return self.c.threads.select_related('author', 'question').all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

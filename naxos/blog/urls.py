@@ -16,7 +16,7 @@ urlpatterns = patterns(
         name='new_post'
     ),
     url(
-        regex=r'^edit=(?P<slug>\w+)$',
+        regex=r'^edit=(?P<slug>[\w|\d|-]+)$',
         view=views.EditPost.as_view(),
         name='edit'
     ),

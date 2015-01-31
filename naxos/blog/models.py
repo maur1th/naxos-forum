@@ -18,13 +18,21 @@ class Post(models.Model):
     slug = models.CharField(max_length=50, unique=True)
 
     def save(self, *args, **kwargs):
+        # Create unique slug
         self.slug = uuslug(self.title,
                            instance=self,
                            max_length=SLUG_LENGTH)
-        if not self.slug:  # Prevent empty strings as slug
+        # Prevent empty strings as slug
+        if not self.slug:
             self.slug = uuslug('sans titre',
                                instance=self,
                                max_length=SLUG_LENGTH)
+        # Delete old image
+        try:
+            this = Post.objects.get(pk=self.pk)
+            if this.image != self.image:
+                this.image.delete()
+        except: pass
         super().save(*args, **kwargs)
 
     @property

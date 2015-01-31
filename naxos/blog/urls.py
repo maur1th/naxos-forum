@@ -15,4 +15,9 @@ urlpatterns = patterns(
         view=views.NewPost.as_view(),
         name='new_post'
     ),
+    url(
+        regex=r'^edit=(?P<slug>\w+)$',
+        view=views.EditPost.as_view(),
+        name='edit'
+    ),
 )

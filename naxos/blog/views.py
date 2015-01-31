@@ -18,3 +18,13 @@ class NewPost(CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class EditPost(UpdateView):
+    model = Post
+    form_class = PostForm
+    success_url = reverse_lazy('blog:top')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)

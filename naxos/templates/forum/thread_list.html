@@ -34,6 +34,7 @@
     <tbody>
       {% for thread in object_list %}
       <tr>
+        {% cache 9999999 thread thread.pk %}
         <td class="text-center vert-align" style="padding:0">
         {% if thread.readCaret %}
           {% ifequal thread.readCaret 'not_visited'  %}
@@ -60,13 +61,18 @@
           {% endif %}
           <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
         </td>
+        {% endcache %}
         <td class="text-center vert-align importantData hidden-xs">
           <small><strong>{{ thread.author }}</strong></small>
         </td>
+        {# Post count #}
         {% cache 9999999 thread_post_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count|add:"-1" }}</small></td>
         {% endcache %}
+        {# View count #}
+        {% cache 9999999 thread_view_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        {% endcache %}
         {# Latest post #}
         {% cache 9999999 thread_latest_post thread.pk %}
         <td class="text-center vert-align importantData" style="line-height:100%">

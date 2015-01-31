@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import messages
 from datetime import datetime
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from braces.views import LoginRequiredMixin
 
@@ -70,6 +72,9 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
             t.author, p.author = self.request.user, self.request.user
             t.save()
             p.save()
+            # Update thread cache to reflect author's change
+            key = make_template_fragment_key('thread', [self.t.pk])
+            cache.delete(key)
             obj.delete()
         return super().form_valid(form)
 

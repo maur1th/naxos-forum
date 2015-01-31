@@ -38,7 +38,7 @@
       }  
       {% endif %}
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="{% static 'js/bootstrap-colorpicker.min.js' %}"></script>  {# http://mjolnic.github.io/bootstrap-colorpicker/ #}
     <script src="{% static 'js/naxos.js' %}"></script>
@@ -79,6 +79,10 @@
               <a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
             <li>
               <a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope"></span><span class="hidden-sm hidden-md hidden-lg"> Messages privés</span></a>
+            </li>
+            <li>
+              <a href="{% url 'blog:top' %}" data-toggle="tooltip" data-placement="bottom" title="Blog" class="hidden-xs"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="{% url 'blog:top' %}" class="visible-xs"><span class="glyphicon glyphicon-pencil"></span> Blog</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

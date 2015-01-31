@@ -19,8 +19,11 @@ class PostForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Enregistrer'))
 
     def clean_image(self, *args, **kwargs):
-        # Resize image if needed
+        # Get image from form, return if no image was provided
         form_img = self.cleaned_data['image']
+        if type(form_img) is not InMemoryUploadedFile:
+            return form_img
+        # Resize image if needed
         image = Image.open(form_img)
         image.thumbnail(IMAGE_SIZE)
         # Create a file-like object to write thumb data

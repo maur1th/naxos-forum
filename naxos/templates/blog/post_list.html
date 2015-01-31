@@ -25,7 +25,7 @@
       </div>
       <div class="col-md-8 col-md-offset-2">
         {% if p.image %}
-          <img src="{{ media }}{{ p.image }}" class="img-responsive">
+          <img src="{{ media }}{{ p.image }}" class="img-responsive" style="max-height:450px">
         {% endif %}
         <p>{{ p.html|safe }}</p>
       </div>

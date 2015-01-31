@@ -34,7 +34,6 @@
     <tbody>
       {% for thread in object_list %}
       <tr>
-        {% cache 9999999 thread thread.pk %}
         <td class="text-center vert-align" style="padding:0">
         {% if thread.readCaret %}
           {% ifequal thread.readCaret 'not_visited'  %}
@@ -48,6 +47,7 @@
             <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% endif %}
         </td>
+        {% cache 9999999 thread thread.pk %}
         <td class="vert-align">
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">

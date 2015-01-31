@@ -18,8 +18,7 @@
       <a href="{% url 'pm:new_conv' %}"><button class="btn btn-default">Nouveau</button></a>
     </div>
     <div class="col-xs-6">
-      <form method="post" action="{% url 'pm:search' %}">
-      {% csrf_token %}
+      <form method="get" action="{% url 'pm:search' %}">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Rechercher une conversation" name="query">
           <span class="input-group-btn">

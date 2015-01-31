@@ -7,8 +7,8 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'naxos',
-        'USER': 'tom',
+        'NAME': 'naxosdb',
+        'USER': 'tm',
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',

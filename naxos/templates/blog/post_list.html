@@ -19,18 +19,16 @@
 {# Posts #}
     {% for p in object_list %}
     <div class="row">
-      <div class="col-sm-10"><hr></div>
-      <div class="col-sm-5 col-sm-offset-2">
-        <h3>{{ p.title }}</h3>
+      <div class="col-md-8 col-md-offset-2 page-header">
+        <h1>{{ p.title }}</h1>
         <p><em>Le {{ p.created_at|date:'d F Y à H:i' }}, par {{ p.author.username }}{% if p.author == user %} – <a href="{% url 'blog:edit' p.slug %}">Modifier</a>{% endif %}</em></p>
-        <p>{{ p.content }}</p>
-        <br />
       </div>
-      {% if p.image %}
-        <div class="col-sm-3">
-          <img src="{{ media }}{{ p.image }}" class="img-responsive" style="max-height:400px" alt="">
-        </div>        
-      {% endif %}
+      <div class="col-md-8 col-md-offset-2">
+        {% if p.image %}
+          <img src="{{ media }}{{ p.image }}" class="img-responsive">
+        {% endif %}
+        <p>{{ p.html|safe }}</p>
+      </div>
     </div>
     {% endfor %}
 </div>

@@ -1,5 +1,7 @@
 from django.db import models
+
 from uuslug import uuslug
+from markdown import markdown
 
 from user.models import ForumUser
 
@@ -24,6 +26,10 @@ class Post(models.Model):
                                instance=self,
                                max_length=SLUG_LENGTH)
         super().save(*args, **kwargs)
+
+    @property
+    def html(self):
+      return markdown(self.content, safe_mode='escape')
 
     def __str__(self):
         return self.title

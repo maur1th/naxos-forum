@@ -39,6 +39,15 @@ class ForumUser(AbstractUser):
     class Meta:
         ordering = ["pk"]
 
+    def save(self, *args, **kwargs):
+        # Delete old logo
+        try:
+            this = ForumUser.objects.get(pk=self.pk)
+            if this.logo != self.logo:
+                this.logo.delete()
+        except: pass
+        super().save(*args, **kwargs)
+
 
 class TokenPool(models.Model):
     token = models.CharField(unique=True, max_length=50)

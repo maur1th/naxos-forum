@@ -61,9 +61,6 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        # Take care of deleting logo on the server if modified
-        if form.cleaned_data.get('logo') != self.request.user.logo:
-            self.request.user.logo.delete()
         # Change thread owner if a token has been entered
         token = form.cleaned_data.get('token')
         if token:
@@ -75,7 +72,7 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
             # Update thread cache to reflect author's change
             key = make_template_fragment_key('thread', [self.t.pk])
             cache.delete(key)
-            obj.delete()
+            obj.delete()  # Delete cession token
         return super().form_valid(form)
 
     def get_success_url(self):

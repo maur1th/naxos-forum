@@ -7,7 +7,7 @@ from .forms import PostForm
 
 class TopView(ListView):
     model = Post
-    pagination = 5
+    paginate_by = 5
 
 
 class NewPost(CreateView):

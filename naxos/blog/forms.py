@@ -27,8 +27,8 @@ class PostForm(forms.ModelForm):
         image_io = BytesIO()
         image.save(image_io, format='JPEG')
         # Create a new Django file-like object to be used as ImageField
-        image = InMemoryUploadedFile(image_io, form_img.field_name,
-            form_img.name, 'image/jpeg', len(image_io.getvalue()), None)
+        image = InMemoryUploadedFile(image_io, None, form_img.name,
+            'image/jpeg', len(image_io.getvalue()), None)
         return image
 
     class Meta:

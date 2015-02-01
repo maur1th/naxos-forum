@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from datetime import datetime
 from uuslug import uuslug
@@ -102,9 +104,13 @@ class Post(models.Model):
 
     @property
     def html(self):
-        content_html = convert_text_to_html(self.content_plain, self.markup)
-        content_html = smilify(content_html)
-        return content_html
+        html = cache.get('post/{}/html'.format(post.pk))
+        if not html:
+            html = convert_text_to_html(
+                self.content_plain, self.markup)
+            html = smilify(html)
+            cache.set('post/{}/html'.format(post.pk), html, None)
+        return html
     
     @property
     def position(self):
@@ -169,3 +175,14 @@ class PollChoice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+
+### Model signal handlers ###
+@receiver(post_save, sender=Post)
+def update_post_cache(sender, instance, **kwargs):
+    """Updates cached data when a post is saved"""
+    html = convert_text_to_html(instance.content_plain, instance.markup)
+    html = smilify(html)
+    cache.set("post/{}/html".format(instance.pk),
+              html,
+              None)

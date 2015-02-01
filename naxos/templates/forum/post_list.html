@@ -2,7 +2,6 @@
 {% block title %}{{ thread.category.slug|upper }} - {{ thread.title|capfirst }}{% endblock title %}
 {% block content %}
 {% load static %}
-{% load cache %}
 {% with thread.category as category %}
 {% with thread.question as question %}
 {# Path #}
@@ -147,7 +146,6 @@ $(document).ready(function() {
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
         </small>
         <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
-        {% cache 9999999 post post.pk %}
         <div class="post-content" style="word-wrap: break-word">
             {{ post.html|safe }}
         </div>
@@ -155,7 +153,6 @@ $(document).ready(function() {
             <br><br>
             <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
         {% endif %}
-        {% endcache %}
     </div>
 </div>
 <hr style="margin:8px; border-top:0">

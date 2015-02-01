@@ -57,6 +57,7 @@ class Thread(CachedAuthorModel):
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
+    modified = models.DateTimeField(default=datetime.now)
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
@@ -111,6 +112,9 @@ class Post(CachedAuthorModel):
     def save(self, *args, **kwargs):
         new_post = True if self.pk is None else False
         self.thread.contributors.add(self.author)
+        if self.pk is None:
+            self.thread.modified = self.created
+            self.thread.save()
         super().save(*args, **kwargs)
         if new_post:  # update thread
             # latest post has changed, remove template fragment from cache

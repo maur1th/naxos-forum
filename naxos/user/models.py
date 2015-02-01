@@ -69,13 +69,10 @@ class TokenPool(models.Model):
 def update_user_cache(instance, **kwargs):
     cache.set('user/{}'.format(instance.pk), instance, None)
 
-
+@receiver(m2m_changed, sender=ForumUser.postsReadCaret.through)
 def postsReadCaret_changed(sender, action, instance, **kwargs):
     """Updates cached data each time a post is added to postsReadCaret"""
     if action == "post_add":
         cache.set("user/{}/readCaret".format(instance.pk),
                   instance.postsReadCaret.all(),
                   None)
-
-m2m_changed.connect(postsReadCaret_changed,
-    sender=ForumUser.postsReadCaret.through)

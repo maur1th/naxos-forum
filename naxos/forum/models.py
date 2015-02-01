@@ -81,14 +81,6 @@ class Thread(CachedAuthorModel):
                 'thread/{}/latest_post'.format(self.pk), latest_post, None)
         return latest_post
 
-    @property
-    def modified(self):
-        modified = cache.get('thread/{}/modified'.format(self.pk))
-        if not modified:
-            modified = self.posts.latest().created
-            cache.set('thread/{}/modified'.format(self.pk), modified, None)
-        return modified
-
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']

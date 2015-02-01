@@ -41,7 +41,7 @@
                         <a href="{% url 'forum:thread' category.slug latest_thread.slug %}?page=last#{{ latest_thread.latest_post.pk }}" class="lastMessage">
                         <span class="hidden-xs">{{ latest_thread.modified|date:'d/m/y H:i' }}<br></span>
                         <span class="visible-xs">{{ latest_thread.modified|date:'d/m H:i' }}</span>
-                        <strong>{{ latest_thread.latest_post.author }}</strong>
+                        <strong>{{ latest_thread.latest_post.cached_author }}</strong>
                         </a>
                         </small>
                     {% endif %}

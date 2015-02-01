@@ -108,7 +108,6 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
 class PostView(LoginRequiredMixin, ListView):
     paginate_by = 30
-    model = Post
 
     def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
@@ -131,6 +130,10 @@ class PostView(LoginRequiredMixin, ListView):
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
         return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        "Return list of posts given thread and category slugs"
+        return self.t.posts.all()
 
     def get_context_data(self, **kwargs):
         "Pass thread from url to context"

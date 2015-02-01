@@ -101,12 +101,11 @@ class Post(models.Model):
 
     @property
     def html(self):
-        html = cache.get('post/{}/html'.format(post.pk))
+        html = cache.get('post/{}/html'.format(self.pk))
         if not html:
-            html = convert_text_to_html(
-                self.content_plain, self.markup)
+            html = convert_text_to_html(self.content_plain, self.markup)
             html = smilify(html)
-            cache.set('post/{}/html'.format(post.pk), html, None)
+            cache.set('post/{}/html'.format(self.pk), html, None)
         return html
     
     @property

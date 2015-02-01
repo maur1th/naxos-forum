@@ -34,22 +34,22 @@ class ThreadStatusMixin(object):
 
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        readCaret = cache.get("{:d}/readCaret".format(user.pk))
+        readCaret = cache.get("{}/readCaret".format(user.pk))
         if not readCaret:
             readCaret = user.postsReadCaret.all()
-            cache.set("{:d}/readCaret".format(user.pk),
+            cache.set("{}/readCaret".format(user.pk),
                   readCaret, None)
         for t in context['object_list']:
             contributors = cache.get("{:d}/contributors".format(t.pk))
             if not contributors:  # caches thread's contributors
                 contributors = t.contributors.all()
-                cache.set("{:d}/contributors".format(t.pk),
+                cache.set("{}/contributors".format(t.pk),
                   contributors, None)
             # Get latest_post from cache or create it
-            latest_post = cache.get("{:d}/latest_post".format(t.pk))
+            latest_post = cache.get("{}/latest_post".format(t.pk))
             if not latest_post:
                 latest_post = t.latest_post
-                cache.set("{:d}/latest_post".format(t.pk),
+                cache.set("{}/latest_post".format(t.pk),
                           latest_post, None)
             uptodate_caret = latest_post in readCaret
             if user in contributors and uptodate_caret:
@@ -70,7 +70,7 @@ class ThreadStatusMixin(object):
                     t.readCaret.page = get_post_page(t.readCaret)
                 except ObjectDoesNotExist:
                     t.readCaret = "not_visited"
-            t.status = 'img/{:s}.png'.format(status)
+            t.status = 'img/{}.png'.format(status)
         return context
 
 

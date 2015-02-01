@@ -125,22 +125,22 @@ $(document).ready(function() {
     {# Large display author #}
     <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
         <p style="word-wrap: break-word">
-            <strong>{{ post.author }}</strong><br>
-            {% if post.author.quote %}
-                <small>{{ post.author.quote }}</small>
+            <strong>{{ post.cached_author }}</strong><br>
+            {% if post.cached_author.quote %}
+                <small>{{ post.cached_author.quote }}</small>
             {% endif %}
         </p>
-        {% if post.author.logo %}
-            <p><img src="{{ media }}{{ post.author.logo }}" alt=""></p>
+        {% if post.cached_author.logo %}
+            <p><img src="{{ media }}{{ post.cached_author.logo }}" alt=""></p>
         {% endif %}
-        <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
+        <p style="font-size:10px">depuis le {{ post.cached_author.date_joined|date:'d/m/Y' }}</p>
     </div>
     {# Content #}
     <div class="col-sm-10 post equal-divs">
-        <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.author }}</strong> | </span>
+        <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.cached_author }}</strong> | </span>
         <small>
             Posté le {{ post.created|date:"d/m/y à H:i:s" }}
-            {% ifequal post.author user %}
+            {% ifequal post.cached_author user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
             {% endifequal %}
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>

@@ -13,6 +13,22 @@ from user.models import ForumUser
 SLUG_LENGTH = 50
 
 
+### Abstract models ###
+class CachedAuthorModel(models.Model):
+    """Gets author from cache else from db and create cache"""
+
+    @property
+    def cached_author(self):
+        author = cache.get('user/{}'.format(self.author_id))
+        if not author:
+            author = ForumUser.objects.get(pk=self.author_id)
+            cache.set('user/{}'.format(self.author_id), author, None)
+        return author
+
+    class Meta:
+        abstract = True
+
+
 ### Basic Forum models ###
 class Category(models.Model):
     """Contains threads."""
@@ -28,7 +44,7 @@ class Category(models.Model):
         return self.slug
 
 
-class Thread(models.Model):
+class Thread(CachedAuthorModel):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=80, verbose_name='Titre')
@@ -67,7 +83,7 @@ class Thread(models.Model):
         return "{:s}/{:s}".format(self.category.slug, self.slug)
 
 
-class Post(models.Model):
+class Post(CachedAuthorModel):
     """A post."""
     created = models.DateTimeField(default=datetime.now,
                                    editable=False)

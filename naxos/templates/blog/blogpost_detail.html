@@ -12,7 +12,7 @@
     <div class="row">
       <div class="col-md-8 col-md-offset-2 page-header">
         <h1>{{ p.title|capfirst }}</h1>
-        <p><em>Le {{ p.created_at|date:'d F Y à H:i' }}, par {{ p.author.username }} <a href="{% url 'blog:post' p.pk %}"><small><span class="glyphicon glyphicon-link"></span></small></a>{% if p.author == user %} – <a href="{% url 'blog:edit' p.slug %}">Modifier</a>{% endif %}</em></p>
+        <p><em>Le {{ p.created_at|date:'d F Y à H:i' }}, par {{ p.author.username }}{% if p.author == user %} – <a href="{% url 'blog:edit' p.slug %}">Modifier</a>{% endif %}</em></p>
       </div>
       <div class="col-md-8 col-md-offset-2">
         {% if p.image %}

@@ -152,11 +152,6 @@ class Preview(models.Model):
         html = smilify(html)
         return html
 
-    def save(self, *args, **kwargs):
-        self.content_html = convert_text_to_html(self.content_plain)
-        self.content_html = smilify(self.content_html)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return "{:d}".format(self.pk)
 

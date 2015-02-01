@@ -5,10 +5,7 @@ from django.db.models import Q
 import re
 import os
 import postmarkup
-# try:
-#     import markdown
-# except ImportError:
-#     pass
+import markdown
 
 from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
 
@@ -179,8 +176,8 @@ def convert_text_to_html(text, markup='bbcode'):
     if markup == 'bbcode':
         text = rm_legacy_tags(text)
         text = render_bbcode(text)
-    # elif markup == 'markdown':
-    #     text = markdown.markdown(text, safe_mode='escape')
+    elif markup == 'markdown':
+        text = markdown.markdown(text, safe_mode='escape')
     text = urlize(text)
     return text
 

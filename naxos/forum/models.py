@@ -102,7 +102,7 @@ class Post(models.Model):
 
     @property
     def html(self):
-        content_html = convert_text_to_html(self.content_plain)
+        content_html = convert_text_to_html(self.content_plain, self.markup)
         content_html = smilify(content_html)
         return content_html
     

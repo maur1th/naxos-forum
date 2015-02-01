@@ -7,15 +7,23 @@ from uuslug import uuslug
 from socket import gethostname
 
 from forum.util import convert_text_to_html
-from forum.models import Category, Thread, Post
+from forum.models import Category, Thread, Post, SLUG_LENGTH
 from user.models import ForumUser
 
-SLUG_LENGTH = 50
+def import_from(module, name):
+    module = __import__(module, fromlist=[name])
+    return getattr(module, name)
+
+try:
+    from os.environ import get
+    SITE_URL = import_from(get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
+except:
+    SITE_URL = ''
 
 
 class BlogPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100, verbose_name='Titre')
+    title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='blogposts')
     content = models.TextField(verbose_name='Message')
     image = models.ImageField(upload_to="images", blank=True, null=True)
@@ -63,10 +71,10 @@ def new_post_pre_save(instance, **kwargs):
     t = Thread.objects.create(title=title,
                               author=instance.author,
                               category=c)
+    url = SITE_URL + reverse('blog:top')
     Post.objects.create(author=instance.author,
                         thread=t,
-                        content_plain="[url={}]Billet[/url]".format(
-                            gethostname() + reverse('blog:top')))
+                        content_plain="[url={}]Billet[/url]".format(url))
     instance.forum_thread = t
 
 

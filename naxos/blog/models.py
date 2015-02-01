@@ -72,10 +72,6 @@ def new_post_pre_save(instance, **kwargs):
     t = Thread.objects.create(title=title,
                               author=instance.author,
                               category=c)
-    url = SITE_URL + reverse('blog:top')
-    Post.objects.create(author=instance.author,
-                        thread=t,
-                        content_plain="[url={}]Billet[/url]".format(url))
     instance.forum_thread = t
 
 
@@ -86,3 +82,7 @@ def new_post_post_save(instance, created, **kwargs):
     title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
     instance.forum_thread.title = title
     instance.forum_thread.save()
+    url = SITE_URL + reverse('blog:post', args=[instance.pk])
+    Post.objects.create(author=instance.author,
+                        thread=instance.forum_thread,
+                        content_plain="[url={}]Billet[/url]".format(url))

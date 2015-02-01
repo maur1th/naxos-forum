@@ -11,6 +11,11 @@ urlpatterns = patterns(
         name='top'
     ),
     url(
+        regex=r'^(?P<pk>\d+)$',
+        view=views.PostView.as_view(),
+        name='post'
+    ),
+    url(
         regex=r'^\+$',
         view=views.NewPost.as_view(),
         name='new_post'

@@ -10,6 +10,11 @@ class TopView(ListView):
     paginate_by = 5
 
 
+class PostView(DetailView):
+    model = BlogPost
+    context_object_name = 'p'
+
+
 class NewPost(CreateView):
     model = BlogPost
     form_class = PostForm

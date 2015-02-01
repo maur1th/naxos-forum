@@ -5,20 +5,10 @@
 {% block content %}
 {# Path #}
 <ol class="breadcrumb">
-  <li class="active">Accueil</a></li>
+  <li><a href="{% url 'blog:top' %}">Accueil</a></li>
+  <li class="active">{{ p.title }}</a></li>
 </ol>
-{# Buttons #}
-{% if user.is_authenticated %}
-<div class="row text-center">
-  <div style="padding: 10px 0">
-    <a href="{% url 'blog:new_post' %}">
-      <button class="btn btn-default">Nouveau billet</button></a>
-  </div>
-</div>
-{% endif %}
-{% include "pagination.html" %}
 {# Posts #}
-    {% for p in object_list %}
     <div class="row">
       <div class="col-md-8 col-md-offset-2 page-header">
         <h1>{{ p.title|capfirst }}</h1>
@@ -34,8 +24,5 @@
         {% endif %}
       </div>
     </div>
-    {% endfor %}
 </div>
-{# Footer #}
-{% include "pagination.html" %}
 {% endblock %}

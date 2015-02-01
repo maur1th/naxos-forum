@@ -205,6 +205,4 @@ def update_post_cache(created, instance, **kwargs):
                   instance.thread.contributors.all(), None)
         cache.set('thread/{}/post_count'.format(instance.thread.pk),
                   instance.thread.posts.count(), None)
-        cache.set('thread/{}/latest_post'.format(instance.pk),
-                  instance.posts.latest(),
-                  None)
+        cache.set('thread/{}/latest_post'.format(instance.pk), instance, None)

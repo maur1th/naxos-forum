@@ -195,7 +195,7 @@ class PollChoice(models.Model):
 ### Model signal handlers ###
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):
-    """Updates cached data when a post is saved"""
+    """Update cached data when a post is saved"""
     html = convert_text_to_html(instance.content_plain, instance.markup)
     html = smilify(html)
     cache.set("post/{}/html".format(instance.pk), html, None)

@@ -64,7 +64,7 @@
         </td>
         {% endcache %}
         <td class="text-center vert-align importantData hidden-xs">
-          <small><strong>{{ thread.author }}</strong></small>
+          <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}
         {% cache 9999999 thread_post_count thread.pk %}
@@ -79,7 +79,7 @@
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
           <a href="{% url 'forum:thread' category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
-            <span class="hidden-xs">{{ thread.modified|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.author }}</strong>
+            <span class="hidden-xs">{{ thread.modified|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.cached_author }}</strong>
           </a>
           </small>
         </td>

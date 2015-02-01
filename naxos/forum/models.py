@@ -144,7 +144,13 @@ class Post(CachedAuthorModel):
 class Preview(models.Model):
     """Contains post previews. Should be empty."""
     content_plain = models.TextField()
-    content_html = models.TextField()
+    markup = models.TextField(default='bbcode')
+
+    @property
+    def html(self):
+        html = convert_text_to_html(self.content_plain, self.markup)
+        html = smilify(html)
+        return html
 
     def save(self, *args, **kwargs):
         self.content_html = convert_text_to_html(self.content_plain)

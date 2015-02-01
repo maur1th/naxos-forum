@@ -85,4 +85,5 @@ def new_post_post_save(instance, created, **kwargs):
     url = SITE_URL + reverse('blog:post', args=[instance.pk])
     Post.objects.create(author=instance.author,
                         thread=instance.forum_thread,
-                        content_plain="[url={}]Billet[/url]".format(url))
+                        content_plain="[url={}]Lien permanent[/url]"\
+                            .format(url))

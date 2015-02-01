@@ -132,10 +132,6 @@ class PostView(LoginRequiredMixin, ListView):
             self.request.user.postsReadCaret.add(p)
         return super().dispatch(request, *args, **kwargs)
 
-    # def get_queryset(self):
-    #     "Return list of posts given thread and category slugs"
-    #     return self.t.posts.all()
-
     def get_context_data(self, **kwargs):
         "Pass thread from url to context"
         context = super().get_context_data(**kwargs)

@@ -67,7 +67,7 @@ class TokenPool(models.Model):
 def postsReadCaret_changed(sender, action, instance, **kwargs):
     """Updates cached data each time a post is added to postsReadCaret"""
     if action == "post_add":
-        cache.set("{:d}/readCaret".format(instance.pk),
+        cache.set("user/{}/readCaret".format(instance.pk),
                   instance.postsReadCaret.all(),
                   None)
 

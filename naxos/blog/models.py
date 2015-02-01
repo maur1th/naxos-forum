@@ -1,8 +1,8 @@
 from django.db import models
 
 from uuslug import uuslug
-from markdown import markdown
 
+from forum.util import convert_text_to_html
 from user.models import ForumUser
 
 SLUG_LENGTH = 50
@@ -10,9 +10,9 @@ SLUG_LENGTH = 50
 
 class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='blogposts')
-    content = models.TextField()
+    content = models.TextField(verbose_name='Message')
     image = models.ImageField(upload_to="images", blank=True, null=True)
     views = models.IntegerField(default=0)
     slug = models.CharField(max_length=50, unique=True)
@@ -37,7 +37,7 @@ class Post(models.Model):
 
     @property
     def html(self):
-      return markdown(self.content, safe_mode='escape')
+      return convert_text_to_html(self.content, 'markdown')
 
     def __str__(self):
         return self.title

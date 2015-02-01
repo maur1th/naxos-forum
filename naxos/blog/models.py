@@ -1,21 +1,28 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
+from django.core.urlresolvers import reverse
 
 from uuslug import uuslug
+from socket import gethostname
 
 from forum.util import convert_text_to_html
+from forum.models import Category, Thread, Post
 from user.models import ForumUser
 
 SLUG_LENGTH = 50
 
 
-class Post(models.Model):
+class BlogPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='blogposts')
     content = models.TextField(verbose_name='Message')
     image = models.ImageField(upload_to="images", blank=True, null=True)
     views = models.IntegerField(default=0)
-    slug = models.CharField(max_length=50, unique=True)
+    slug = models.CharField(max_length=SLUG_LENGTH, unique=True)
+    forum_thread = models.OneToOneField(
+        Thread, null=True, related_name='blog_post')
 
     def save(self, *args, **kwargs):
         # Create unique slug
@@ -29,7 +36,7 @@ class Post(models.Model):
                                max_length=SLUG_LENGTH)
         # Delete old image
         try:
-            this = Post.objects.get(pk=self.pk)
+            this = BlogPost.objects.get(pk=self.pk)
             if this.image != self.image:
                 this.image.delete()
         except: pass
@@ -44,3 +51,29 @@ class Post(models.Model):
 
     class Meta:
       ordering = ['-pk']
+
+
+## Model signal handlers ###
+@receiver(pre_save, sender=BlogPost)
+def new_post_pre_save(instance, **kwargs):
+    """Create related thread and post"""
+    if instance.pk: return
+    c = Category.objects.get(slug='jep')
+    title = "empty"  # For now, need post pk first
+    t = Thread.objects.create(title=title,
+                              author=instance.author,
+                              category=c)
+    Post.objects.create(author=instance.author,
+                        thread=t,
+                        content_plain="[url={}]Billet[/url]".format(
+                            gethostname() + reverse('blog:top')))
+    instance.forum_thread = t
+
+
+@receiver(post_save, sender=BlogPost)
+def new_post_post_save(instance, created, **kwargs):
+    """Update related thread's title"""
+    if not created: return
+    title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
+    instance.forum_thread.title = title
+    instance.forum_thread.save()

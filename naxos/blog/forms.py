@@ -6,7 +6,7 @@ from crispy_forms.layout import Submit
 from PIL import Image
 from io import BytesIO
 
-from .models import Post
+from .models import BlogPost
 
 
 IMAGE_SIZE = 800, 450
@@ -35,5 +35,5 @@ class PostForm(forms.ModelForm):
         return image
 
     class Meta:
-        model = Post
+        model = BlogPost
         fields = ['title', 'content', 'image']

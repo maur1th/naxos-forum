@@ -1,17 +1,17 @@
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.core.urlresolvers import reverse_lazy
 
-from .models import Post
+from .models import BlogPost
 from .forms import PostForm
 
 
 class TopView(ListView):
-    model = Post
+    model = BlogPost
     paginate_by = 5
 
 
 class NewPost(CreateView):
-    model = Post
+    model = BlogPost
     form_class = PostForm
     success_url = reverse_lazy('blog:top')
 
@@ -21,7 +21,7 @@ class NewPost(CreateView):
 
 
 class EditPost(UpdateView):
-    model = Post
+    model = BlogPost
     form_class = PostForm
     success_url = reverse_lazy('blog:top')
 

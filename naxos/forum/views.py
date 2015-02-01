@@ -109,7 +109,8 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 class PostView(LoginRequiredMixin, ListView):
     paginate_by = 30
 
-    def dispatch(self, request, *args, **kwargs):
+    def get_queryset(self):
+        "Return list of posts given thread and category slugs"
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
@@ -129,10 +130,6 @@ class PostView(LoginRequiredMixin, ListView):
         if caret != p:
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        "Return list of posts given thread and category slugs"
         return self.t.posts.all()
 
     def get_context_data(self, **kwargs):

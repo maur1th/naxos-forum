@@ -15,8 +15,9 @@ def import_from(module, name):
     return getattr(module, name)
 
 try:
-    from os.environ import get
-    SITE_URL = import_from(get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
+    import os
+    SITE_URL = import_from(
+        os.environ.get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
 except:
     SITE_URL = ''
 

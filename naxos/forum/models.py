@@ -97,9 +97,6 @@ class Post(models.Model):
             # caches thread's contributors
             cache.set("thread/{}/contributors".format(self.thread.pk),
                   self.thread.contributors.all(), None)
-        else:  # modified, remove template fragment from cache
-            key = make_template_fragment_key('post', [self.pk])
-            cache.delete(key)
         self.thread.save()
 
     @property

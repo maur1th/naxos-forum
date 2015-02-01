@@ -50,7 +50,6 @@ class Thread(CachedAuthorModel):
     title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='threads')
     contributors = models.ManyToManyField(ForumUser)
-    modified = models.DateTimeField(default=datetime.now)
     category = models.ForeignKey(Category, related_name='threads')
     icon = models.CharField(
         max_length=80, default="icon1.gif", verbose_name='Icône')
@@ -58,7 +57,6 @@ class Thread(CachedAuthorModel):
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
-    latest_post = models.ForeignKey('Post', related_name='+', null=True)
 
     def save(self, *args, **kwargs):
         """Custom save to create a slug from title"""
@@ -73,6 +71,23 @@ class Thread(CachedAuthorModel):
                                max_length=SLUG_LENGTH)
         super().save(*args, **kwargs)
 
+    @property
+    def latest_post(self):
+        latest_post = cache.get('thread/{}/latest_post'.format(self.pk))
+        if not latest_post:
+            latest_post = self.posts.latest()
+            cache.set(
+                'thread/{}/latest_post'.format(self.pk), latest_post, None)
+        return latest_post
+
+    @property
+    def modified(self):
+        modified = cache.get('thread/{}/modified'.format(self.pk))
+        if not modified:
+            modified = self.posts.latest().created
+            cache.set('thread/{}/modified'.format(self.pk), modified, None)
+        return modified
+
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']
@@ -80,7 +95,7 @@ class Thread(CachedAuthorModel):
         get_latest_by = "modified"
 
     def __str__(self):
-        return "{:s}/{:s}".format(self.category.slug, self.slug)
+        return "{}/{}".format(self.category.slug, self.slug)
 
 
 class Post(CachedAuthorModel):
@@ -98,11 +113,6 @@ class Post(CachedAuthorModel):
         self.thread.contributors.add(self.author)
         super().save(*args, **kwargs)
         if new_post:  # update thread
-            self.thread.modified = self.created
-            self.thread.latest_post = self
-            # latest post has changed, update cache
-            cache.set("thread/{}/latest_post".format(self.thread.pk),
-                      self, None)
             # latest post has changed, remove template fragment from cache
             key = make_template_fragment_key('thread_latest_post',
                                              [self.thread.pk])
@@ -113,7 +123,6 @@ class Post(CachedAuthorModel):
             # caches thread's contributors
             cache.set("thread/{}/contributors".format(self.thread.pk),
                   self.thread.contributors.all(), None)
-        self.thread.save()
 
     @property
     def html(self):
@@ -191,10 +200,12 @@ class PollChoice(models.Model):
 
 ### Model signal handlers ###
 @receiver(post_save, sender=Post)
-def update_post_cache(sender, instance, **kwargs):
+def update_post_cache(created, instance, **kwargs):
     """Updates cached data when a post is saved"""
     html = convert_text_to_html(instance.content_plain, instance.markup)
     html = smilify(html)
     cache.set("post/{}/html".format(instance.pk),
               html,
               None)
+    if created:
+        pass

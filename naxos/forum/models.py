@@ -81,6 +81,15 @@ class Thread(CachedAuthorModel):
                 'thread/{}/latest_post'.format(self.pk), latest_post, None)
         return latest_post
 
+    @property
+    def post_count(self):
+        post_count = cache.get('thread/{}/post_count'.format(self.pk))
+        if not post_count:
+            post_count = self.posts.count()
+            cache.set(
+                'thread/{}/post_count'.format(self.pk), post_count, None)
+        return post_count
+
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']
@@ -108,17 +117,6 @@ class Post(CachedAuthorModel):
             self.thread.modified = self.created
             self.thread.save()
         super().save(*args, **kwargs)
-        if new_post:  # update thread
-            # latest post has changed, remove template fragment from cache
-            key = make_template_fragment_key('thread_latest_post',
-                                             [self.thread.pk])
-            cache.delete(key)
-            key = make_template_fragment_key('thread_post_count',
-                                             [self.thread.pk])
-            cache.delete(key)
-            # caches thread's contributors
-            cache.set("thread/{}/contributors".format(self.thread.pk),
-                  self.thread.contributors.all(), None)
 
     @property
     def html(self):
@@ -200,8 +198,9 @@ def update_post_cache(created, instance, **kwargs):
     """Updates cached data when a post is saved"""
     html = convert_text_to_html(instance.content_plain, instance.markup)
     html = smilify(html)
-    cache.set("post/{}/html".format(instance.pk),
-              html,
-              None)
+    cache.set("post/{}/html".format(instance.pk), html, None)
     if created:
-        pass
+        cache.set("thread/{}/contributors".format(instance.thread.pk),
+                  instance.thread.contributors.all(), None)
+        cache.set('thread/{}/post_count'.format(instance.thread.pk),
+                  instance.thread.posts.count(), None)

@@ -14,16 +14,11 @@ def import_from(module, name):
     module = __import__(module, fromlist=[name])
     return getattr(module, name)
 
-try:
-    import os
-    SITE_URL = import_from(
-        os.environ.get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
-    ROBOT_NAME = import_from(
-        os.environ.get("DJANGO_SETTINGS_MODULE"), 'ROBOT')
-    ROBOT = ForumUser.objects.get(username=ROBOT_NAME)
-except:
-    SITE_URL = ''
-    ROBOT = ''
+import os
+SITE_URL = import_from(
+    os.environ.get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
+ROBOT_NAME = import_from(
+    os.environ.get("DJANGO_SETTINGS_MODULE"), 'ROBOT')
 
 
 class BlogPost(models.Model):
@@ -73,7 +68,8 @@ def new_post_pre_save(instance, **kwargs):
     if instance.pk: return
     c = Category.objects.get(slug='jep')
     title = "empty"  # For now, need post pk first
-    author = ROBOT if ROBOT else instance.author
+    author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
+        else instance.author)
     t = Thread.objects.create(title=title,
                               author=author,
                               category=c)
@@ -88,10 +84,11 @@ def new_post_post_save(instance, created, **kwargs):
     instance.forum_thread.title = title
     instance.forum_thread.save()
     url = SITE_URL + reverse('blog:post', args=[instance.pk])
-    author = ROBOT if ROBOT else instance.author
+    author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
+        else instance.author)
     Post.objects.create(
         author=author,
         thread=instance.forum_thread,
         content_plain="[url={}]{} a posté un nouveau billet[/url]".format(
-            instance.author, url)
+            url, instance.author)
     )

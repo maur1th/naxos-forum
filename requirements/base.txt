@@ -6,3 +6,4 @@ django-uuslug>=1.0,<1.1
 postmarkup>=1.2,<1.3
 psycopg2>=2.5,<2.6
 markdown>=2.5,<2.6
+pylibmc

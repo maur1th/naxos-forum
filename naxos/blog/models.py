@@ -82,7 +82,7 @@ def new_post_post_save(instance, created, **kwargs):
     url = SITE_URL + reverse('blog:post', args=[instance.slug])
     url = "{} a posté [un nouveau billet]({})\n".format(
         instance.author, url)
-    if instance.image: image = "![Image]({})".format(
+    if instance.image: image = "![Image]({})\n".format(
         SITE_URL + '/media/' + str(instance.image))
     try:
         content = '\n'.join([url, image, instance.content])

@@ -103,4 +103,5 @@ def new_post_post_save(instance, created, **kwargs):
     else:
         p = Post.objects.filter(thread=instance.forum_thread).first()
         p.content_plain = content
+        p.markup = 'markdown'
         p.save()

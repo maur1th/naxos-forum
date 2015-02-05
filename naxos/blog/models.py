@@ -79,16 +79,28 @@ def new_post_pre_save(instance, **kwargs):
 @receiver(post_save, sender=BlogPost)
 def new_post_post_save(instance, created, **kwargs):
     """Update related thread's title"""
-    if not created: return
-    title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
-    instance.forum_thread.title = title
-    instance.forum_thread.save()
-    url = SITE_URL + reverse('blog:post', args=[instance.pk])
-    author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
-        else instance.author)
-    Post.objects.create(
-        author=author,
-        thread=instance.forum_thread,
-        content_plain="[url={}]{} a posté un nouveau billet[/url]".format(
-            url, instance.author)
-    )
+    url = SITE_URL + reverse('blog:post', args=[instance.slug])
+    url = "{} a posté [un nouveau billet]({})\n".format(
+        instance.author, url)
+    if instance.image: image = "![Image]({})".format(
+        url + '/media/' + str(instance.image))
+    try:
+        content = '\n'.join([url, image, instance.content])
+    except NameError:
+        content = '\n'.join([url, instance.content])
+    if created:
+        title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
+        instance.forum_thread.title = title
+        instance.forum_thread.save()
+        author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
+            else instance.author)
+        Post.objects.create(
+            author=author,
+            thread=instance.forum_thread,
+            markup='markdown',
+            content_plain=content
+        )
+    else:
+        p = Post.objects.filter(thread=instance.forum_thread).first()
+        p.content_plain = content
+        p.save()

@@ -123,7 +123,7 @@ class Post(CachedAuthorModel):
         html = cache.get('post/{}/html'.format(self.pk))
         if not html:
             html = convert_text_to_html(self.content_plain, self.markup)
-            html = smilify(html)
+            if self.markup == 'bbcode': html = smilify(html)
             cache.set('post/{}/html'.format(self.pk), html, None)
         return html
     

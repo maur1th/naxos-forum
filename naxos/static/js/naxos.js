@@ -35,7 +35,7 @@ $(document).ready(function() {
   // Ensure presentation is ok on DOM ready().
   $('.equal-divs').responsiveEqualHeightGrid();
   // Responsive images in posts
-  $('.post-content > img').load(function() {
+  $('.post-content img').load(function() {
       if ($(this).width() > 100) {
         $(this).addClass("img-responsive");
       }

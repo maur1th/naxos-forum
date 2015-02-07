@@ -79,6 +79,10 @@ def new_post_pre_save(instance, **kwargs):
 @receiver(post_save, sender=BlogPost)
 def new_post_post_save(instance, created, **kwargs):
     """Create/Update the thread's first post and its title"""
+    # Create or update thread's title
+    title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
+    instance.forum_thread.title = title
+    instance.forum_thread.save()
     # Prepare post: url text
     url = SITE_URL + reverse('blog:post', args=[instance.slug])
     url_text = "{} a posté [un nouveau billet]({})\n".format(
@@ -93,10 +97,6 @@ def new_post_post_save(instance, created, **kwargs):
         content = '\n'.join([url_text, instance.content])
     # Create or update Post
     if created:
-        # Create or update thread's title
-        title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
-        instance.forum_thread.title = title
-        instance.forum_thread.save()
         author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
             else instance.author)
         Post.objects.create(

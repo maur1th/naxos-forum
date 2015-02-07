@@ -2,7 +2,7 @@ from django import forms
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Field, HTML, Submit
 from PIL import Image
 from io import BytesIO
 
@@ -15,14 +15,19 @@ class PostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        help_text = "<p class='help-block'>La syntaxe est en <a href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>markdown</a>.</p>"
         self.helper = FormHelper(self)
+        self.helper.layout = Layout(Field('title'),
+                                    Field('content'),
+                                    HTML(help_text),
+                                    Field('image'))
         self.helper.add_input(Submit('submit', 'Enregistrer'))
 
     def clean_image(self, *args, **kwargs):
         # Get image from form, return if no image was provided
         form_img = self.cleaned_data['image']
         if type(form_img) is not InMemoryUploadedFile:
-            return form_img
+            return None
         # Resize image if needed
         image = Image.open(form_img)
         image.thumbnail(IMAGE_SIZE)

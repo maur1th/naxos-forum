@@ -64,7 +64,7 @@ class BlogPost(models.Model):
 ## Model signal handlers ###
 @receiver(pre_save, sender=BlogPost)
 def new_post_pre_save(instance, **kwargs):
-    """Create related thread and post"""
+    """Create related thread and link it to the blog post"""
     if instance.pk: return
     c = Category.objects.get(slug='jep')
     title = "empty"  # For now, need post pk first
@@ -78,17 +78,22 @@ def new_post_pre_save(instance, **kwargs):
 
 @receiver(post_save, sender=BlogPost)
 def new_post_post_save(instance, created, **kwargs):
-    """Update related thread's title"""
+    """Create/Update the thread's first post and its title"""
+    # Prepare post: url text
     url = SITE_URL + reverse('blog:post', args=[instance.slug])
-    url = "{} a posté [un nouveau billet]({})\n".format(
+    url_text = "{} a posté [un nouveau billet]({})\n".format(
         instance.author, url)
+    # Prepare image text
     if instance.image: image = "![Image]({})\n".format(
         SITE_URL + '/media/' + str(instance.image))
+    # Aggregate
     try:
-        content = '\n'.join([url, image, instance.content])
+        content = '\n'.join([url_text, image, instance.content])
     except NameError:
-        content = '\n'.join([url, instance.content])
+        content = '\n'.join([url_text, instance.content])
+    # Create or update Post
     if created:
+        # Create or update thread's title
         title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
         instance.forum_thread.title = title
         instance.forum_thread.save()

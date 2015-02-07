@@ -85,7 +85,7 @@ def new_post_post_save(instance, created, **kwargs):
     instance.forum_thread.save()
     # Prepare post: url text
     url = SITE_URL + reverse('blog:post', args=[instance.slug])
-    url_text = "{} a posté [un nouveau billet]({})\n".format(
+    url_text = "**{} a posté [un nouveau billet]({}) :**\n".format(
         instance.author, url)
     # Prepare image text
     if instance.image: image = "![Image]({})\n".format(

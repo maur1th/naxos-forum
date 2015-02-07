@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ thread.category.slug|upper }} - {{ thread.title|capfirst }}{% endblock title %}
+{% block title %}{{ thread.title|capfirst }}{% endblock title %}
 {% block content %}
 {% load static %}
 {% with thread.category as category %}

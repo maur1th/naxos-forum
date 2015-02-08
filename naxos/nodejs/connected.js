@@ -28,7 +28,7 @@ io.on('connection', function(socket){
             status: 'connected'
         });
         var options = {
-            host:'localhost',
+            host:'geekattitude.org',
             port: 80,
             path: '/user/node_api/',
             method: 'POST',
@@ -57,7 +57,7 @@ io.on('connection', function(socket){
                     status: 'disconnected'
                 })
                 var options = {
-                    host:'localhost',
+                    host:'geekattitude.org',
                     port: 80,
                     path: '/user/node_api/',
                     method: 'POST',

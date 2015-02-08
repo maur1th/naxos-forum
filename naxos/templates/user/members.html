@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Profil{% endblock title %}
 {% block content %}
+{% load humanize %}
 {# Path #}
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
@@ -32,6 +33,14 @@
                     <strong>{{ member }}</strong>
                     {% if member.last_login > creation %}
                         <span class="glyphicon glyphicon-ok-circle" style="color:#d9534f"></span>
+                    {% endif %}
+                    {% if member.is_online %}
+                        <span class="glyphicon glyphicon-flash" style="color:#5cb85c"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-flash" style="color:lightgray"></span>
+                    {% endif %}
+                    {% if member.last_seen %}
+                        <span style="color:gray">{{ member.last_seen|naturaltime }}</span>
                     {% endif %}
                 </td>
                 <td class="text-center">

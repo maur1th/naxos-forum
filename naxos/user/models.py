@@ -36,7 +36,9 @@ class ForumUser(AbstractUser):
     postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
-
+    is_online = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(blank=True, null=True)
+    
     class Meta:
         ordering = ["pk"]
 

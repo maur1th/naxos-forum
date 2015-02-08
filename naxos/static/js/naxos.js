@@ -73,3 +73,7 @@ $(document).ready(function(){
     }, 20);
   });
 });
+// socket.io
+$(document).ready(function(){
+  var socket = io('http://localhost:4000');
+});

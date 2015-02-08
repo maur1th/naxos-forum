@@ -8,6 +8,9 @@ from django.contrib import messages
 from datetime import datetime
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.http import HttpResponse, HttpResponseServerError
+from django.contrib.sessions.models import Session
+from django.views.decorators.csrf import csrf_exempt
 
 from braces.views import LoginRequiredMixin
 
@@ -116,3 +119,23 @@ class MemberList(LoginRequiredMixin, ListView):
         context['inactive_users'] = self.inactive_users
         context['creation'] = datetime(2015, 1, 28, 15, 5)
         return context
+
+
+# Set disconnection timestamp
+@csrf_exempt
+def node_api(request):
+    session = Session.objects.get(
+        session_key=request.POST['sessionid'])
+    user_id = session.get_decoded().get('_auth_user_id')
+    status = request.POST['status']
+    try:
+        user = ForumUser.objects.get(pk=user_id)
+    except ForumUser.DoesNotExist:
+        return HttpResponseServerError()
+    if status == 'connected':
+        user.is_online = True
+    elif status == 'disconnected':
+        user.is_online = False
+    user.last_seen = datetime.now()
+    user.save()
+    return HttpResponse()  # So we don't log a 500 error

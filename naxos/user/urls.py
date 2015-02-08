@@ -37,4 +37,9 @@ urlpatterns = patterns(
         kwargs={'next_page': reverse_lazy('user:login')},
         name='logout'
     ),
+    url(
+        regex=r'^node_api/$',
+        view=views.node_api,
+        name='node_api'
+    ),
 )

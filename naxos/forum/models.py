@@ -60,16 +60,35 @@ class Thread(CachedAuthorModel):
     modified = models.DateTimeField(default=datetime.now)
 
     def save(self, *args, **kwargs):
-        """Custom save to create a slug from title"""
-        self.slug = uuslug(self.title,
-                           filter_dict={'category': self.category},
-                           instance=self,
-                           max_length=SLUG_LENGTH)
-        if not self.slug:  # Prevent empty strings as slug
-            self.slug = uuslug('sans titre',
-                               filter_dict={'category': self.category},
-                               instance=self,
-                               max_length=SLUG_LENGTH)
+
+        def make_slug(self, title):
+            slug = uuslug(title,
+                          filter_dict={'category': self.category},
+                          instance=self,
+                          max_length=SLUG_LENGTH)
+            return slug
+
+        new_slug = make_slug(self, self.title)
+        if self.pk is not None:
+            orig = Thread.objects.get(pk=self.pk)
+            # Delete template cache when needed and set new slug
+            if orig.slug != new_slug:
+                self.slug = new_slug
+                key = make_template_fragment_key(
+                    'thread', [self.pk])
+                cache.delete(key)  # Fails silently
+            if orig.icon != self.icon:
+                key = make_template_fragment_key(
+                    'thread', [self.pk])
+                cache.delete(key)
+            if orig.viewCount != self.viewCount:
+                key = make_template_fragment_key(
+                    'thread_view_count', [self.pk])
+                cache.delete(key)
+        else:  # New thread, only set a slug
+            self.slug = new_slug
+        if not self.slug:  # Prevent slugs to be empty
+            self.slug = make_slug(self, 'sans titre')
         super().save(*args, **kwargs)
 
     @property
@@ -111,7 +130,6 @@ class Post(CachedAuthorModel):
     thread = models.ForeignKey(Thread, related_name='posts')
 
     def save(self, *args, **kwargs):
-        new_post = True if self.pk is None else False
         self.thread.contributors.add(self.author)
         if self.pk is None:
             self.thread.modified = self.created

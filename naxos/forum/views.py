@@ -5,7 +5,6 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
 
 import re
 import datetime
@@ -117,10 +116,6 @@ class PostView(LoginRequiredMixin, ListView):
                                     category__slug=c_slug)
         self.t.viewCount += 1  # Increment views
         self.t.save()
-        # Set new cache value
-        key = make_template_fragment_key('thread_view_count',
-                                         [self.t.pk])
-        cache.delete(key)
         # Handle user read caret
         p = self.t.latest_post
         try:
@@ -288,9 +283,6 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-            # Remove from cache in case title or icon have been changed
-            key = make_template_fragment_key('thread', [self.t.pk])
-            cache.delete(key)
         form.instance.modified = datetime.datetime.now()
         return super().form_valid(form)
 

@@ -31,9 +31,6 @@
             <tr>
                 <td>
                     <strong>{{ member }}</strong>
-                    {% if member.last_login > creation %}
-                        <span class="glyphicon glyphicon-ok-circle" style="color:#d9534f"></span>
-                    {% endif %}
                     {% if member.is_online %}
                         <span class="glyphicon glyphicon-flash" style="color:#5cb85c"></span>
                     {% else %}

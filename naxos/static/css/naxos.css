@@ -67,7 +67,7 @@ div.post {
     cursor: pointer;
 }
 /* Image alignment in posts */
-.post-content > img {
+.post-content img {
     vertical-align:bottom;
     padding-bottom:4px;
 }

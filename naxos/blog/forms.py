@@ -15,7 +15,7 @@ class PostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        help_text = "<p class='help-block'>La syntaxe est en <a href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>markdown</a>.</p>"
+        help_text = "<p class='help-block'>La syntaxe est en <a href='http://daringfireball.net/projects/markdown/syntax'>markdown</a>.</p>"
         self.helper = FormHelper(self)
         self.helper.layout = Layout(Field('title'),
                                     Field('content'),

@@ -52,7 +52,7 @@ $(window).load(function() {
 // Ensure presentation is ok while spoiler animation is playing.
 $(document).ready(function(){
   // Remove inner spoiler tags
-  $(".panel-body > .panel").remove();
+  $(".panel-body .panel").remove();
   // Give spoiler tags unique ids and hyperlink adresses
   $("div[id^='spoiler-panel']").attr("id", function(index) {
     return 'spoiler-panel-' + (index+1);

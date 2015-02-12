@@ -49,6 +49,8 @@ $(document).ready(function(){
   });
   // Remove inner spoiler tags
   $(".panel-body .panel").remove();
+    // Remove inner quotes
+  $("blockquote blockquote").remove();
   // Ensure presentation is ok while spoiler animation is playing
   // Give spoiler tags unique ids and hyperlink adresses
   $("div[id^='spoiler-panel']").attr("id", function(index) {

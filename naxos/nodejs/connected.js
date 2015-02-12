@@ -6,6 +6,9 @@ var querystring = require('querystring');
 
 app.listen(4000);
 
+var HOST = 'geekattitude.org';
+var HOST_PORT = 80;
+
 io.use(function(socket, next) {
     var handshakeData = socket.request;
     if(handshakeData.headers.cookie){
@@ -28,8 +31,8 @@ io.on('connection', function(socket){
             status: 'connected'
         });
         var options = {
-            host:'geekattitude.org',
-            port: 80,
+            host: HOST,
+            port: HOST_PORT,
             path: '/user/node_api/',
             method: 'POST',
             headers: {
@@ -57,8 +60,8 @@ io.on('connection', function(socket){
                     status: 'disconnected'
                 })
                 var options = {
-                    host:'geekattitude.org',
-                    port: 80,
+                    host: HOST,
+                    port: HOST_PORT,
                     path: '/user/node_api/',
                     method: 'POST',
                     headers: {

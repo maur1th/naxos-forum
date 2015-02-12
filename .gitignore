@@ -17,6 +17,7 @@
 migration.txt
 secret.txt
 util/data/
+naxos/manage.py
 naxos/templates/ads/
 naxos/naxos/settings/local.py
 naxos/naxos/settings/dev.py

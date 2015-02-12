@@ -30,29 +30,26 @@ function scrollToPosition($textarea, caret) {
     $textarea.val(text);
     $textarea[0].setSelectionRange(caret, caret);
 };
-// Posts presentation
-$(document).ready(function() {
-  // Ensure presentation is ok on DOM ready().
+$(document).ready(function(){
+  // Ensure presentation is ok on DOM ready()
   $('.equal-divs').responsiveEqualHeightGrid();
+  // Ensure presentation is ok while media still loading
+  var x = setInterval(function() {
+    $('.equal-divs').responsiveEqualHeightGrid();
+  }, 500);
+  $(window).load(function() {
+    // Stops presentation refresh when everything loaded
+    clearInterval(x);
+  });
   // Responsive images in posts
   $('.post-content img').load(function() {
       if ($(this).width() > 100) {
         $(this).addClass("img-responsive");
       }
   });
-});
-var x = setInterval(function() {
-  // Ensure presentation is ok while media still loading.
-  $('.equal-divs').responsiveEqualHeightGrid();
-}, 500);
-$(window).load(function() {
-  // Stops presentation refresh when everything loaded.
-  clearInterval(x);
-});
-// Ensure presentation is ok while spoiler animation is playing.
-$(document).ready(function(){
   // Remove inner spoiler tags
   $(".panel-body .panel").remove();
+  // Ensure presentation is ok while spoiler animation is playing
   // Give spoiler tags unique ids and hyperlink adresses
   $("div[id^='spoiler-panel']").attr("id", function(index) {
     return 'spoiler-panel-' + (index+1);

@@ -25,7 +25,8 @@ class BlogPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='blogposts')
-    content = models.TextField(verbose_name='Message')
+    content = models.TextField(verbose_name='Message',
+                               max_length=100000)
     image = models.ImageField(upload_to="images", blank=True, null=True)
     views = models.IntegerField(default=0)
     slug = models.CharField(max_length=SLUG_LENGTH, unique=True)

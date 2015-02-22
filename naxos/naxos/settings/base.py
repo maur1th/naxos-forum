@@ -73,17 +73,6 @@ ROOT_URLCONF = 'naxos.urls'
 
 WSGI_APPLICATION = 'naxos.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'naxos',
-        'USER': 'naxos',
-        'PASSWORD': 'crimson',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 

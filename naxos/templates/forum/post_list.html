@@ -124,7 +124,7 @@ $(document).ready(function() {
     <a name="{{ post.pk }}"></a>
     {# Large display author #}
     <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
-        <p style="word-wrap:break-word;margin-bottom:0;line-height:100%">
+        <p style="word-wrap:break-word;line-height:100%">
             <strong>{{ post.cached_author }}</strong><br style="margin-bottom:10px">
             {% if post.cached_author.quote %}
                 <small>{{ post.cached_author.quote }}</small>

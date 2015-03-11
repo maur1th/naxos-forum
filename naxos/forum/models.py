@@ -126,7 +126,7 @@ class Post(CachedAuthorModel):
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField(verbose_name='Message',
                                      max_length=100000)
-    markup = models.CharField(default='bbcode')
+    markup = models.CharField(default='bbcode', max_length=10)
     author = models.ForeignKey(ForumUser, related_name='posts')
     thread = models.ForeignKey(Thread, related_name='posts')
 

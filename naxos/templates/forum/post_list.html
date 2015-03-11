@@ -131,7 +131,7 @@ $(document).ready(function() {
             {% endif %}
         </p>
         {% if post.cached_author.logo %}
-            <img src="{{ media }}{{ post.cached_author.logo }}" alt="">
+            <p><img src="{{ media }}{{ post.cached_author.logo }}" alt=""></p>
         {% endif %}
         <p style="font-size:10px">depuis le {{ post.cached_author.date_joined|date:'d/m/Y' }}</p>
     </div>

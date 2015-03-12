@@ -124,12 +124,12 @@ $(document).ready(function() {
     <a name="{{ post.pk }}"></a>
     {# Large display author #}
     <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;">
-        <p>
+        <p style="margin-bottom:5px">
             <strong>{{ post.cached_author }}</strong>
-            {% if post.cached_author.quote %}
-                <p style="line-height:100%"><small>{{ post.cached_author.quote }}</small></p>
-            {% endif %}
         </p>
+        {% if post.cached_author.quote %}
+            <p style="line-height:100%"><small>{{ post.cached_author.quote }}</small></p>
+        {% endif %}
         {% if post.cached_author.logo %}
             <p><img src="{{ media }}{{ post.cached_author.logo }}" alt=""></p>
         {% endif %}

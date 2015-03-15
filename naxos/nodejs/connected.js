@@ -1,5 +1,5 @@
 var http = require('http');
-var app= http.createServer();
+var app = http.createServer();
 var io = require('socket.io')(app);
 var cookie_reader = require('cookie');
 var querystring = require('querystring');
@@ -7,6 +7,7 @@ var settings = require('./settings');
 
 var HOST = settings.host;
 var HOST_PORT = settings.port;
+var DEBUG = settings.debug;
 
 app.listen(4000);
 
@@ -25,7 +26,9 @@ io.on('connection', function(socket){
         connected_users[user] += 1;
     } else {
         connected_users[user] = 1;
-        console.log(user + ' connected');
+        if (DEBUG) {
+            console.log(user + ' connected');
+        }
         // Tell django the user has come online
         var data = querystring.stringify({
             sessionid: user,
@@ -43,9 +46,11 @@ io.on('connection', function(socket){
         };
         var req = http.request(options, function(res){
             res.setEncoding('utf8');
-            res.on('data', function(chunk){
-                console.log("body: " + chunk)
-            })
+            if (DEBUG) {
+                res.on('data', function(chunk){
+                    console.log("body: " + chunk)
+                })
+            }
         });
         req.write(data);
         req.end();
@@ -54,7 +59,9 @@ io.on('connection', function(socket){
         setTimeout(function() {
             if (connected_users[user] === 1) {
                 delete connected_users[user];
-                console.log(user + ' disconnected');
+                if (DEBUG) {
+                    console.log(user + ' disconnected');
+                }
                 // Tell django the user is now offline
                 var data = querystring.stringify({
                     sessionid: user,
@@ -72,9 +79,11 @@ io.on('connection', function(socket){
                 }
                 var req = http.request(options, function(res){
                     res.setEncoding('utf8');
-                    res.on('data', function(chunk){
-                        console.log("body: " + chunk)
-                    })
+                    if (DEBUG) {
+                        res.on('data', function(chunk){
+                            console.log("body: " + chunk)
+                        })
+                    }
                 })
                 req.write(data);
                 req.end();

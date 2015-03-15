@@ -6,10 +6,10 @@ var querystring = require('querystring');
 var settings = require('./settings');
 
 var HOST = settings.host;
-var HOST_PORT = settings.port;
+var HOST_PORT = settings.host_port;
 var DEBUG = settings.debug;
 
-app.listen(4000);
+app.listen(settings.app_port);
 
 io.use(function(socket, next) {
     var handshakeData = socket.request;

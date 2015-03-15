@@ -22,6 +22,10 @@ naxos/templates/ads/
 naxos/naxos/settings/local.py
 naxos/naxos/settings/dev.py
 
+## nodejs
+naxos/nodejs/node_modules
+naxos/nodejs/settings.js
+
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files
 __pycache__/

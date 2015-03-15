@@ -3,11 +3,12 @@ var app= http.createServer();
 var io = require('socket.io')(app);
 var cookie_reader = require('cookie');
 var querystring = require('querystring');
+var settings = require('./settings');
+
+var HOST = settings.host;
+var HOST_PORT = settings.port;
 
 app.listen(4000);
-
-var HOST = 'geekattitude.org';
-var HOST_PORT = 80;
 
 io.use(function(socket, next) {
     var handshakeData = socket.request;

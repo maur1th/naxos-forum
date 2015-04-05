@@ -58,6 +58,7 @@ class Thread(CachedAuthorModel):
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
     modified = models.DateTimeField(default=datetime.now)
+    personal = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
 

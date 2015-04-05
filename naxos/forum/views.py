@@ -190,6 +190,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['category'] = self.t.category
         context['thread'] = self.t
+        context['history'] = Post.objects.filter(
+            thread=self.t).order_by('-pk')[:10]
         return context
 
     def get_form_kwargs(self):

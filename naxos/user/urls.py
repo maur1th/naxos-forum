@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, url
-from django.core.urlresolvers import reverse_lazy
 
 from . import views
 from .forms import CrispyLoginForm, CrispyPasswordResetForm, \

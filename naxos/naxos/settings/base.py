@@ -96,5 +96,6 @@ MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'user.ForumUser'
 
 LOGIN_URL = 'user:login'
+LOGIN_REDIRECT_URL = 'forum:top'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -14,8 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from braces.views import LoginRequiredMixin
 
-from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm, \
-    CrispyAuthForm
+from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
 from .models import ForumUser
 from forum.models import ThreadCession
 
@@ -24,25 +23,6 @@ class Register(CreateView):
     form_class = RegisterForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('user:login')
-
-
-class Login(FormView):
-    form_class = CrispyAuthForm
-    template_name = 'registration/login.html'
-    success_url = reverse_lazy('forum:top')
-
-    def dispatch(self, request, *args, **kwargs):
-        request.session.set_test_cookie()
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        auth_login(self.request, form.get_user())
-        if self.request.session.test_cookie_worked():
-            self.request.session.delete_test_cookie()
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
 
 
 class UpdateUser(LoginRequiredMixin, UpdateView):

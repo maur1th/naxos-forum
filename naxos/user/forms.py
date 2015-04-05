@@ -79,7 +79,7 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
             token.delete()
 
 
-class CrispyAuthForm(AuthenticationForm):
+class CrispyLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()

@@ -2,7 +2,8 @@ from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse_lazy
 
 from . import views
-from .forms import CrispyPasswordResetForm, CrispySetPasswordForm
+from .forms import CrispyLoginForm, CrispyPasswordResetForm, \
+    CrispySetPasswordForm
 
 
 urlpatterns = patterns(
@@ -29,7 +30,8 @@ urlpatterns = patterns(
     ),
     url(
         regex=r'^login/$',
-        view=views.Login.as_view(),
+        view='django.contrib.auth.views.login',
+        kwargs={'authentication_form': CrispyLoginForm},
         name='login'
     ),
     url(

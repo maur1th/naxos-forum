@@ -37,7 +37,7 @@ urlpatterns = patterns(
     url(
         regex=r'^logout/$',
         view='django.contrib.auth.views.logout_then_login',
-        kwargs={'login_url': reverse_lazy('user:login')},
+        kwargs={'login_url': 'user:login'},
         name='logout'
     ),
     url(

@@ -161,7 +161,8 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
             title=form.cleaned_data['title'],
             icon=form.cleaned_data['icon'],
             author=self.request.user,
-            category=self.c)
+            category=self.c,
+            personal=form.cleaned_data['personal'])
         # Complete the post and save it
         form.instance.thread = t
         form.instance.thread.category.postCount += 1  # Increment category

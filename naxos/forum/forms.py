@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import BaseInlineFormSet, inlineformset_factory
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, HTML, Submit
+from crispy_forms.layout import Layout, Field, HTML, Submit, Button
 from crispy_forms.bootstrap import InlineRadios
 
 from .models import Post, PollQuestion, PollChoice
@@ -25,6 +25,8 @@ class GenericThreadForm(forms.ModelForm):
     title = forms.CharField(max_length=140, label='Titre')
     icon = forms.ChoiceField(widget=forms.RadioSelect,
         choices=CHOICES, label="Icône")
+    personal = forms.BooleanField(label=("Sujet personnel : permet la suppres"
+                                         "sion du sujet a posteriori."))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,7 +37,7 @@ class GenericThreadForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ('title', 'icon', 'content_plain')
+        fields = ('title', 'icon', 'content_plain', 'personal')
 
 
 # Basic thread stuff
@@ -60,22 +62,31 @@ class ThreadForm(GenericThreadForm):
             self.helper.layout = Layout(Field('title'),
                                         InlineRadios('icon'),
                                         HTML(toolbar),
-                                        Field('content_plain'))
+                                        Field('content_plain'),
+                                        Field('personal'))
         else:  # This is an edit
             if post == thread.posts.first():
                 self.helper.layout = Layout(Field('title'),
                                             InlineRadios('icon'),
                                             HTML(toolbar),
-                                            Field('content_plain'))
+                                            Field('content_plain'),
+                                            Field('personal', type='hidden'))
                 self.helper.add_input(
-                    Submit('cede', 'Céder le contrôle de ce sujet'))
+                    Submit('cede', 'Céder le contrôle'))
+                if thread.personal:
+                    self.helper.add_input(Button('delete',
+                                                 'Supprimer',
+                                                 css_class='btn-default',
+                                                 data_toggle='modal',
+                                                 data_target='#deleteModal'))
             else:  # If it's not the first post
                 self.fields['title'].required = False
                 self.fields['icon'].required = False
                 self.helper.layout = Layout(Field('title', disabled=''),
                                             HTML(toolbar),
                                             Field('content_plain'),
-                                            Field('icon', type='hidden'),)
+                                            Field('icon', type='hidden'),
+                                            Field('personal', type='hidden'))
             self.helper.form_action = reverse(
                 'forum:edit', kwargs={'category_slug': c_slug,
                                       'thread_slug': thread.slug,

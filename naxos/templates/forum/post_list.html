@@ -15,6 +15,9 @@
         Sujet : 
     {% endif %}
     {{ thread.title|capfirst }}
+    {% if thread.personal %}
+        <span style="color:#d9534f">(perso)</span>
+    {% endif %}
     </li>
 </ol>
 {# Poll results #}

@@ -61,6 +61,9 @@
             Sondage :
           {% endif %}
           <a href="{% url 'forum:thread' category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+          {% if thread.personal %}
+            <span style="color:#d9534f">(perso)</span>
+          {% endif %}
         </td>
         {% endcache %}
         <td class="text-center vert-align importantData hidden-xs">

@@ -22,13 +22,32 @@
     </div>
     {% include "smileys.html" %}
 </div>
+
+{% if thread.personal %}
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Êtes-vous sûr de vouloir supprimer le sujet ?</h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger">Oui, supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>    
+{% endif %}
+
 {% include "threadform_js.html" %}
 <script>
     // Focus
     $(document).ready(function() {
         $("textarea[id$='content_plain']").focus();
     });
-    // Preview button
+    // Customize crispy form buttons appearance
     $('#submit-id-cede').removeClass("btn-primary").addClass("btn-default");
 </script>
 {% endblock %}

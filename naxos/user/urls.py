@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 from django.core.urlresolvers import reverse_lazy
 
 from . import views
+from .forms import CrispyPasswordResetForm, CrispySetPasswordForm
 
 
 urlpatterns = patterns(
@@ -36,6 +37,30 @@ urlpatterns = patterns(
         view='django.contrib.auth.views.logout',
         kwargs={'next_page': reverse_lazy('user:login')},
         name='logout'
+    ),
+    url(
+        regex=r'^password_reset/$',
+        view='django.contrib.auth.views.password_reset',
+        kwargs={'password_reset_form': CrispyPasswordResetForm,
+                'post_reset_redirect': 'user:password_reset_done'},
+        name='password_reset'
+    ),
+    url(
+        regex=r'^password_reset/done/$',
+        view='django.contrib.auth.views.password_reset_done',
+        name='password_reset_done'
+    ),
+    url(
+        regex=r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        view='django.contrib.auth.views.password_reset_confirm',
+        kwargs={'set_password_form': CrispySetPasswordForm,
+                'post_reset_redirect': 'user:password_reset_complete'},
+        name='password_reset_confirm'
+    ),
+    url(
+        regex=r'^reset/done/$',
+        view='django.contrib.auth.views.password_reset_complete',
+        name='password_reset_complete'
     ),
     url(
         regex=r'^node_api/$',

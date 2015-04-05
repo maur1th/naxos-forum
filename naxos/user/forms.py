@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
-    AuthenticationForm
+    AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.template.defaultfilters import filesizeformat
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -151,6 +151,26 @@ class CrispyPasswordForm(PasswordChangeForm):
         super().__init__(user=user, *args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Modifier'))
+
+
+class CrispyPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label=_('Email address'),
+        max_length=254,
+        help_text="Veuillez entrer l'adresse associée à votre compte."
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Envoyer'))
+
+
+class CrispySetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Enregistrer'))
 
 
 class RestrictedImageField(forms.ImageField):

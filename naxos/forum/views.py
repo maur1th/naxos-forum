@@ -97,7 +97,8 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
         self.c = Category.objects.get(slug=self.kwargs['category_slug'])
-        return self.c.threads.select_related('author', 'question').all()
+        return self.c.threads.select_related('author', 'question')\
+                             .filter(visible=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,12 +109,14 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 class PostView(LoginRequiredMixin, ListView):
     paginate_by = 30
 
-    def get_queryset(self):
-        "Return list of posts given thread and category slugs"
+    def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
         self.t = Thread.objects.get(slug=t_slug,
                                     category__slug=c_slug)
+        # 403 if the thread has been removed
+        if not self.t.visible:
+            return HttpResponseForbidden()
         self.t.viewCount += 1  # Increment views
         self.t.save()
         # Handle user read caret
@@ -125,6 +128,10 @@ class PostView(LoginRequiredMixin, ListView):
         if caret != p:
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        "Return list of posts given thread and category slugs"
         return self.t.posts.all()
 
     def get_context_data(self, **kwargs):

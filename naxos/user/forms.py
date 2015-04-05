@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm
 from django.template.defaultfilters import filesizeformat
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from PIL import Image
 from crispy_forms.helper import FormHelper
@@ -34,7 +35,8 @@ class UniqueEmailMixin(object):
 
 
 class RegisterForm(UniqueEmailMixin, UserCreationForm):
-    email = forms.EmailField(required=True, help_text="Requis.")
+    email = forms.EmailField(
+        label=_('Email address'), required=True, help_text="Requis.")
     token = forms.CharField(
         max_length=50,
         label='Clé',

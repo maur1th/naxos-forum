@@ -1,4 +1,5 @@
-from django.views.generic import ListView, CreateView, UpdateView, DetailView
+from django.views.generic import View, ListView, CreateView, UpdateView,\
+    DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -302,6 +303,21 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         post_page = self.object.position//PostView.paginate_by + 1
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '?page=' + str(post_page) + '#' + str(self.object.pk))
+
+
+class DeleteThread(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        t = Thread.objects.get(pk=self.kwargs['pk'])
+        if t.author != self.request.user:
+            return HttpResponseForbidden
+        elif not t.personal:
+            return HttpResponseForbidden
+        else:
+            t.visible = False
+            t.save()
+            return HttpResponseRedirect(reverse('forum:category',
+                kwargs={'category_slug': t.category}))
 
 
 class PreviewView(LoginRequiredMixin, DetailView):

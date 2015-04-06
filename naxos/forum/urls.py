@@ -56,6 +56,11 @@ urlpatterns = patterns(
         name='quote'
     ),
     url(
+        regex=r'^delete_thread/(?P<pk>[0-9]+)$',
+        view=views.DeleteThread.as_view(),
+        name='delete_thread'
+    ),
+    url(
         regex=r'^preview/(?P<pk>[0-9]+)$',
         view=views.PreviewView.as_view(),
         name='preview'

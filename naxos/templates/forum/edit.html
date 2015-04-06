@@ -33,8 +33,11 @@
         <h4 class="modal-title" id="myModalLabel">Êtes-vous sûr de vouloir supprimer le sujet ?</h4>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-danger">Oui, supprimer</button>
+        <form method="post" action="{% url 'forum:delete_thread' thread.pk %}">
+        {% csrf_token %}
+            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+        </form>
       </div>
     </div>
   </div>

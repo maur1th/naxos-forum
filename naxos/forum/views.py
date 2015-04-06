@@ -367,7 +367,8 @@ def NewPoll(request, category_slug):
                     title=thread_form.cleaned_data['title'],
                     icon=thread_form.cleaned_data['icon'],
                     author=request.user,
-                    category=c)
+                    category=c,
+                    personal=thread_form.cleaned_data['personal'])
                 # Complete the post and save it
                 thread_form.instance.thread = t
                 thread_form.instance.author = request.user

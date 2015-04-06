@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Field, HTML, Submit, Button
 from crispy_forms.bootstrap import InlineRadios
 
 from .models import Post, PollQuestion, PollChoice
-from .util import get_title, normalize_query
+from .util import normalize_query
 
 toolbar = "{% include \"toolbar.html\" %}"  # Text format
 
@@ -95,6 +95,7 @@ class ThreadForm(GenericThreadForm):
 
 
 class PostForm(forms.ModelForm):
+    title = forms.CharField(max_length=140, label='Titre')
 
     def __init__(self, *args, **kwargs):
         self.c_slug = kwargs.pop('category_slug')
@@ -104,9 +105,10 @@ class PostForm(forms.ModelForm):
         self.helper.form_action = reverse(
             'forum:new_post', kwargs={'category_slug': self.c_slug,
                                       'thread_slug': self.t.slug})
-        self.helper.layout = Layout(HTML(get_title(self.t.title)),
-                                    HTML(toolbar),
-                                    Field('content_plain'))
+        self.helper.layout = Layout(
+            Field('title', value=self.t.title, disabled=''),
+            HTML(toolbar),
+            Field('content_plain'))
         self.helper.add_input(Submit('submit', 'Enregistrer', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 

@@ -241,20 +241,6 @@ def smilify(html):
 
 
 ### Misc ###
-def get_title(value):
-    title = (
-        "<div id='div_id_title' class='form-group'>"
-        "<label for='id_title' class='control-label requiredField'>"
-        "Titre<span class='asteriskField'>*</span>"
-        "</label>"
-        "<div class='controls'>"
-        "<input class='textinput textInput form-control' id='id_title' "
-        "maxlength='140' name='title' type='text' value='{:s}' disabled/>"
-        "</div>"
-        "</div>").format(value)
-    return title
-
-
 def keygen():
     import random
     return ''.join([random.SystemRandom().choice(

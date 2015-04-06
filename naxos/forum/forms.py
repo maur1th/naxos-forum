@@ -97,7 +97,7 @@ class ThreadForm(GenericThreadForm):
 
 class PostForm(forms.ModelForm):
     """PostForm as used by .views.NewPost"""
-    title = forms.CharField(max_length=140, label='Titre')
+    title = forms.CharField(max_length=140, label='Titre', required=False)
 
     def __init__(self, *args, **kwargs):
         self.c_slug = kwargs.pop('category_slug')

@@ -5,8 +5,15 @@
 {# Path #}
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
-    <li class="active">Message</li>
-</ol><br>
+    <li><a href="{% url 'forum:category' post.thread.category %}">{{ post.thread.category.title }}</a></li>
+    <li><a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{% if question %}Sondage : {% else %}Sujet : {% endif %}{{ post.thread.title|capfirst }}</a>
+    {% if thread.personal %}
+        <span style="color:#d9534f">(perso)</span>
+    {% endif %}
+    </li>
+    <li class="active">Message de {{ post.author }}</li>
+</ol>
+<br>
 {# Header #}
 <hr style="margin:8px; border-top:0">
 <div class="row">

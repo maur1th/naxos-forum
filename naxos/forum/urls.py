@@ -16,42 +16,42 @@ urlpatterns = patterns(
         name='search',
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/$',
         view=views.ThreadView.as_view(),
         name='category'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
         view=views.PostView.as_view(),
         name='thread'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/\+$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/\+$',
         view=views.NewThread.as_view(),
         name='new_thread'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/\+poll$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/\+poll$',
         view=views.NewPoll,
         name='new_poll'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/vote/$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/(?P<thread_slug>[\w|\-]+)/vote/$',
         view=views.VotePoll,
         name='vote'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/\+$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/(?P<thread_slug>[\w|\-]+)/\+$',
         view=views.NewPost.as_view(),
         name='new_post'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/edit=(?P<pk>\d+)$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/(?P<thread_slug>[\w|\-]+)/edit=(?P<pk>\d+)$',
         view=views.EditPost.as_view(),
         name='edit'
     ),
     url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/quote=(?P<pk>\d+)$',
+        regex=r'^(?P<category_slug>[\D|\-]+)/(?P<thread_slug>[\w|\-]+)/quote=(?P<pk>\d+)$',
         view=views.QuotePost.as_view(),
         name='quote'
     ),
@@ -66,7 +66,7 @@ urlpatterns = patterns(
         name='preview'
     ),
     url(
-        regex=(r'^(?P<category_slug>[\w|\-]+)/'
+        regex=(r'^(?P<category_slug>[\D|\-]+)/'
                 '(?P<thread_slug>[\w|\-]+)/cession$'),
         view=views.ThreadCessionView.as_view(),
         name='cession'

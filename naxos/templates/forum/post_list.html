@@ -147,6 +147,7 @@ $(document).ready(function() {
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
             {% endifequal %}
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
+            | <a href="{% url 'forum:post' post.pk %}"><small><span class="glyphicon glyphicon-link"></span></small></a>
         </small>
         <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
         <div class="post-content" style="word-wrap: break-word">

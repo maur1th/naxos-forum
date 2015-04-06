@@ -26,6 +26,11 @@ urlpatterns = patterns(
         name='thread'
     ),
     url(
+        regex=r'^post/(?P<pk>[0-9]+)$',
+        view=views.PostDetailView.as_view(),
+        name='post'
+    ),
+    url(
         regex=r'^(?P<category_slug>[\D|\-]+)/\+$',
         view=views.NewThread.as_view(),
         name='new_thread'

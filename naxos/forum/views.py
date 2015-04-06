@@ -143,7 +143,8 @@ class PostView(LoginRequiredMixin, ListView):
 
 
 class PostDetailView(DetailView):
-    pass
+    "Displays a single post"
+    model = Post
 
 
 ### Thread and Post creation and edit ###

@@ -43,6 +43,7 @@ class GenericThreadForm(forms.ModelForm):
 
 # Basic thread stuff
 class ThreadForm(GenericThreadForm):
+    """Create and/or edit Thread & Posts: .views.NewThread & EditPost"""
 
     def __init__(self, *args, **kwargs):
         c_slug = kwargs.pop('category_slug')
@@ -65,7 +66,7 @@ class ThreadForm(GenericThreadForm):
                                         HTML(toolbar),
                                         Field('content_plain'),
                                         Field('personal'))
-        else:  # This is an edit
+        else:  # This is an edit - used by .views.EditPost
             if post == thread.posts.first():
                 self.helper.layout = Layout(Field('title'),
                                             InlineRadios('icon'),
@@ -95,6 +96,7 @@ class ThreadForm(GenericThreadForm):
 
 
 class PostForm(forms.ModelForm):
+    """PostForm as used by .views.NewPost"""
     title = forms.CharField(max_length=140, label='Titre')
 
     def __init__(self, *args, **kwargs):

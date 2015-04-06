@@ -60,26 +60,28 @@
             Sondage :
           {% endif %}
           <a href="{% url 'forum:thread' thread.category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+          {% if thread.personal %}
+            <span style="color:#d9534f">(perso)</span>
+          {% endif %}
         </td>
-        <td class="text-center vert-align importantData">
-          <small><strong>{{ thread.author }}</strong></small>
-        </td>
-        {% cache 9999999 thread_post_count thread.pk %}
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.posts.count }}</small></td>
         {% endcache %}
+        <td class="text-center vert-align importantData hidden-xs">
+          <small><strong>{{ thread.cached_author }}</strong></small>
+        </td>
+        {# Post count #}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count|add:"-1" }}</small></td>
+        {# View count #}
+        {% cache 9999999 thread_view_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         {% endcache %}
         {# Latest post #}
-        {% cache 9999999 thread_latest_post thread.pk %}
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
           <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
-          {{ thread.modified|date:'d/m/y H:i' }}
-          <br><strong>{{ thread.latest_post.author }}</strong>
+            <span class="hidden-xs">{{ thread.latest_post.created|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.cached_author }}</strong>
           </a>
           </small>
         </td>
-        {% endcache %}
       </tr>
       {% endfor %}
     </tbody>

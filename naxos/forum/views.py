@@ -142,6 +142,10 @@ class PostView(LoginRequiredMixin, ListView):
         return context
 
 
+class PostDetailView(DetailView):
+    pass
+
+
 ### Thread and Post creation and edit ###
 class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     form_class = ThreadForm

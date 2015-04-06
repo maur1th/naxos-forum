@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -42,7 +43,7 @@ class MessageView(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def dispatch(self, request, *args, **kwargs):
-        self.c = Conversation.objects.get(pk=self.kwargs['pk'])
+        self.c = get_object_or_404(Conversation, pk=self.kwargs['pk'])
         # Handle forbidden user
         if self.request.user not in self.c.participants.all():
             return HttpResponseForbidden()
@@ -104,7 +105,7 @@ class NewConversation(LoginRequiredMixin, CreateView):
 @login_required
 def NewMessage(request, pk):
     if request.method == 'POST':
-        c = Conversation.objects.get(pk=pk)
+        c = get_object_or_404(Conversation, pk=pk)
         m = Message.objects.create(
                 conversation = c,
                 author = request.user,

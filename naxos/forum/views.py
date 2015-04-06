@@ -1,11 +1,11 @@
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, ListView, CreateView, UpdateView,\
     DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 import re
 import datetime
@@ -97,7 +97,8 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
-        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        self.c = get_object_or_404(Category,
+                                   slug=self.kwargs['category_slug'])
         return self.c.threads.select_related('author', 'question')\
                              .filter(visible=True)
 
@@ -113,11 +114,10 @@ class PostView(LoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
-        self.t = Thread.objects.get(slug=t_slug,
-                                    category__slug=c_slug)
+        self.t = get_object_or_404(Thread, slug=t_slug, category__slug=c_slug)
         # 403 if the thread has been removed
         if not self.t.visible:
-            return HttpResponseForbidden()
+            raise PermissionDenied
         self.t.viewCount += 1  # Increment views
         self.t.save()
         # Handle user read caret
@@ -148,7 +148,8 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/new_thread.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.c = Category.objects.get(slug=self.kwargs['category_slug'])
+        self.c = get_object_or_404(
+            Category, slug=self.kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -189,7 +190,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/new_post.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.t = Thread.objects.get(
+        self.t = get_object_or_404(
+            Thread,
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
@@ -228,7 +230,7 @@ class QuotePost(NewPost):
     """Quote the content of another post"""
 
     def dispatch(self, request, *args, **kwargs):
-        self.p = Post.objects.get(pk=self.kwargs['pk'])
+        self.p = get_object_or_404(Post, pk=self.kwargs['pk'])
         self.t = self.p.thread
         return super().dispatch(request, *args, **kwargs)
 
@@ -248,9 +250,9 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         "Get the right post and thread"
-        self.p = Post.objects.get(pk=self.kwargs['pk'])
+        self.p = get_object_or_404(Post, pk=self.kwargs['pk'])
         if self.p.author != self.request.user:
-            return HttpResponseForbidden()
+            raise PermissionDenied
         self.t = self.p.thread
         self.c = self.t.category
         return super().dispatch(request, *args, **kwargs)
@@ -308,11 +310,9 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 class DeleteThread(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        t = Thread.objects.get(pk=self.kwargs['pk'])
-        if t.author != self.request.user:
-            return HttpResponseForbidden
-        elif not t.personal:
-            return HttpResponseForbidden
+        t = get_object_or_404(Thread, pk=self.kwargs['pk'])
+        if t.author != self.request.user or not t.personnal:
+            raise PermissionDenied
         else:
             t.visible = False
             t.save()
@@ -333,11 +333,12 @@ class PreviewView(LoginRequiredMixin, DetailView):
 class ThreadCessionView(LoginRequiredMixin, DetailView):
     
     def dispatch(self, request, *args, **kwargs):
-        self.t = Thread.objects.get(
-                    slug=self.kwargs['thread_slug'],
-                    category__slug=self.kwargs['category_slug'])
+        self.t = get_object_or_404(
+            Thread,
+            slug=self.kwargs['thread_slug'],
+            category__slug=self.kwargs['category_slug'])
         if self.t.author != self.request.user:
-            return HttpResponseForbidden()
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
@@ -347,7 +348,7 @@ class ThreadCessionView(LoginRequiredMixin, DetailView):
 ### Poll Views ###
 @login_required
 def NewPoll(request, category_slug):
-    c = Category.objects.get(slug=category_slug)
+    c = get_object_or_404(Category, slug=category_slug)
     thread_form = PollThreadForm(prefix="thread")
     question_form = QuestionForm(prefix="question")
     choices_formset = ChoicesFormSet(instance=PollQuestion())
@@ -397,8 +398,9 @@ def NewPoll(request, category_slug):
 
 @login_required
 def VotePoll(request, category_slug, thread_slug):
-    thread = Thread.objects.get(slug=thread_slug,
-                                category__slug=category_slug)
+    thread = get_object_or_404(Thread,
+                               slug=thread_slug,
+                               category__slug=category_slug)
     question = thread.question
 
     if request.method == 'POST':

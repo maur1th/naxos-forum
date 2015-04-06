@@ -26,7 +26,8 @@ class GenericThreadForm(forms.ModelForm):
     icon = forms.ChoiceField(widget=forms.RadioSelect,
         choices=CHOICES, label="Icône")
     personal = forms.BooleanField(label=("Sujet personnel : permet la suppres"
-                                         "sion du sujet a posteriori."))
+                                         "sion du sujet a posteriori."),
+                                  required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

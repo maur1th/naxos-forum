@@ -105,8 +105,12 @@ def import_threads(f):
     for i, thread in enumerate(threads):
         print("Creating threads... {}/{}".format(
             i+1, len(threads)), end="\r")
-        isSticky = True if thread['postit'] == 1 else False
         if thread['idtopic'] in existing_threads: continue
+        # prepare tokens for threads
+        tokens = set()
+        while len(tokens) != len(threads):
+            tokens.add(keygen())
+        isSticky = True if thread['postit'] == 1 else False
         t = Thread.objects.create(
             pk=int(thread['idtopic']),
             category=Category.objects.get(pk=cat_map[thread['idforum']]),
@@ -115,6 +119,7 @@ def import_threads(f):
             icon=str(thread['icone'])+'.gif',
             viewCount=int(thread['nbvues']),
             isSticky=isSticky,
+            cessionToken=tokens.pop()
         )
     print("Creating threads... done{}".format(" "*20))
 
@@ -171,8 +176,7 @@ def import_posts(f):
     for i, t in enumerate(threads):
         print('Updating threads... {}/{}'.format(
             i+1, count), end="\r")
-        latest_post = t.posts.latest()
-        t.latest_post, t.modified = latest_post, latest_post.created
+        t.modified = t.latest_post.created
         for p in t.posts.iterator():
             t.contributors.add(p.author)
         t.save()

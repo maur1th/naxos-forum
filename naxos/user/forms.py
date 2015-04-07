@@ -10,7 +10,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
 from .models import ForumUser, TokenPool
-from forum.models import ThreadCession
+from forum.models import Thread
 
 MAX_USERNAME_LENGTH = 20
 MAX_UPLOAD_SIZE = 102400
@@ -117,7 +117,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
 
     def clean_token(self, *args, **kwargs):
         token = self.cleaned_data['token']
-        if token and not ThreadCession.objects.filter(token=token).exists():
+        if token and not Thread.objects.filter(cessionToken=token).exists():
             raise forms.ValidationError('Aucun sujet correspondant.')
         return token
 

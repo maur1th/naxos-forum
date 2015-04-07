@@ -16,7 +16,7 @@ from braces.views import LoginRequiredMixin
 
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
 from .models import ForumUser
-from forum.models import ThreadCession
+from forum.models import Thread
 
 
 class Register(CreateView):
@@ -47,7 +47,7 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         # Change thread owner if a token has been entered
         token = form.cleaned_data.get('token')
         if token:
-            obj = ThreadCession.objects.get(token=token)
+            obj = Thread.objects.get(cessionToken=token)
             t, p = obj.thread, obj.thread.posts.first()
             t.author, p.author = self.request.user, self.request.user
             t.save()

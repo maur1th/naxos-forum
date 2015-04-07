@@ -73,8 +73,11 @@ class ThreadForm(GenericThreadForm):
                                             HTML(toolbar),
                                             Field('content_plain'),
                                             Field('personal', type='hidden'))
-                self.helper.add_input(
-                    Submit('cede', 'Céder le contrôle'))
+                self.helper.add_input(Button('cession',
+                                             'Céder le contrôle',
+                                             css_class='btn-default',
+                                             data_toggle='modal',
+                                             data_target='#cessionModal'))
                 if thread.personal:
                     self.helper.add_input(Button('delete',
                                                  'Supprimer',

@@ -70,10 +70,4 @@ urlpatterns = patterns(
         view=views.PreviewView.as_view(),
         name='preview'
     ),
-    url(
-        regex=(r'^(?P<category_slug>[\w|\-]+)/'
-                '(?P<thread_slug>[\w|\-]+)/cession$'),
-        view=views.ThreadCessionView.as_view(),
-        name='cession'
-    ),
 )

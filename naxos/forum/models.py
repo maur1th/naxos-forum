@@ -60,6 +60,7 @@ class Thread(CachedAuthorModel):
     modified = models.DateTimeField(default=datetime.now)
     personal = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
+    cessionToken = models.CharField(max_length=50, unique=True)
 
     def save(self, *args, **kwargs):
 
@@ -70,10 +71,17 @@ class Thread(CachedAuthorModel):
                           max_length=SLUG_LENGTH)
             return slug
 
+        def create_token(self):
+            queryset = self.__class__.objects.all()
+            while True:
+                token = keygen()
+                if not queryset.filter(cessionToken=token).exists():
+                    return token
+
         new_slug = make_slug(self, self.title)
-        if self.pk is not None:
+        if self.pk is not None:  # This is an existing thread
             orig = Thread.objects.get(pk=self.pk)
-            # Delete template cache when needed and set new slug
+            # Delete template cache when needed and create new slug
             if orig.slug != new_slug:
                 self.slug = new_slug
                 key = make_template_fragment_key(
@@ -87,8 +95,14 @@ class Thread(CachedAuthorModel):
                 key = make_template_fragment_key(
                     'thread_view_count', [self.pk])
                 cache.delete(key)
-        else:  # New thread, only set a slug
+            # Change cessionToken if the author has changed or db migration
+            if orig.author != self.author or self.cessionToken == 'tmp':
+                self.cessionToken = create_token(self)
+        else:  # This is a new thread
+            # Create slug
             self.slug = new_slug
+            # Create initial cessionToken
+            self.cessionToken = create_token(self)
         if not self.slug:  # Prevent slugs to be empty
             self.slug = make_slug(self, 'sans titre')
         super().save(*args, **kwargs)
@@ -175,21 +189,6 @@ class Preview(models.Model):
 
     def __str__(self):
         return "{:d}".format(self.pk)
-
-
-class ThreadCession(models.Model):
-    thread = models.OneToOneField(Thread)
-    token = models.CharField(max_length=50, unique=True)
-
-    def save(self, *args, **kwargs):
-        queryset = self.__class__.objects.all()
-        self.token = keygen()
-        while queryset.filter(token=self.token).exists():
-            self.token = keygen()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return thread
 
 
 ### Poll models ###

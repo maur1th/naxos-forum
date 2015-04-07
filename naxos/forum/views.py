@@ -11,8 +11,7 @@ import re
 import datetime
 from braces.views import LoginRequiredMixin
 
-from .models import Category, Thread, Post, Preview, PollQuestion, \
-    ThreadCession
+from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -262,16 +261,6 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         self.c = self.t.category
         return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        if "cede" in request.POST:
-            ThreadCession.objects.get_or_create(thread=self.t)
-            return HttpResponseRedirect(
-                reverse('forum:cession',
-                        kwargs={'category_slug': self.c.slug,
-                                'thread_slug': self.t.slug}))
-        else:
-            return super().post(request, *args, **kwargs)
-
     def get_initial(self):
         "Pass initial data to form"
         initial = super().get_initial()
@@ -333,21 +322,6 @@ class PreviewView(LoginRequiredMixin, DetailView):
         context = self.get_context_data(object=self.object)
         self.object.delete()  # Now the object is loaded, delete it
         return self.render_to_response(context)
-
-
-class ThreadCessionView(LoginRequiredMixin, DetailView):
-    
-    def dispatch(self, request, *args, **kwargs):
-        self.t = get_object_or_404(
-            Thread,
-            slug=self.kwargs['thread_slug'],
-            category__slug=self.kwargs['category_slug'])
-        if self.t.author != self.request.user:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_object(self):
-        return ThreadCession.objects.get(thread=self.t)
 
 
 ### Poll Views ###

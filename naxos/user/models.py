@@ -53,6 +53,7 @@ class ForumUser(AbstractUser):
 
 
 class TokenPool(models.Model):
+    "Contains tokens for user creation"
     token = models.CharField(unique=True, max_length=50)
 
     def save(self, *args, **kwargs):

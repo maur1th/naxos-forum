@@ -55,7 +55,6 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
             # Update thread cache to reflect author's change
             key = make_template_fragment_key('thread', [self.t.pk])
             cache.delete(key)
-            obj.delete()  # Delete cession token
         return super().form_valid(form)
 
     def get_success_url(self):

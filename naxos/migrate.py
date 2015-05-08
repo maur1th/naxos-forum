@@ -1,6 +1,7 @@
 # CoolForum database migration scripts
 # Feed it JSON
 import os
+from os.path import join, abspath, dirname, basename
 import re
 import json
 import django
@@ -11,16 +12,15 @@ django.setup()
 
 from django.db import connection
 from django.utils.html import strip_tags
+from uuslug import uuslug
 
-from naxos.settings.base import here
 from user.models import ForumUser
 from forum.models import Category, Thread, Post
 from forum.util import keygen
 
-
+here = lambda *dirs: join(abspath(dirname(__file__)), *dirs)
 CUT_OFF_DATE = datetime(2010, 1, 1)
-
-# CATEGORIES HAVE TO BE CREATED FIRST AND UPDATE 'cat_map' ACCORDINGLY
+SLUG_LENGTH = 50
 
 
 def fix_json(f):
@@ -33,8 +33,7 @@ def fix_json(f):
     def clean_invalid_char(match_obj):
         return ': ' + json.dumps(match_obj.group(1)) +','
 
-    filename = os.path.basename(f)
-    print('Repairing {}...'.format(filename), end="\r")
+    print('Repairing {}...'.format(basename(f)), end=" "*20+"\r")
     with open(f) as f:
         lines = f.readlines()
     # Remove comments at the top (illegal in json)
@@ -53,8 +52,25 @@ def fix_json(f):
         new.append(re.sub(r': "([\s|\S]*?)",', clean_invalid_char, item))
     s = "}, {".join(new)
     # Good to go
-    print("Repairing {}... done".format(filename))
     return s
+
+
+def import_categories(f):
+    with open(f) as f:
+        categories = json.load(f)
+    print("Creating categories...", end=" "*20+"\r")
+    for c in categories:
+        # Skip if pk is taken (category likely exists already)
+        match = Category.objects.filter(pk=c['pk']).first()
+        if match: continue
+        # Else create category
+        fields = c['fields']
+        Category.objects.create(
+            pk=c['pk'],
+            title=fields['title'],
+            subtitle=fields['subtitle'],
+            slug=fields['slug'],
+            postCount=0)
 
 
 def import_users(f):
@@ -66,18 +82,20 @@ def import_users(f):
     s = fix_json(f)
     users = json.loads(s)
     n = len(users)
-    new_users = {}
+    new_users = {}  # Here will be stored usernames & passwords
     for i, user in enumerate(users):
         print("Creating users... {}/{}".format(
-            i+1, n), end="\r")
+            i+1, n), end=" "*20+"\r")
         user['login'] = convert_username(user['login'])
+        # Skip if pk is taken (user likely exists already)
         m = ForumUser.objects.filter(pk=user['userid']).first()
         if m: continue
         ### TEMPORARY FIX WHILE HOST BLOCKS SMTP ###
         # password = keygen()  # generate password
         password = HTMLParser().unescape(user['usermail'])
         ### END ###
-        new_users[user['login']] = password
+        new_users[user['login']] = password  # Store username & password
+        # Create users
         u = ForumUser.objects.create(
             pk=int(user['userid']),
             username=user['login'],
@@ -85,11 +103,10 @@ def import_users(f):
             date_joined=datetime.fromtimestamp(user['registerdate']),
             logo="logo/{}".format(user['userlogo']),
             quote=HTMLParser().unescape(str(user['usercitation'])),
-            website=HTMLParser().unescape(str(user['usersite'])),
-        )
+            website=HTMLParser().unescape(str(user['usersite'])))
         u.set_password(password)
         u.save()
-    print("Creating users... done{}".format(" "*20))
+    # Write username & passwords into a file
     with open('new_users.json', 'a') as f:
         json.dump(new_users, f)
     # TODO: SEND EMAILS WITH NEW PASSWORDS
@@ -102,16 +119,19 @@ def import_threads(f):
     existing_threads = {}
     for thread in Thread.objects.iterator():
         existing_threads[thread.pk] = thread.category_id
+    # prepare tokens for threads
+    tokens = set()
+    print("Creating tokens...", end='\r')
+    while len(tokens) != len(threads):
+        tokens.add(keygen())
+    # Prepare bulk
+    bulk = []
     for i, thread in enumerate(threads):
-        print("Creating threads... {}/{}".format(
-            i+1, len(threads)), end="\r")
+        print("Preparing threads... {}/{}".format(
+            i+1, len(threads)), end='\r')
         if thread['idtopic'] in existing_threads: continue
-        # prepare tokens for threads
-        tokens = set()
-        while len(tokens) != len(threads):
-            tokens.add(keygen())
         isSticky = True if thread['postit'] == 1 else False
-        t = Thread.objects.create(
+        bulk.append(Thread(
             pk=int(thread['idtopic']),
             category=Category.objects.get(pk=cat_map[thread['idforum']]),
             title=HTMLParser().unescape(str(thread['sujet']))[:80],
@@ -119,9 +139,9 @@ def import_threads(f):
             icon=str(thread['icone'])+'.gif',
             viewCount=int(thread['nbvues']),
             isSticky=isSticky,
-            cessionToken=tokens.pop()
-        )
-    print("Creating threads... done{}".format(" "*20))
+            cessionToken=tokens.pop()))
+    print("Creating threads in the database...", end='\r')
+    if bulk: Thread.objects.bulk_create(bulk)
 
 
 def import_posts(f):
@@ -146,7 +166,7 @@ def import_posts(f):
         bulk = []
         for i, post in enumerate(posts):
             print("Preparing posts... {}/{}".format(
-                i+1, len(posts)), end="\r")
+                i+1, len(posts)), end=" "*20+"\r")
             if post['parent'] not in existing_threads: continue
             # increment category post counter
             post_counter[existing_threads[post['parent']]] += 1
@@ -162,34 +182,40 @@ def import_posts(f):
                 thread_id=int(post['parent']),
                 author_id=int(post['idmembre']),
                 created=datetime.fromtimestamp(post['date']),
-                content_plain=content_plain,
-            ))
+                content_plain=content_plain))
         return bulk, post_counter
 
+
+    def make_slug(thread, title):
+        slug = uuslug(title,
+                      filter_dict={'category': thread.category},
+                      instance=thread,
+                      max_length=SLUG_LENGTH)
+        return slug
+
     bulk, post_counter = prepare_bulk(f)
-    print("\nCreating posts in the database...", end="\r")
+    print("Creating posts in the database...", end=" "*20+"\r")
     if bulk: Post.objects.bulk_create(bulk)
-    print("Creating posts in the database... done")
 
     threads = Thread.objects.iterator()
     count = Thread.objects.count()
     for i, t in enumerate(threads):
-        print('Updating threads... {}/{}'.format(
-            i+1, count), end="\r")
+        print('Updating threads... {}/{}'.format(i+1, count), end=" "*20+"\r")
         t.modified = t.latest_post.created
         for p in t.posts.iterator():
             t.contributors.add(p.author)
+        t.slug = make_slug(t, t.title)
+        if not t.slug:  # Prevent slugs to be empty
+            t.slug = make_slug(t, 'sans titre')
         t.save()
-    print("Updating threads... done{}".format(" "*20))
     for key, value in post_counter.items():
-        print('Updating post counter...', end="\r")
+        print('Updating post counter...')
         c = Category.objects.get(pk=key)
         c.postCount = value
         c.save()
-    print('Updating post counter... done')
 
 
-def delete_inactive_users():
+def disable_inactive_users():
     delete_count = 0
     inactive_count = 0
     for u in ForumUser.objects.iterator():
@@ -200,14 +226,15 @@ def delete_inactive_users():
             u.is_active = False
             u.save()
             inactive_count += 1
-    print("Deleted {} users which never posted".format(delete_count))
-    print("Deactivated {} users".format(inactive_count))
+    print("Disabled {} users which never posted".format(delete_count))
+    print("Disabled {} inactive users".format(inactive_count))
 
 
-import_users(here('..', '..', '..', 'util', 'data', 'CF_user.json'))
-import_threads(here('..', '..', '..', 'util', 'data', 'CF_topics.json'))
-import_posts(here('..', '..', '..', 'util', 'data', 'CF_posts.json'))
-delete_inactive_users()
+import_categories(here('..', 'util', 'data', 'categories.json'))
+import_users(here('..', 'util', 'data', 'CF_user.json'))
+import_threads(here('..', 'util', 'data', 'CF_topics.json'))
+import_posts(here('..', 'util', 'data', 'CF_posts.json'))
+disable_inactive_users()
 
 cursor = connection.cursor()
 cursor.execute('ALTER SEQUENCE user_forumuser_id_seq RESTART WITH {}'.format(

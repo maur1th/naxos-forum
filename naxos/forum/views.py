@@ -305,7 +305,7 @@ class DeleteThread(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         t = get_object_or_404(Thread, pk=self.kwargs['pk'])
-        if t.author != self.request.user or not t.personnal:
+        if t.author != self.request.user or not t.personal:
             raise PermissionDenied
         else:
             t.visible = False

@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView, FormView, ListView, TemplateView
+from django.views.generic import CreateView, UpdateView, TemplateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
@@ -78,23 +78,20 @@ def UpdatePassword(request):
     })
 
 
-class MemberList(LoginRequiredMixin, ListView):
+class MemberList(LoginRequiredMixin, TemplateView):
     template_name = "user/members.html"
-    context_object_name = "active_users"
 
     def dispatch(self, request, *args, **kwargs):
         qs = ForumUser.objects.extra(
-            select={'username_lower': 'lower(username)'}).order_by(
-            'username_lower')
+            select={'username_lower': 'lower(username)'})\
+            .order_by('username_lower')
         self.active_users = qs.filter(is_active=True)
         self.inactive_users = qs.filter(is_active=False)
         return super().dispatch(request, *args, **kwargs)
 
-    def get_queryset(self):
-        return self.active_users
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['active_users'] = self.active_users
         context['inactive_users'] = self.inactive_users
         return context
 

@@ -168,7 +168,7 @@ class SpoilerTag(postmarkup.TagBase):
         return '</div></div></div>'
 
 
-render_bbcode = postmarkup.create(use_pygments=False)
+render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False)
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
 
 

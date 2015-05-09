@@ -136,7 +136,7 @@ $(document).ready(function() {
     <div class="col-sm-10 post equal-divs">
         <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.cached_author }}</strong> | </span>
         <small>
-            Posté le {{ post.created|date:"d/m/y à H:i:s" }}
+            <span class="hidden-xs">Posté le {{ post.created|date:"d/m/y à H:i:s" }}</span><span class="hidden-sm hidden-lg hidden-md">Le {{ post.created|date:"d/m/y à H:i" }}</span>
             {% ifequal post.cached_author user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
             {% endifequal %}

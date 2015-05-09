@@ -23,6 +23,11 @@ urlpatterns = patterns(
         name='members'
     ),
     url(
+        regex=r'^top10/$',
+        view=views.Top10.as_view(),
+        name='top10'
+    ),
+    url(
         regex=r'^register/$',
         view=views.Register.as_view(),
         name='register'

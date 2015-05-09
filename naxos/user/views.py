@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView, FormView, ListView
+from django.views.generic import CreateView, UpdateView, FormView, ListView, TemplateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
@@ -96,6 +96,24 @@ class MemberList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['inactive_users'] = self.inactive_users
+        return context
+
+
+class Top10(LoginRequiredMixin, TemplateView):
+    template_name = "user/top10.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.top_views = Thread.objects.order_by("-viewCount")[:10]
+        # Since post_count is a property, computation must be performed in
+        # python instead of db
+        self.top_posts = sorted(Thread.objects.all(),
+            key=lambda t: t.post_count, reverse=True)[:10]
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['top_views'] = self.top_views
+        context['top_posts'] = self.top_posts
         return context
 
 

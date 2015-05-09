@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Profil{% endblock title %}
+{% load static %}
+{% load cache %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li class="active">Profil</li>
+</ol>
+{# Tabs #}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="{% url 'user:profile' %}">Paramètres</a></li>
+    <li role="presentation"><a href="{% url 'user:password' %}">Sécurité</a></li>
+    <li role="presentation"><a href="{% url 'user:members' %}">Liste des membres</a></li>
+    <li role="presentation" class="active"><a href="#">Top 10</a></li>
+</ul>
+{# Top views #}
+<h3>Sujets les plus vus</h3>
+<div class="row">
+  <table class="table table-condensed table-bordered" id="view">
+    <thead>
+    <tr>
+      <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+      <th>Titre</th>
+      <th class="col-xs-2 text-center hidden-xs">Auteur</th>
+      <th class="text-center col-xs-1 hidden-xs">Rép.</th>
+      <th class="text-center col-xs-1 hidden-xs">Vues</th>
+      <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
+      <th class="text-center col-xs-2 visible-xs">Der. msg.</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for thread in top_views %}
+      <tr>
+        <td class="text-center vert-align" style="padding:0">
+            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;cursor: not-allowed">
+        </td>
+        {% cache 9999999 thread thread.pk %}
+        <td class="vert-align">
+          {% with 'img/thread/'|add:thread.icon as icon %}
+            <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
+          {% endwith %}
+          {% if thread.isSticky and thread.question %}
+            Annonce/Sondage : 
+          {% elif thread.isSticky %}
+            Annonce :
+          {% elif thread.question %}
+            Sondage :
+          {% endif %}
+          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+          {% if thread.personal %}
+            <span style="color:#d9534f">(perso)</span>
+          {% endif %}
+        </td>
+        {% endcache %}
+        <td class="text-center vert-align importantData hidden-xs">
+          <small><strong>{{ thread.cached_author }}</strong></small>
+        </td>
+        {# Post count #}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count|add:"-1" }}</small></td>
+        {# View count #}
+        {% cache 9999999 thread_view_count thread.pk %}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        {% endcache %}
+        {# Latest post #}
+        <td class="text-center vert-align importantData" style="line-height:100%">
+          <small>
+          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
+            <span class="hidden-xs">{{ thread.latest_post.created|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.cached_author }}</strong>
+          </a>
+          </small>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{# Threads #}
+<h3>Sujets les plus commentés</h3>
+<div class="row">
+  <table class="table table-condensed table-bordered" id="view">
+    <thead>
+    <tr>
+      <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+      <th>Titre</th>
+      <th class="col-xs-2 text-center hidden-xs">Auteur</th>
+      <th class="text-center col-xs-1 hidden-xs">Rép.</th>
+      <th class="text-center col-xs-1 hidden-xs">Vues</th>
+      <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
+      <th class="text-center col-xs-2 visible-xs">Der. msg.</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for thread in top_posts %}
+      <tr>
+        <td class="text-center vert-align" style="padding:0">
+            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;cursor: not-allowed">
+        </td>
+        {% cache 9999999 thread thread.pk %}
+        <td class="vert-align">
+          {% with 'img/thread/'|add:thread.icon as icon %}
+            <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
+          {% endwith %}
+          {% if thread.isSticky and thread.question %}
+            Annonce/Sondage : 
+          {% elif thread.isSticky %}
+            Annonce :
+          {% elif thread.question %}
+            Sondage :
+          {% endif %}
+          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}" style="word-wrap: break-word">{{ thread.title }}</a>
+          {% if thread.personal %}
+            <span style="color:#d9534f">(perso)</span>
+          {% endif %}
+        </td>
+        {% endcache %}
+        <td class="text-center vert-align importantData hidden-xs">
+          <small><strong>{{ thread.cached_author }}</strong></small>
+        </td>
+        {# Post count #}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count|add:"-1" }}</small></td>
+        {# View count #}
+        {% cache 9999999 thread_view_count thread.pk %}
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
+        {% endcache %}
+        {# Latest post #}
+        <td class="text-center vert-align importantData" style="line-height:100%">
+          <small>
+          <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page=last#{{ thread.latest_post.pk }}" class="lastMessage">
+            <span class="hidden-xs">{{ thread.latest_post.created|date:'d/m/y H:i' }}<br></span><span class="visible-xs">{{ thread.modified|date:'d/m H:i' }}</span><strong>{{ thread.latest_post.cached_author }}</strong>
+          </a>
+          </small>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

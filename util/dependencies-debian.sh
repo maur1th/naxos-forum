@@ -1,1 +1,1 @@
-sudo apt-get install -y git build-essential python3 python3-pip virtualenvwrapper nginx postgresql postgresql-server-dev-9.3 memcached libmemcached-dev libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev nginx supervisor
+sudo apt-get install -y git build-essential python3 python3-pip virtualenvwrapper nginx postgresql postgresql-server-dev-9.4 memcached libmemcached-dev libtiff5-dev libjpeg62-turbo-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev nginx supervisor

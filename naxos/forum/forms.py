@@ -114,7 +114,7 @@ class PostForm(forms.ModelForm):
             Field('title', value=self.t.title, disabled=''),
             HTML(toolbar),
             Field('content_plain'))
-        self.helper.add_input(Submit('submit', 'Enregistrer', accesskey="s"))
+        self.helper.add_input(Submit('submit', 'Répondre', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     class Meta:

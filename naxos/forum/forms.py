@@ -56,7 +56,7 @@ class ThreadForm(GenericThreadForm):
             new = True
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Enregistrer', accesskey="s"))
+        self.helper.add_input(Submit('submit', 'Publier', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
         if new:  # This is a new thread
             self.helper.form_action = reverse(

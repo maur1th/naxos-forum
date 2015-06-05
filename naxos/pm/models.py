@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 
 import datetime
 
@@ -30,7 +31,6 @@ class Message(models.Model):
     created = models.DateTimeField(default=datetime.datetime.now,
                                    editable=False)
     content_plain = models.TextField(verbose_name='Message')
-    content_html = models.TextField()
     markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='pvt_messages')
     conversation = models.ForeignKey(Conversation, related_name='messages')
@@ -43,6 +43,15 @@ class Message(models.Model):
         self.conversation.modified = self.created
         self.conversation.save()
         super().save(*args, **kwargs)
+
+    @property
+    def html(self):
+        html = cache.get('post/{}/html'.format(self.pk))
+        if not html:
+            html = convert_text_to_html(self.content_plain, self.markup)
+            if self.markup == 'bbcode': html = smilify(html)
+            cache.set('post/{}/html'.format(self.pk), html, None)
+        return html
 
     class Meta:
         ordering = ["created"]

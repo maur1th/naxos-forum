@@ -83,9 +83,9 @@ class NewConversation(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         recipient = self.request.POST['recipient']
         # Check if conversation already exists
-        query = Conversation.objects.filter(
-                    participants=self.request.user).filter(
-                    participants=recipient)
+        query = Conversation.objects\
+                    .filter(participants=self.request.user)\
+                    .filter(participants=recipient)
         if query:
             c = query.get()
         else:  # Create the conversation

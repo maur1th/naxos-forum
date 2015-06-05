@@ -16,6 +16,7 @@ from uuslug import uuslug
 
 from user.models import ForumUser
 from forum.models import Category, Thread, Post
+from pm.models import Conversation, Message
 from forum.util import keygen
 
 here = lambda *dirs: join(abspath(dirname(__file__)), *dirs)
@@ -90,10 +91,7 @@ def import_users(f):
         # Skip if pk is taken (user likely exists already)
         m = ForumUser.objects.filter(pk=user['userid']).first()
         if m: continue
-        ### TEMPORARY FIX WHILE HOST BLOCKS SMTP ###
-        # password = keygen()  # generate password
-        password = HTMLParser().unescape(user['usermail'])
-        ### END ###
+        password = keygen()  # generate password
         new_users[user['login']] = password  # Store username & password
         # Create users
         u = ForumUser.objects.create(
@@ -109,7 +107,6 @@ def import_users(f):
     # Write username & passwords into a file
     with open('new_users.json', 'a') as f:
         json.dump(new_users, f)
-    # TODO: SEND EMAILS WITH NEW PASSWORDS
 
 
 def import_threads(f):
@@ -215,6 +212,53 @@ def import_posts(f):
         c.save()
 
 
+def import_pm(f):
+
+    def clean_size(match_obj):
+        return "[size=" + str(int(match_obj.group(1))+9) + "]"
+    
+    messages = json.loads(fix_json(f))
+    bulk = []
+    for i, message in enumerate(messages):
+        # Getting users
+        recipient = ForumUser.objects.get(pk=message['iddest'])
+        sender = ForumUser.objects.get(pk=message['idexp'])
+        if recipient == sender:
+            continue
+        # Check if conversation already exists
+        query = Conversation.objects\
+                    .filter(participants=sender)\
+                    .filter(participants=recipient)
+        if query:
+            c = query.get()
+        else:  # Create the conversation
+            c = Conversation()
+            c.save()
+            c.participants.add(recipient, sender)
+        print("Preparing private messages... {}/{}".format(
+            i+1, len(messages)), end='\r')
+        # perpare message
+        content_plain = strip_tags(HTMLParser().unescape(str(message['msg'])))
+        # fix text size tags
+        content_plain = re.sub(r'\[size=(\d)\]', clean_size, content_plain)
+        # store prepared message
+        bulk.append(Message(
+            conversation=c,
+            author=sender,
+            created=datetime.fromtimestamp(message['date']),
+            content_plain=content_plain))
+    print("Creating private messages in the database...", end="\r")
+    if bulk: Message.objects.bulk_create(bulk)
+
+    conversations = Conversation.objects.iterator()
+    count = Conversation.objects.count()
+    for i, c in enumerate(conversations):
+        print('Updating Conversations... {}/{}'.format(i+1, count),
+              end=" "*20+"\r")
+        c.modified = c.messages.latest().created
+        c.save()
+
+
 def disable_inactive_users():
     delete_count = 0
     inactive_count = 0
@@ -234,6 +278,7 @@ import_categories(here('..', 'util', 'data', 'categories.json'))
 import_users(here('..', 'util', 'data', 'CF_user.json'))
 import_threads(here('..', 'util', 'data', 'CF_topics.json'))
 import_posts(here('..', 'util', 'data', 'CF_posts.json'))
+import_pm(here('..', 'util', 'data', 'CF_privatemsg.json'))
 disable_inactive_users()
 
 cursor = connection.cursor()

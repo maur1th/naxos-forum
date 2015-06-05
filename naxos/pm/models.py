@@ -36,9 +36,6 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, related_name='messages')
 
     def save(self, *args, **kwargs):
-        # BBCode + Smileys
-        self.content_html = convert_text_to_html(self.content_plain)
-        self.content_html = smilify(self.content_html)
         # Update conv datetime
         self.conversation.modified = self.created
         self.conversation.save()

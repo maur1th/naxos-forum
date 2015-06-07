@@ -96,9 +96,14 @@ $(document).ready(function() {
 {% endif %}
 {# Header #}
 {% include "pagination.html" %}
-<div class="row" style="padding: 5px 0">
+{# Top reply button #}
+<div class="row hidden-xs" style="padding: 5px 0"> {# large display #}
     <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
 </div>
+<div class="row visible-xs" style="padding: 5px 2px"> {# small display #}
+    <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
+</div>
+{# Thread's title #}
 <hr style="margin:8px; border-top:0">
 <div class="row">
     <strong>
@@ -133,7 +138,7 @@ $(document).ready(function() {
         <p style="font-size:10px">depuis le {{ post.cached_author.date_joined|date:'d/m/Y' }}</p>
     </div>
     {# Small display logo #}
-    <div class="col-xs-2 hidden-sm hidden-lg hidden-md" style="padding:0 5px">
+    <div class="col-xs-2 visible-xs" style="padding:0 5px">
         {% if post.cached_author.logo %}
             <img src="{{ media }}{{ post.cached_author.logo }}" alt="" class="img-responsive">
         {% endif %}
@@ -161,8 +166,11 @@ $(document).ready(function() {
 </div>
 <hr style="margin:8px; border-top:0">
 {% endfor %}
-{# Posts footer #}
-<div class="row" style="padding: 5px 0">
+{# Bottom reply button #}
+<div class="row hidden-xs" style="padding: 5px 0"> {# large display #}
+        <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>
+</div>
+<div class="row visible-xs" style="padding: 5px 2px"> {# small display #}
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>
 </div>
 {% include "pagination.html" %}

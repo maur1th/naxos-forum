@@ -26,6 +26,7 @@ class ForumUser(AbstractUser):
     fullscreen = models.BooleanField(
         default=False,
         verbose_name='Utilisation de la largeur de l\'écran')
+    showLogosOnSmartphone = models.BooleanField(default=True, verbose_name='Afficher les logos sur smartphone')
     logo = models.ImageField(upload_to="logo",
                              blank=True)
     quote = models.CharField(max_length=50,

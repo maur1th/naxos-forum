@@ -125,8 +125,8 @@ $(document).ready(function() {
 {% for post in object_list %}
 <div class="row">
     <a name="{{ post.pk }}"></a>
-    {# Large display author #}
-    <div class="col-xs-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;">
+    {# Author #}
+    <div class="col-xs-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
         <p style="margin-bottom:5px">
             <strong>{{ post.cached_author }}</strong>
         </p>
@@ -138,14 +138,17 @@ $(document).ready(function() {
         {% endif %}
         <p style="font-size:10px">depuis le {{ post.cached_author.date_joined|date:'d/m/Y' }}</p>
     </div>
-    {# Small display logo #}
-    <div class="col-xs-2 visible-xs" style="padding:0 5px">
+    {% if user.showLogosOnSmartphone %}
+    <div class="col-xs-2 visible-xs" style="padding:0 5px"> {# small display #}
         {% if post.cached_author.logo %}
             <img src="{{ media }}{{ post.cached_author.logo }}" alt="" class="img-responsive">
         {% endif %}
     </div>
-    {# Content #}
     <div class="col-xs-10 post equal-divs">
+    {% else %}
+    <div class="col-xs-12 post equal-divs">    
+    {% endif %}
+    {# Content #}
         <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.cached_author }}</strong> | </span>
         <small>
             <span class="hidden-xs">Posté le {{ post.created|date:"d/m/y à H:i:s" }}</span><span class="hidden-sm hidden-lg hidden-md">Le {{ post.created|date:"d/m/y à H:i" }}</span>

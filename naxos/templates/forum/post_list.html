@@ -133,7 +133,7 @@ $(document).ready(function() {
         <p style="font-size:10px">depuis le {{ post.cached_author.date_joined|date:'d/m/Y' }}</p>
     </div>
     {# Small display logo #}
-    <div class="col-xs-2 hidden-sm hidden-lg hidden-md">
+    <div class="col-xs-2 hidden-sm hidden-lg hidden-md" style="padding:0 5px">
         {% if post.cached_author.logo %}
             <img src="{{ media }}{{ post.cached_author.logo }}" alt="" class="img-responsive">
         {% endif %}

@@ -34,6 +34,7 @@ class Message(models.Model):
     markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='pvt_messages')
     conversation = models.ForeignKey(Conversation, related_name='messages')
+    visible = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         # Update conv datetime

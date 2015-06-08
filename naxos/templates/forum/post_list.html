@@ -36,7 +36,7 @@
                     {% if user not in question.voters.all %}
                         <input type="radio" name="choice_text" value="{{ choice }}">
                     {% endif %}
-                        <span style="font-weight:normal">{{ choice }}</span>
+                        <span style="font-weight:normal">{{ choice }} – {{ choice.votes }} vote(s)</span>
                     </label>
                     {# In order to have labels and progress bars aligned #}
                     <div class="progress" style="visibility: hidden">

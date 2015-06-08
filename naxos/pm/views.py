@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, CreateView
-from django.core.urlresolvers import reverse_lazy
+from django.views.generic import View, ListView, CreateView
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -118,6 +118,19 @@ def NewMessage(request, pk):
 
     else:
         return HttpResponseRedirect(reverse_lazy('pm:top'))
+
+
+class DeleteMessage(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        m = get_object_or_404(Message, pk=self.kwargs['pk'])
+        if m.author not in m.conversation.participants.all():
+            raise PermissionDenied
+        else:
+            m.visible = False
+            m.save()
+            return HttpResponseRedirect(
+                reverse('pm:msg', args=[m.conversation.pk]))
 
 
 ### Search form ###

@@ -26,6 +26,11 @@ urlpatterns = patterns(
         name='new_msg'
     ),
     url(
+        regex=r'^delete_msg/(?P<pk>[0-9]+)$',
+        view=views.DeleteMessage.as_view(),
+        name='delete_msg'
+    ),
+    url(
         regex=r'^\$$',
         view=views.GetConversation,
         name='search'

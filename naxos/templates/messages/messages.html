@@ -24,6 +24,7 @@
 <hr style="margin:1px; border-top:0">
 {# Posts #}
 {% for msg in object_list %}
+{% if msg.visible %}
 <div class="row">
   <a name="{{ msg.pk }}"></a>
   {# Author panel #}
@@ -43,7 +44,7 @@
   <div class="col-sm-10 post equal-divs">
     <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ msg.author }}</strong> | </span>
     <small>
-      Posté le {{ msg.created|date:"j F Y à H:i:s" }}
+      Posté le {{ msg.created|date:"j F Y à H:i:s" }} | <a href="#" data-toggle='modal' data-target='#deleteModal-{{ msg.pk }}'>Supprimer</a>
     </small>
     <hr style="margin:5px; border-top: 1px solid #ccc">
     <div class="post-content">
@@ -53,6 +54,25 @@
 </div>
 {% include "pagination.html" %}
 <hr style="margin:8px; border-top:0">
+{# Delete modal #}
+<div class="modal fade" id="deleteModal-{{ msg.pk }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteModalLabel">Êtes-vous sûr de vouloir supprimer ce message ?</h4>
+      </div>
+      <div class="modal-footer">
+        <form method="post" action="{% url 'pm:delete_msg' msg.pk %}">
+        {% csrf_token %}
+            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endfor %}
 {# Quick reply #}
 <hr style="margin:20px; border-top: 1px solid #ccc">

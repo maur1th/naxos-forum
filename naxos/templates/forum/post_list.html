@@ -71,8 +71,8 @@ $(document).ready(function() {
     var highestNumber = 0;
     var sum = 0;
     $chart.find($bar).each(function() {
-        var num = $(this).text();
-        sum += parseInt(num,10);
+        var num = parseInt($(this).text(),10);
+        sum += num;
         if (num > highestNumber) {
             highestNumber = num;
         };

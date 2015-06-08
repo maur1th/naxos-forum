@@ -109,7 +109,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    paginate_by = 5
+    paginate_by = 30
     paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):

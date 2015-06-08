@@ -93,6 +93,7 @@ class TopView(LoginRequiredMixin, ListView):
 
 class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_by = 30
+    paginate_orphans = 2
 
     def get_queryset(self):
         "Return threads of the current category ordered by latest post"
@@ -108,7 +109,8 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    paginate_by = 30
+    paginate_by = 5
+    paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
@@ -398,6 +400,7 @@ def VotePoll(request, category_slug, thread_slug):
 ### Search View ###
 class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_by = 30
+    paginate_orphans = 2
     template_name = 'forum/search_results.html'
 
     def dispatch(self, request, *args, **kwargs):

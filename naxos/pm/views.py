@@ -25,6 +25,7 @@ class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
     template_name = "messages/top.html"
     paginate_by = 30
+    paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):
         self.request.user.pmUnreadCount = 0
@@ -41,6 +42,7 @@ class MessageView(LoginRequiredMixin, ListView):
     template_name = "messages/messages.html"
     model = Message
     paginate_by = 30
+    paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):
         self.c = get_object_or_404(Conversation, pk=self.kwargs['pk'])

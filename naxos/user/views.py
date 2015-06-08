@@ -48,12 +48,12 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
         token = form.cleaned_data.get('token')
         if token:
             obj = Thread.objects.get(cessionToken=token)
-            t, p = obj.thread, obj.thread.posts.first()
+            t, p = obj, obj.posts.first()
             t.author, p.author = self.request.user, self.request.user
             t.save()
             p.save()
             # Update thread cache to reflect author's change
-            key = make_template_fragment_key('thread', [self.t.pk])
+            key = make_template_fragment_key('thread', [t.pk])
             cache.delete(key)
         return super().form_valid(form)
 

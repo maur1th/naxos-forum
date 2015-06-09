@@ -16,6 +16,10 @@ class Conversation(models.Model):
     modified = models.DateTimeField(default=datetime.datetime.now)
     isRemoved = models.BooleanField(default=False)
 
+    @property
+    def latest_message_visible(self):
+        return self.messages.filter(visible=True).order_by('created').last()
+
     class Meta:
         ordering = ["-modified"]
         # Permit thread.posts.latest in template

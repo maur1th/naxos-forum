@@ -61,9 +61,9 @@
           <td class="text-center vert-align"><small>{{ conv.messages.count }}</small></td>
           <td class="text-center vert-align importantData" style="line-height:100%">
             <small>
-            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.messages.latest.pk }}" class="lastMessage">
+            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_message_visible.pk }}" class="lastMessage">
             {{ conv.modified|date:'d/m/y H:i' }}
-            <br><strong>{{ conv.messages.latest.author }}</strong>
+            <br><strong>{{ conv.latest_message_visible.author }}</strong>
             </a>
             </small>
           </td>

@@ -41,7 +41,7 @@
     </thead>
     <tbody>
     {% for conv in object_list %}
-    {% if conv.latest_message_visible %}
+    {% if conv.latest_shown_message %}
         <tr>
           <td class="text-center vert-align" style="padding:0">
           {% if conv.messages.latest in user.pmReadCaret.all %}
@@ -59,12 +59,12 @@
             {% endfor %}
             </a>
           </td>
-          <td class="text-center vert-align"><small>{{ conv.messages.count }}</small></td>
+          <td class="text-center vert-align"><small>{{ conv.shown_message_count }}</small></td>
           <td class="text-center vert-align importantData" style="line-height:100%">
             <small>
-            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_message_visible.pk }}" class="lastMessage">
-            {{ conv.latest_message_visible.created|date:'d/m/y H:i' }}
-            <br><strong>{{ conv.latest_message_visible.author }}</strong>
+            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_shown_message.pk }}" class="lastMessage">
+            {{ conv.latest_shown_message.created|date:'d/m/y H:i' }}
+            <br><strong>{{ conv.latest_shown_message.author }}</strong>
             </a>
             </small>
           </td>

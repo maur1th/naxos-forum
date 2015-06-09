@@ -24,7 +24,7 @@
 <hr style="margin:1px; border-top:0">
 {# Posts #}
 {% for msg in object_list %}
-{% if msg.visible %}
+{% if msg.shown %}
 <div class="row">
   <a name="{{ msg.pk }}"></a>
   {# Author panel #}

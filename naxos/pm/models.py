@@ -17,8 +17,12 @@ class Conversation(models.Model):
     isRemoved = models.BooleanField(default=False)
 
     @property
-    def latest_message_visible(self):
-        return self.messages.filter(visible=True).order_by('created').last()
+    def latest_shown_message(self):
+        return self.messages.filter(shown=True).order_by('created').last()
+
+    @property
+    def shown_message_count(self):
+        return self.messages.filter(shown=True).count()
 
     class Meta:
         ordering = ["-modified"]
@@ -38,7 +42,7 @@ class Message(models.Model):
     markup = models.TextField(default='bbcode')
     author = models.ForeignKey(ForumUser, related_name='pvt_messages')
     conversation = models.ForeignKey(Conversation, related_name='messages')
-    visible = models.BooleanField(default=True)
+    shown = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         # Update conv datetime

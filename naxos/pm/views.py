@@ -126,20 +126,20 @@ class DeleteMessage(LoginRequiredMixin, View):
         if m.author not in m.conversation.participants.all():
             raise PermissionDenied
         else:
-            # Set message invisible
-            m.visible = False
+            # Set message inshown
+            m.shown = False
             m.save()
             # Set conversation modified timestamp again in case
             # the latest message was the one deleted
-            latest_message_visible = c.messages.filter(visible=True)\
+            latest_message_shown = c.messages.filter(shown=True)\
                                             .order_by('created').last()
-            if latest_message_visible:
-                c.modified = latest_message_visible.created
+            if latest_message_shown:
+                c.modified = latest_message_shown.created
                 c.save()
                 return HttpResponseRedirect(
                     reverse('pm:msg', args=[m.conversation.pk]))
             else:
-                # If no message is visible return to top
+                # If no message is shown return to top
                 return HttpResponseRedirect(
                     reverse('pm:top'))
 

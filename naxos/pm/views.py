@@ -139,6 +139,7 @@ class DeleteMessage(LoginRequiredMixin, View):
                 return HttpResponseRedirect(
                     reverse('pm:msg', args=[m.conversation.pk]))
             else:
+                # If no message is visible return to top
                 return HttpResponseRedirect(
                     reverse('pm:top'))
 

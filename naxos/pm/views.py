@@ -126,7 +126,6 @@ class DeleteMessage(LoginRequiredMixin, View):
         if m.author not in m.conversation.participants.all():
             raise PermissionDenied
         else:
-            # Set message inshown
             m.shown = False
             m.save()
             # Set conversation modified timestamp again in case

@@ -122,13 +122,25 @@ class DeleteMessage(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         m = get_object_or_404(Message, pk=self.kwargs['pk'])
+        c = m.conversation
         if m.author not in m.conversation.participants.all():
             raise PermissionDenied
         else:
+            # Set message invisible
             m.visible = False
             m.save()
-            return HttpResponseRedirect(
-                reverse('pm:msg', args=[m.conversation.pk]))
+            # Set conversation modified timestamp again in case
+            # the latest message was the one deleted
+            latest_message_visible = c.messages.filter(visible=True)\
+                                            .order_by('created').last()
+            if latest_message_visible:
+                c.modified = latest_message_visible.created
+                c.save()
+                return HttpResponseRedirect(
+                    reverse('pm:msg', args=[m.conversation.pk]))
+            else:
+                return HttpResponseRedirect(
+                    reverse('pm:top'))
 
 
 ### Search form ###

@@ -41,6 +41,7 @@
     </thead>
     <tbody>
     {% for conv in object_list %}
+    {% if conv.latest_message_visible %}
         <tr>
           <td class="text-center vert-align" style="padding:0">
           {% if conv.messages.latest in user.pmReadCaret.all %}
@@ -68,6 +69,7 @@
             </small>
           </td>
         </tr>
+    {% endif %}
     {% endfor %}
     {% if not object_list %}
         <tr>

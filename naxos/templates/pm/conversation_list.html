@@ -62,7 +62,7 @@
           <td class="text-center vert-align importantData" style="line-height:100%">
             <small>
             <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_message_visible.pk }}" class="lastMessage">
-            {{ conv.modified|date:'d/m/y H:i' }}
+            {{ conv.latest_message_visible.created|date:'d/m/y H:i' }}
             <br><strong>{{ conv.latest_message_visible.author }}</strong>
             </a>
             </small>

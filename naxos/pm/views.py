@@ -23,7 +23,6 @@ def pm_counter(request, c):
 ### PM views ###
 class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
-    template_name = "messages/top.html"
     paginate_by = 30
     paginate_orphans = 2
 
@@ -39,7 +38,6 @@ class PMTopView(LoginRequiredMixin, ListView):
 class MessageView(LoginRequiredMixin, ListView):
 
     """Display conversation list of messages"""
-    template_name = "messages/messages.html"
     model = Message
     paginate_by = 30
     paginate_orphans = 2
@@ -73,8 +71,8 @@ class MessageView(LoginRequiredMixin, ListView):
 
 
 class NewConversation(LoginRequiredMixin, CreateView):
+    model = Conversation
     form_class = ConversationForm
-    template_name = "messages/new_conversation.html"
     success_url = reverse_lazy('pm:top')
 
     def get_form_kwargs(self):

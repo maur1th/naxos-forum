@@ -203,7 +203,7 @@ class PollQuestion(models.Model):
 
 class PollChoice(models.Model):
     question = models.ForeignKey(PollQuestion, related_name='choices')
-    choice_text = models.CharField(max_length=40)
+    choice_text = models.CharField(max_length=80)
     votes = models.IntegerField(default=0)
 
     class Meta:

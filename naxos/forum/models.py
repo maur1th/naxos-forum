@@ -47,7 +47,7 @@ class Category(models.Model):
 class Thread(CachedAuthorModel):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
-    title = models.CharField(max_length=80, verbose_name='Titre')
+    title = models.CharField(max_length=140, verbose_name='Titre')
     author = models.ForeignKey(ForumUser, related_name='threads')
     contributors = models.ManyToManyField(ForumUser)
     category = models.ForeignKey(Category, related_name='threads')

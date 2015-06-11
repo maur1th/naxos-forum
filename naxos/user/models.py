@@ -39,7 +39,7 @@ class ForumUser(AbstractUser):
     pmUnreadCount = models.IntegerField(default=0)
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         ordering = ["pk"]
 
@@ -51,6 +51,12 @@ class ForumUser(AbstractUser):
                 this.logo.delete()
         except: pass
         super().save(*args, **kwargs)
+
+
+class Visit(models.Model):
+    user = models.ForeignKey(ForumUser, related_name='visits')
+    thread = models.ForeignKey('forum.Thread', related_name='visits')
+    timestamp = models.DateTimeField(auto_now=True)
 
 
 class TokenPool(models.Model):

@@ -23,54 +23,54 @@ def get_preview(content):
     p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
-class ThreadStatusMixin(object):
-    "Populate thread status and readCaret where needed"
+# class ThreadStatusMixin(object):
+#     "Populate thread status and readCaret where needed"
 
-    def get_context_data(self, **kwargs):
+#     def get_context_data(self, **kwargs):
            
-        def get_post_page(post):
-            return  post.position // PostView.paginate_by + 1
+#         def get_post_page(post):
+#             return  post.position // PostView.paginate_by + 1
 
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        readCaret = cache.get("user/{}/readCaret".format(user.pk))
-        if not readCaret:
-            readCaret = user.postsReadCaret.all()
-            cache.set("user/{}/readCaret".format(user.pk),
-                  readCaret, None)
-        for t in context['object_list']:
-            contributors = cache.get("thread/{}/contributors".format(t.pk))
-            if not contributors:  # caches thread's contributors
-                contributors = t.contributors.all()
-                cache.set("thread/{}/contributors".format(t.pk),
-                  contributors, None)
-            # Get latest_post from cache or create it
-            latest_post = cache.get("thread/{}/latest_post".format(t.pk))
-            if not latest_post:
-                latest_post = t.latest_post
-                cache.set("thread/{}/latest_post".format(t.pk),
-                          latest_post, None)
-            uptodate_caret = latest_post in readCaret
-            if user in contributors and uptodate_caret:
-                status = "added"
-            elif user in contributors:
-                status = "added+on"
-                try:
-                    t.readCaret = readCaret.get(thread=t)
-                    t.readCaret.page = get_post_page(t.readCaret)
-                except ObjectDoesNotExist:
-                    t.readCaret = "not_visited"
-            elif uptodate_caret:
-                status = "off"
-            else:
-                status = "on"
-                try:
-                    t.readCaret = readCaret.get(thread=t)
-                    t.readCaret.page = get_post_page(t.readCaret)
-                except ObjectDoesNotExist:
-                    t.readCaret = "not_visited"
-            t.status = 'img/{}.png'.format(status)
-        return context
+#         context = super().get_context_data(**kwargs)
+#         user = self.request.user
+#         readCaret = cache.get("user/{}/readCaret".format(user.pk))
+#         if not readCaret:
+#             readCaret = user.postsReadCaret.all()
+#             cache.set("user/{}/readCaret".format(user.pk),
+#                   readCaret, None)
+#         for t in context['object_list']:
+#             contributors = cache.get("thread/{}/contributors".format(t.pk))
+#             if not contributors:  # caches thread's contributors
+#                 contributors = t.contributors.all()
+#                 cache.set("thread/{}/contributors".format(t.pk),
+#                   contributors, None)
+#             # Get latest_post from cache or create it
+#             latest_post = cache.get("thread/{}/latest_post".format(t.pk))
+#             if not latest_post:
+#                 latest_post = t.latest_post
+#                 cache.set("thread/{}/latest_post".format(t.pk),
+#                           latest_post, None)
+#             uptodate_caret = latest_post in readCaret
+#             if user in contributors and uptodate_caret:
+#                 status = "added"
+#             elif user in contributors:
+#                 status = "added+on"
+#                 try:
+#                     t.readCaret = readCaret.get(thread=t)
+#                     t.readCaret.page = get_post_page(t.readCaret)
+#                 except ObjectDoesNotExist:
+#                     t.readCaret = "not_visited"
+#             elif uptodate_caret:
+#                 status = "off"
+#             else:
+#                 status = "on"
+#                 try:
+#                     t.readCaret = readCaret.get(thread=t)
+#                     t.readCaret.page = get_post_page(t.readCaret)
+#                 except ObjectDoesNotExist:
+#                     t.readCaret = "not_visited"
+#             t.status = 'img/{}.png'.format(status)
+#         return context
 
 
 class PreviewPostMixin(object):
@@ -91,7 +91,7 @@ class TopView(LoginRequiredMixin, ListView):
         return context
 
 
-class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
+class ThreadView(LoginRequiredMixin, ListView):
     paginate_by = 30
     paginate_orphans = 2
 
@@ -401,7 +401,7 @@ def VotePoll(request, category_slug, thread_slug):
 
 
 ### Search View ###
-class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
+class SearchView(LoginRequiredMixin, ListView):
     paginate_by = 30
     paginate_orphans = 2
     template_name = 'forum/search_results.html'

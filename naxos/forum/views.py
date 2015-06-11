@@ -243,8 +243,11 @@ class QuotePost(NewPost):
     def get_initial(self):
         "Pass quoted post content as initial data for form"
         initial = super().get_initial()
+        initial_text = re.sub(r'\[quote\][\S|\s]+\[/quote\]\r{0,1}\n{0,1}',
+                              '',
+                              self.p.content_plain)
         text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
-            self.p.author.username, self.p.content_plain)
+            self.p.author.username, initial_text)
         initial['content_plain'] = text
         return initial
 

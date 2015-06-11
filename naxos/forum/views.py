@@ -127,7 +127,7 @@ class PostView(LoginRequiredMixin, ListView):
             caret = self.request.user.postsReadCaret.get(thread=self.t)
         except:
             caret = False
-        if caret != p:
+        if caret != p and request.user.is_authenticated():
             self.request.user.postsReadCaret.remove(caret)
             self.request.user.postsReadCaret.add(p)
         return super().dispatch(request, *args, **kwargs)

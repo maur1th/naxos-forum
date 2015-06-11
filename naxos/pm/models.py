@@ -26,7 +26,6 @@ class Conversation(models.Model):
 
     class Meta:
         ordering = ["-modified"]
-        # Permit thread.posts.latest in template
         get_latest_by = "modified"
 
     def __str__(self):

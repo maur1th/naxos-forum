@@ -23,7 +23,7 @@
   <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
-      <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
+      <th class="text-center" style="padding:5px 0;width:25px"><a href="#" data-toggle='modal' data-target='#reset-bookmarks'><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></a></th>
       <th>Titre</th>
       <th class="col-xs-2 text-center hidden-xs">Auteur</th>
       <th class="text-center col-xs-1 hidden-xs">Rép.</th>
@@ -82,6 +82,24 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+{# Reset bookmarks modal #}
+<div class="modal fade" id="reset-bookmarks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteModalLabel">Êtes-vous sûr de vouloir réinitialiser le statut de lecture de tous les sujets ? (Ceci s'applique à toutes les catégories du forum.)</h4>
+      </div>
+      <div class="modal-footer">
+        <form method="post" action="{% url 'forum:reset_bookmarks' user.pk %}">
+        {% csrf_token %}
+            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-danger">Oui, réinitialiser</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% include "pagination.html" %}
 {# Caption #}

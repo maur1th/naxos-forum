@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 import re
-import datetime
+from datetime import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post, Preview, PollQuestion
@@ -69,6 +69,8 @@ class ThreadStatusMixin(object):
                 status = "unread_contributor"
             elif unread_items:
                 status = "unread"
+                if not hasattr(t, 'bookmark'):
+                    t.bookmark, t.page = t.posts.first(), 1
             elif is_contributor:
                 status, t.bookmark = "read_contributor", None
             else:
@@ -292,7 +294,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-        form.instance.modified = datetime.datetime.now()
+        form.instance.modified = datetime.now()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -301,6 +303,18 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         post_page = get_post_page(self.t, self.p)
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '?page=' + str(post_page) + '#' + str(self.object.pk))
+
+
+class ResetBookmarks(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        if self.kwargs['pk'] != request.user.pk:
+            raise PermissionDenied
+        else:
+            Bookmark.objects.filter(user=request.user).delete()
+            request.user.resetDateTime = datetime.now()
+            request.user.save()
+        return reverse('forum:top')
 
 
 class DeleteThread(LoginRequiredMixin, View):

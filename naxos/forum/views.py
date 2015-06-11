@@ -319,13 +319,13 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 class ResetBookmarks(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        if self.kwargs['pk'] != request.user.pk:
+        if kwargs['pk'] != str(request.user.pk):
             raise PermissionDenied
         else:
             Bookmark.objects.filter(user=request.user).delete()
             request.user.resetDateTime = datetime.now()
             request.user.save()
-        return reverse('forum:top')
+        return HttpResponseRedirect(reverse('forum:top'))
 
 
 class DeleteThread(LoginRequiredMixin, View):

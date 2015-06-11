@@ -65,6 +65,7 @@ class Bookmark(models.Model):
     class Meta:
         unique_together = ('user', 'thread')
         index_together = ('user', 'thread')
+        get_latest_by = 'timestamp'
 
     def __str__(self):
         return "{} {} {}".format(self.user, self.thread, self.timestamp)

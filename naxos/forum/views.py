@@ -90,10 +90,21 @@ class PreviewPostMixin(object):
 ### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
     model = Category
+    context_object_name = 'categories'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['readCaret'] = self.request.user.postsReadCaret.all()
+        for c in context['categories']:
+            try:
+                latest_bookmark = Bookmark.objects\
+                    .filter(user=self.request.user, thread__category=c)\
+                    .values_list('timestamp').latest()[0]
+            except ObjectDoesNotExist:
+                latest_bookmark = self.request.user.resetDateTime
+            c.latest_thread = c.threads.latest()
+            status = ('unread' if c.latest_thread.modified >
+                      latest_bookmark else 'read')
+            c.status = 'img/{}.png'.format(status)
         return context
 
 

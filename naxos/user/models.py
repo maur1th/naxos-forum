@@ -52,9 +52,9 @@ class ForumUser(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class Visit(models.Model):
-    user = models.ForeignKey(ForumUser, related_name='visits')
-    thread = models.ForeignKey('forum.Thread', related_name='visits')
+class Bookmark(models.Model):
+    user = models.ForeignKey(ForumUser, related_name='bookmarks')
+    thread = models.ForeignKey('forum.Thread', related_name='bookmarks')
     timestamp = models.DateTimeField(auto_now=True)
 
 

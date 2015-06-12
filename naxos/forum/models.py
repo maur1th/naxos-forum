@@ -140,7 +140,9 @@ class Post(CachedAuthorModel):
 
     def save(self, *args, **kwargs):
         self.thread.contributors.add(self.author)
-        if self.pk is None:
+        if self.pk is None:  # Which means this is a new post, not an edit
+            self.thread.category.postCount += 1
+            self.thread.category.save()
             self.thread.modified = self.created
             self.thread.save()
         super().save(*args, **kwargs)

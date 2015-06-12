@@ -192,8 +192,6 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
             personal=form.cleaned_data['personal'])
         # Complete the post and save it
         form.instance.thread = t
-        form.instance.thread.category.postCount += 1  # Increment category
-        form.instance.thread.category.save()          # post counter
         form.instance.author = self.request.user
         p = form.save()
         # self.request.user.postsReadCaret.add(p)
@@ -230,11 +228,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        "Handle post creation in the db"
-        # Update category and thread
-        self.t.category.postCount += 1
-        self.t.category.save()
-        # Update remaining form fields
+        "Update remaining form fields"
         form.instance.thread = self.t
         form.instance.author = self.request.user
         return super().form_valid(form)

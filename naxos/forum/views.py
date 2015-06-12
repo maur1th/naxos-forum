@@ -30,8 +30,7 @@ def get_post_page(thread, post):
     if num_posts % PostView.paginate_by > PostView.paginate_orphans:
         return post.position // PostView.paginate_by + 1
     else:
-        if (num_posts - post.position
-                <= PostView.paginate_orphans):
+        if num_posts - post.position <= PostView.paginate_orphans:
             return post.position // PostView.paginate_by
         else:
             return post.position // PostView.paginate_by + 1

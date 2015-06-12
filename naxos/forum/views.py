@@ -138,9 +138,21 @@ class PostView(LoginRequiredMixin, ListView):
         # 403 if the thread has been removed
         if not self.t.visible:
             raise PermissionDenied
-        self.t.viewCount += 1  # Increment views
-        self.t.save()
-        Bookmark.objects.update_or_create(user=self.request.user,
+        # Decide whether Post.viewCount should be incremented
+        try:
+            b = Bookmark.objects.values_list('timestamp')\
+                    .get(user=request.user, thread=self.t)[0]
+            # If b > t.latest_post.created then request.user has already
+            # visited this Thread since last post, so no incrementation
+            increment = self.t.latest_post.created > b
+        except ObjectDoesNotExist:
+            # Post has never been visited, so increment
+            increment = True
+        if increment:
+            self.t.viewCount += 1  # Increment views
+            self.t.save()
+        # Now update or create Bookmark's timestamp (see user.models)
+        Bookmark.objects.update_or_create(user=request.user,
                                           thread=self.t)
         return super().dispatch(request, *args, **kwargs)
 

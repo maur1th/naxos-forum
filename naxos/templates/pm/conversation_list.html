@@ -45,9 +45,9 @@
         <tr>
           <td class="text-center vert-align" style="padding:0">
           {% if conv.messages.latest in user.pmReadCaret.all %}
-            <img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            <img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
           {% else %}
-            <img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
+            <img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
           {% endif %}
           </td>
           <td class="vert-align importantData">
@@ -84,8 +84,8 @@
     <h6>Légende</h6>
   </div>
   <div class="col-md-4">
-    <p class="legend"><img src="{% static 'img/on.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-    <p class="legend"><img src="{% static 'img/off.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+    <p class="legend"><img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+    <p class="legend"><img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
   </div>
 </div>
 {% endblock %}

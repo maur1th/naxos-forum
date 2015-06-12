@@ -59,7 +59,7 @@ class ThreadStatusMixin(object):
             latest_post = t.latest_post
             try:
                 b = Bookmark.objects.values_list('timestamp')\
-                        .get(user=self.request.user,thread=t)[0]
+                        .get(user=self.request.user, thread=t)[0]
                 unread_items = t.latest_post.created > b
                 t.bookmark, t.page = get_bookmarked_post(t, b)
             except ObjectDoesNotExist:

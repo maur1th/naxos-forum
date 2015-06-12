@@ -8,13 +8,14 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 import re
-import datetime
+from datetime import datetime
 from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
+from user.models import Bookmark
 
 
 ### Helpers ###
@@ -23,52 +24,57 @@ def get_preview(content):
     p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
+
+def get_post_page(thread, post):
+    num_posts = thread.posts.count()
+    if num_posts % PostView.paginate_by > PostView.paginate_orphans:
+        return post.position // PostView.paginate_by + 1
+    else:
+        if (num_posts - post.position
+                <= PostView.paginate_orphans):
+            return post.position // PostView.paginate_by
+        else:
+            return post.position // PostView.paginate_by + 1
+
+
+### Mixins ###
 class ThreadStatusMixin(object):
     "Populate thread status and readCaret where needed"
 
     def get_context_data(self, **kwargs):
            
-        def get_post_page(post):
-            return  post.position // PostView.paginate_by + 1
+        def get_bookmarked_post(thread, bookmark):
+            post = Post.objects.filter(
+                        thread=thread, created__gt=bookmark).first()
+            if post:
+                page = get_post_page(thread, post)
+                return post, page
+            else:
+                return post, None
 
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        readCaret = cache.get("user/{}/readCaret".format(user.pk))
-        if not readCaret:
-            readCaret = user.postsReadCaret.all()
-            cache.set("user/{}/readCaret".format(user.pk),
-                  readCaret, None)
         for t in context['object_list']:
-            contributors = cache.get("thread/{}/contributors".format(t.pk))
-            if not contributors:  # caches thread's contributors
-                contributors = t.contributors.all()
-                cache.set("thread/{}/contributors".format(t.pk),
-                  contributors, None)
-            # Get latest_post from cache or create it
-            latest_post = cache.get("thread/{}/latest_post".format(t.pk))
-            if not latest_post:
-                latest_post = t.latest_post
-                cache.set("thread/{}/latest_post".format(t.pk),
-                          latest_post, None)
-            uptodate_caret = latest_post in readCaret
-            if user in contributors and uptodate_caret:
-                status = "added"
-            elif user in contributors:
-                status = "added+on"
-                try:
-                    t.readCaret = readCaret.get(thread=t)
-                    t.readCaret.page = get_post_page(t.readCaret)
-                except ObjectDoesNotExist:
-                    t.readCaret = "not_visited"
-            elif uptodate_caret:
-                status = "off"
+            is_contributor = Thread.objects.filter(
+                pk=t.pk, contributors=self.request.user).exists()
+            latest_post = t.latest_post
+            try:
+                b = Bookmark.objects.values_list('timestamp')\
+                        .get(user=self.request.user,thread=t)[0]
+                unread_items = t.latest_post.created > b
+                t.bookmark, t.page = get_bookmarked_post(t, b)
+            except ObjectDoesNotExist:
+                unread_items = (True if t.latest_post.created > 
+                                self.request.user.resetDateTime else False)
+            if unread_items and is_contributor:
+                status = "unread_contributor"
+            elif unread_items:
+                status = "unread"
+                if not hasattr(t, 'bookmark'):
+                    t.bookmark, t.page = t.posts.first(), 1
+            elif is_contributor:
+                status, t.bookmark = "read_contributor", None
             else:
-                status = "on"
-                try:
-                    t.readCaret = readCaret.get(thread=t)
-                    t.readCaret.page = get_post_page(t.readCaret)
-                except ObjectDoesNotExist:
-                    t.readCaret = "not_visited"
+                status, t.bookmark = "read", None
             t.status = 'img/{}.png'.format(status)
         return context
 
@@ -84,10 +90,21 @@ class PreviewPostMixin(object):
 ### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
     model = Category
+    context_object_name = 'categories'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['readCaret'] = self.request.user.postsReadCaret.all()
+        for c in context['categories']:
+            try:
+                latest_bookmark = Bookmark.objects\
+                    .filter(user=self.request.user, thread__category=c)\
+                    .values_list('timestamp').latest()[0]
+            except ObjectDoesNotExist:
+                latest_bookmark = self.request.user.resetDateTime
+            c.latest_thread = c.threads.latest()
+            status = ('unread' if c.latest_thread.modified >
+                      latest_bookmark else 'read')
+            c.status = 'img/{}.png'.format(status)
         return context
 
 
@@ -109,7 +126,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    paginate_by = 30
+    paginate_by = 5
     paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):
@@ -121,15 +138,8 @@ class PostView(LoginRequiredMixin, ListView):
             raise PermissionDenied
         self.t.viewCount += 1  # Increment views
         self.t.save()
-        # Handle user read caret
-        p = self.t.latest_post
-        try:
-            caret = self.request.user.postsReadCaret.get(thread=self.t)
-        except:
-            caret = False
-        if caret != p and request.user.is_authenticated():
-            self.request.user.postsReadCaret.remove(caret)
-            self.request.user.postsReadCaret.add(p)
+        Bookmark.objects.update_or_create(user=self.request.user,
+                                          thread=self.t)
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -184,7 +194,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
         form.instance.thread.category.save()          # post counter
         form.instance.author = self.request.user
         p = form.save()
-        self.request.user.postsReadCaret.add(p)
+        # self.request.user.postsReadCaret.add(p)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -295,15 +305,27 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-        form.instance.modified = datetime.datetime.now()
+        form.instance.modified = datetime.now()
         return super().form_valid(form)
 
     def get_success_url(self):
         self.kwargs.pop('pk')  # remove useless pk
         self.kwargs['thread_slug'] = self.t.slug
-        post_page = self.object.position//PostView.paginate_by + 1
+        post_page = get_post_page(self.t, self.p)
         return (reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '?page=' + str(post_page) + '#' + str(self.object.pk))
+
+
+class ResetBookmarks(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        if kwargs['pk'] != str(request.user.pk):
+            raise PermissionDenied
+        else:
+            Bookmark.objects.filter(user=request.user).delete()
+            request.user.resetDateTime = datetime.now()
+            request.user.save()
+        return HttpResponseRedirect(reverse('forum:top'))
 
 
 class DeleteThread(LoginRequiredMixin, View):

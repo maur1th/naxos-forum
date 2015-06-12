@@ -8,7 +8,7 @@ from datetime import datetime
 from uuslug import uuslug
 
 from .util import convert_text_to_html, smilify, keygen
-from user.models import ForumUser
+from user.models import ForumUser, Bookmark
 
 SLUG_LENGTH = 50
 
@@ -164,8 +164,7 @@ class Post(CachedAuthorModel):
     
     @property
     def position(self):
-        return Post.objects.filter(thread=self.thread).filter(
-                                   pk__lt=self.pk).count()
+        return Post.objects.filter(thread=self.thread, pk__lt=self.pk).count()
 
     class Meta:
         ordering = ["pk"]
@@ -227,3 +226,9 @@ def update_post_cache(created, instance, **kwargs):
                   instance.thread.posts.count(), None)
         cache.set('thread/{}/latest_post'.format(instance.thread.pk),
                   instance, None)
+
+### Model signal handlers ###
+@receiver(post_save, sender=Thread)
+def add_bookmark(created, instance, **kwargs):
+    if created: Bookmark.objects.update_or_create(user=instance.author,
+                                                  thread=instance)

@@ -61,6 +61,11 @@ urlpatterns = patterns(
         name='quote'
     ),
     url(
+        regex=r'^reset_bookmarks/(?P<pk>[0-9]+)$',
+        view=views.ResetBookmarks.as_view(),
+        name='reset_bookmarks'
+    ),
+    url(
         regex=r'^delete_thread/(?P<pk>[0-9]+)$',
         view=views.DeleteThread.as_view(),
         name='delete_thread'

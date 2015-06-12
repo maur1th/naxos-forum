@@ -6,6 +6,10 @@ from django.core.cache import cache
 
 from forum.util import keygen
 
+from datetime import datetime
+
+
+FORUM_INIT = datetime(2013,1,1)
 
 ### Model classes ###
 class ForumUser(AbstractUser):
@@ -34,12 +38,12 @@ class ForumUser(AbstractUser):
                              verbose_name='Citation')
     website = models.URLField(blank=True,
                               verbose_name='Site web')
-    postsReadCaret = models.ManyToManyField('forum.Post', blank=True)
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
+    resetDateTime = models.DateTimeField(default=FORUM_INIT)
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         ordering = ["pk"]
 
@@ -51,6 +55,20 @@ class ForumUser(AbstractUser):
                 this.logo.delete()
         except: pass
         super().save(*args, **kwargs)
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(ForumUser, related_name='bookmarks')
+    thread = models.ForeignKey('forum.Thread', related_name='bookmarks')
+    timestamp = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'thread')
+        index_together = ('user', 'thread')
+        get_latest_by = 'timestamp'
+
+    def __str__(self):
+        return "{} {} {}".format(self.user, self.thread, self.timestamp)
 
 
 class TokenPool(models.Model):
@@ -72,11 +90,3 @@ class TokenPool(models.Model):
 @receiver(post_save, sender=ForumUser)
 def update_user_cache(instance, **kwargs):
     cache.set('user/{}'.format(instance.pk), instance, None)
-
-@receiver(m2m_changed, sender=ForumUser.postsReadCaret.through)
-def postsReadCaret_changed(sender, action, instance, **kwargs):
-    """Updates cached data each time a post is added to postsReadCaret"""
-    if action == "post_add":
-        cache.set("user/{}/readCaret".format(instance.pk),
-                  instance.postsReadCaret.all(),
-                  None)

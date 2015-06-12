@@ -67,6 +67,8 @@ class ThreadStatusMixin(object):
                                 self.request.user.resetDateTime else False)
             if unread_items and is_contributor:
                 status = "unread_contributor"
+                if not hasattr(t, 'bookmark'):
+                    t.bookmark, t.page = t.posts.first(), 1
             elif unread_items:
                 status = "unread"
                 if not hasattr(t, 'bookmark'):
@@ -322,7 +324,8 @@ class ResetBookmarks(LoginRequiredMixin, View):
         if kwargs['pk'] != str(request.user.pk):
             raise PermissionDenied
         else:
-            Bookmark.objects.filter(user=request.user).delete()
+            Bookmark.objects.filter(user=request.user)\
+                .update(timestamp=datetime.now())
             request.user.resetDateTime = datetime.now()
             request.user.save()
         return HttpResponseRedirect(reverse('forum:top'))

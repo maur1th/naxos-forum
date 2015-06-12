@@ -227,7 +227,6 @@ def update_post_cache(created, instance, **kwargs):
         cache.set('thread/{}/latest_post'.format(instance.thread.pk),
                   instance, None)
 
-### Model signal handlers ###
 @receiver(post_save, sender=Thread)
 def add_bookmark(created, instance, **kwargs):
     if created: Bookmark.objects.update_or_create(user=instance.author,

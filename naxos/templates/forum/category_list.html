@@ -52,7 +52,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="deleteModalLabel">Êtes-vous sûr de vouloir réinitialiser le statut de lecture de tous les sujets ? (Ceci s'applique à toutes les catégories du forum.)</h4>
+        <h4 class="modal-title" id="deleteModalLabel">Réinitialiser ?</h4>
+      </div>
+      <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir réinitialiser le statut de lecture de tous les sujets ? Ceci s'applique à toutes les catégories du forum.</p>
       </div>
       <div class="modal-footer">
         <form method="post" action="{% url 'forum:reset_bookmarks' user.pk %}">

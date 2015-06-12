@@ -78,9 +78,9 @@
               </ul>
             </li>
             <li>
-              <a href="{% url 'user:profile' %}"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
+              <a href="{% url 'user:profile' %}" data-toggle="tooltip" data-placement="bottom" title="Profil" class="hidden-xs"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
             <li>
-              <a href="{% url 'pm:top' %}"><span class="glyphicon glyphicon-envelope"></span><span class="hidden-sm hidden-md hidden-lg"> Messages privés</span></a>
+              <a href="{% url 'pm:top' %}" data-toggle="tooltip" data-placement="bottom" title="Messages privés" class="hidden-xs"><span class="glyphicon glyphicon-envelope"></span><span class="hidden-sm hidden-md hidden-lg"> Messages privés</span></a>
             </li>
             <li>
               <a href="{% url 'blog:top' %}" data-toggle="tooltip" data-placement="bottom" title="Blog" class="hidden-xs"><span class="glyphicon glyphicon-pencil"></span></a>

@@ -27,7 +27,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="cessionModalLabel">Céder le sujet</h4>
+        <h4 class="modal-title" id="cessionModalLabel">Céder ce sujet</h4>
       </div>
       <div class="modal-body" style="color:#d9534f">
         <p>Vous pouvez céder le contrôle de ce sujet en communiquant le code ci-dessous à un autre membre.</p>
@@ -47,7 +47,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="deleteModalLabel">Êtes-vous sûr de vouloir supprimer le sujet ?</h4>
+        <h4 class="modal-title" id="deleteModalLabel">Supprimer ?</h4>
+      </div>
+      <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer ce sujet ?</p>
       </div>
       <div class="modal-footer">
         <form method="post" action="{% url 'forum:delete_thread' thread.pk %}">

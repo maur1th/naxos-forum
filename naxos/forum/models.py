@@ -57,6 +57,7 @@ class Thread(CachedAuthorModel):
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
+    postCount = models.IntegerField(default=0)
     modified = models.DateTimeField(default=datetime.now)
     personal = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)

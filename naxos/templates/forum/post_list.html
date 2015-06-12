@@ -62,37 +62,6 @@
         </tbody>
     </table>
 </div></div>
-<script>
-$(document).ready(function() {
-    var $chart = $('.poll-chart');
-    var $bar = $('.poll-bar');
-    // Get highest number and use that as 100%
-    // This will always make sure the graph is a decent size and all numbers are relative to each other
-    var highestNumber = 0;
-    var sum = 0;
-    $chart.find($bar).each(function() {
-        var num = parseInt($(this).text(),10);
-        sum += num;
-        if (num > highestNumber) {
-            highestNumber = num;
-        };
-    });
-    // Set the progress bar data
-    $chart.find($bar).each(function() {
-        num = $(this).text();
-        // Convert to percentage and round
-        dispPerc = Math.round((num / highestNumber) * 100);
-        realPerc = Math.round((num / sum) * 100);
-        if(!isNaN(realPerc) && realPerc !== 0) {
-            $(this).animate({width: dispPerc + '%'}, {duration:'fast'});
-            $(this).text(Math.round(realPerc) + '%');
-            $(this).attr("aria-valuenow", dispPerc);
-        } else {
-            $(this).text("");
-        };
-    });
-});
-</script>
 {% endif %}
 {# Header #}
 {% include "pagination.html" %}

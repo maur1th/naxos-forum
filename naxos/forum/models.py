@@ -117,15 +117,6 @@ class Thread(CachedAuthorModel):
                 'thread/{}/latest_post'.format(self.pk), latest_post, None)
         return latest_post
 
-    @property
-    def post_count(self):
-        post_count = cache.get('thread/{}/post_count'.format(self.pk))
-        if not post_count:
-            post_count = self.posts.count()
-            cache.set(
-                'thread/{}/post_count'.format(self.pk), post_count, None)
-        return post_count
-
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
         index_together = ['category', 'slug']
@@ -216,17 +207,21 @@ class PollChoice(models.Model):
 ### Model signal handlers ###
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):
-    """Update cached data when a post is saved"""
     html = convert_text_to_html(instance.content_plain, instance.markup)
     html = smilify(html)
     cache.set("post/{}/html".format(instance.pk), html, None)
     if created:
         cache.set("thread/{}/contributors".format(instance.thread.pk),
                   instance.thread.contributors.all(), None)
-        cache.set('thread/{}/post_count'.format(instance.thread.pk),
-                  instance.thread.posts.count(), None)
         cache.set('thread/{}/latest_post'.format(instance.thread.pk),
                   instance, None)
+
+@receiver(post_save, sender=Post)
+def increment_thread_postCount(created, instance, **kwargs):
+    thread = instance.thread
+    thread.postCount = thread.posts.count()
+    thread.save()
+
 
 @receiver(post_save, sender=Thread)
 def add_bookmark(created, instance, **kwargs):

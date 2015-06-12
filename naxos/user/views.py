@@ -101,10 +101,7 @@ class Top10(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.top_views = Thread.objects.order_by("-viewCount")[:10]
-        # Since post_count is a property, computation must be performed in
-        # python instead of db
-        self.top_posts = sorted(Thread.objects.all(),
-            key=lambda t: t.post_count, reverse=True)[:10]
+        self.top_posts = Thread.objects.order_by("-postCount")[:10]
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

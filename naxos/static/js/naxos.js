@@ -52,6 +52,10 @@ $(document).ready(function(){
   // Remove inner quotes
   $("blockquote blockquote").remove();
 
+  // Make URL in posts open in a new window/tab
+  // target="_blank"
+  $('.post-content a').attr('target', '_blank');
+
   // Animate poll results
   var $chart = $('.poll-chart');
   var $bar = $('.poll-bar');

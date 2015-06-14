@@ -134,9 +134,10 @@ class PostView(LoginRequiredMixin, ListView):
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
         self.t = get_object_or_404(Thread, slug=t_slug, category__slug=c_slug)
-        # 403 if the thread has been removed
-        if not self.t.visible:
+        if not self.t.visible:  # 403 if the thread has been removed
             raise PermissionDenied
+        if not request.user.is_authenticated():  # redirect to login page
+            return super().dispatch(request, *args, **kwargs)
         # Decide whether Post.viewCount should be incremented
         try:
             b = Bookmark.objects.values_list('timestamp')\

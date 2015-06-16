@@ -66,7 +66,6 @@
           <ul class="nav navbar-nav navbar-left">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle hidden-xs" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-chevron-down"></span></a>
-              <a href="#" class="dropdown-toggle visible-xs" data-toggle="dropdown" role="button" aria-expanded="false">Catégories<span class="caret"></span></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="{% url 'forum:category' 'materiel' %}">Informatique - Matériel</a></li>
                 <li><a href="{% url 'forum:category' 'logiciel' %}">Informatique - Logiciel</a></li>
@@ -78,9 +77,12 @@
               </ul>
             </li>
             <li>
-              <a href="{% url 'user:profile' %}" data-toggle="tooltip" data-placement="bottom" title="Profil" class="hidden-xs"><span class="glyphicon glyphicon-user"></span><span class="hidden-sm hidden-md hidden-lg"> Profil</span></a></li>
+              <a href="{% url 'user:profile' %}" data-toggle="tooltip" data-placement="bottom" title="Profil" class="hidden-xs"><span class="glyphicon glyphicon-user"></span></a>
+              <a href="{% url 'user:profile' %}" data-toggle="tooltip" data-placement="bottom" title="Profil" class="visible-xs"><span class="glyphicon glyphicon-user"></span> Profil</a>
+            </li>
             <li>
-              <a href="{% url 'pm:top' %}" data-toggle="tooltip" data-placement="bottom" title="Messages privés" class="hidden-xs"><span class="glyphicon glyphicon-envelope"></span><span class="hidden-sm hidden-md hidden-lg"> Messages privés</span></a>
+              <a href="{% url 'pm:top' %}" data-toggle="tooltip" data-placement="bottom" title="Messages privés" class="hidden-xs"><span class="glyphicon glyphicon-envelope"></span></a>
+              <a href="{% url 'pm:top' %}" data-toggle="tooltip" data-placement="bottom" title="Messages privés" class="visible-xs"><span class="glyphicon glyphicon-envelope"></span> Messages privés</a>
             </li>
             <li>
               <a href="{% url 'blog:top' %}" data-toggle="tooltip" data-placement="bottom" title="Blog" class="hidden-xs"><span class="glyphicon glyphicon-pencil"></span></a>

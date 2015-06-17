@@ -55,14 +55,13 @@ class ThreadStatusMixin(object):
         for t in context['object_list']:
             is_contributor = Thread.objects.filter(
                 pk=t.pk, contributors=self.request.user).exists()
-            latest_post = t.latest_post
             try:
                 b = Bookmark.objects.values_list('timestamp')\
                         .get(user=self.request.user, thread=t)[0]
-                unread_items = t.latest_post.created > b
+                unread_items = t.modified > b
                 t.bookmark, t.page = get_bookmarked_post(t, b)
             except ObjectDoesNotExist:
-                unread_items = (True if t.latest_post.created > 
+                unread_items = (True if t.modified > 
                                 self.request.user.resetDateTime else False)
             if unread_items and is_contributor:
                 status = "unread_contributor"
@@ -142,9 +141,9 @@ class PostView(LoginRequiredMixin, ListView):
         try:
             b = Bookmark.objects.values_list('timestamp')\
                     .get(user=request.user, thread=self.t)[0]
-            # If b > t.latest_post.created then request.user has already
+            # If b > t.modified then request.user has already
             # visited this Thread since last post, so no incrementation
-            increment = self.t.latest_post.created > b
+            increment = self.t.modified > b
         except ObjectDoesNotExist:
             # Post has never been visited, so increment
             increment = True

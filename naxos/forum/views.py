@@ -344,10 +344,15 @@ class ResetBookmarks(LoginRequiredMixin, View):
         if kwargs['pk'] != str(request.user.pk):
             raise PermissionDenied
         else:
+            # update all bookmark timestamps to now
             Bookmark.objects.filter(user=request.user)\
                 .update(timestamp=datetime.now())
+            # record resetDateTime on user
             request.user.resetDateTime = datetime.now()
             request.user.save()
+            # delete cached bookmarks & force re-cache
+            cache.delete('bookmark/{}'.format(request.user.pk), bookmarks, None)
+            request.user.cached_bookmarks
         return HttpResponseRedirect(reverse('forum:top'))
 
 

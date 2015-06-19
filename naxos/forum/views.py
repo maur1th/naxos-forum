@@ -53,17 +53,17 @@ class ThreadStatusMixin(object):
                 return post, None
 
         context = super().get_context_data(**kwargs)
+        bookmarks = self.request.user.cached_bookmarks
         for t in context['object_list']:
             # gets thread status cache key for this topic and user
             key = make_template_fragment_key(
                 'thread_status',
                 [t.pk, self.request.user.pk, self.request.user.resetDateTime])
-            try:
-                b = Bookmark.objects.values_list('timestamp')\
-                        .get(user=self.request.user, thread=t)[0]
+            b = bookmarks.get(t.pk, None)
+            if b:
                 unread_items = t.modified > b
                 t.bookmark, t.page = get_bookmarked_post(t, b)
-            except ObjectDoesNotExist:  # 'Object being Bookmark here'
+            else:
                 unread_items = (True if t.modified > 
                                 self.request.user.resetDateTime else False)
             # handle caching

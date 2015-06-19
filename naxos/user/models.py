@@ -48,6 +48,15 @@ class ForumUser(AbstractUser):
     class Meta:
         ordering = ["pk"]
 
+    @property
+    def cached_bookmarks(self):
+        bookmarks = cache.get('bookmark/{}'.format(self.pk))
+        if not bookmarks:
+            bookmarks = dict(self.bookmarks.values_list(
+                             'thread', 'timestamp'))
+            cache.set('bookmark/{}'.format(self.pk), bookmarks, None)
+        return bookmarks
+
     def save(self, *args, **kwargs):
         # Delete old logo
         try:
@@ -98,3 +107,9 @@ def delete_status_cache(instance, **kwargs):
         'thread_status',
         [instance.thread.pk, instance.user.pk, instance.user.resetDateTime])
     cache.delete(key)
+
+@receiver(post_save, sender=Bookmark)
+def cache_bookmarks(instance, **kwargs):
+    bookmarks = dict(instance.user.bookmarks.values_list(
+                     'thread', 'timestamp'))
+    cache.set('bookmark/{}'.format(instance.user.pk), bookmarks, None)

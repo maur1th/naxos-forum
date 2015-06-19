@@ -55,26 +55,31 @@ class ThreadStatusMixin(object):
         context = super().get_context_data(**kwargs)
         bookmarks = self.request.user.cached_bookmarks
         for t in context['object_list']:
-            # gets thread status cache key for this topic and user
+            # get thread status cache key for this thread / user
             key = make_template_fragment_key(
                 'thread_status',
                 [t.pk, self.request.user.pk, self.request.user.resetDateTime])
+            # get thread's bookmark and check if there are unread items
             b = bookmarks.get(t.pk, None)
             if b:
                 unread_items = t.modified > b
                 t.bookmark, t.page = get_bookmarked_post(t, b)
             else:
+                # in case there is no bookmark for this thread
                 unread_items = (True if t.modified > 
                                 self.request.user.resetDateTime else False)
-            # handle caching
+            # check whether additional calculation is needed
             if unread_items:
                 cache.delete(key)
             elif not cache.has_key(key):
                 pass
-            else:  # no unread items? cache exists? then good to go!
+            else:  # no unread items & cache exists? then skip the rest!
                 continue
+            # now check if user is a contributor in this thread
             is_contributor = Thread.objects.filter(
                 pk=t.pk, contributors=self.request.user).exists()
+            # now we've got all the data we needed, let's choose the correct
+            # status icon and behaviour
             if unread_items and is_contributor:
                 status = "unread_contributor"
                 if not hasattr(t, 'bookmark'):

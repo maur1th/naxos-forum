@@ -50,6 +50,7 @@ class ForumUser(AbstractUser):
 
     @property
     def cached_bookmarks(self):
+        "Return user's bookmarks as a dict thread:timestamp"
         bookmarks = cache.get('bookmark/{}'.format(self.pk))
         if not bookmarks:
             bookmarks = dict(self.bookmarks.values_list(

@@ -133,8 +133,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         "Return threads of the current category ordered by latest post"
         self.c = get_object_or_404(Category,
                                    slug=self.kwargs['category_slug'])
-        return self.c.threads.select_related('author', 'question')\
-                             .filter(visible=True)
+        return self.c.threads.filter(visible=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

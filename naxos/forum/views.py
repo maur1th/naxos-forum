@@ -351,7 +351,7 @@ class ResetBookmarks(LoginRequiredMixin, View):
             request.user.resetDateTime = datetime.now()
             request.user.save()
             # delete cached bookmarks & force re-cache
-            cache.delete('bookmark/{}'.format(request.user.pk), bookmarks, None)
+            cache.delete('bookmark/{}'.format(request.user.pk))
             request.user.cached_bookmarks
         return HttpResponseRedirect(reverse('forum:top'))
 

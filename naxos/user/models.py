@@ -95,5 +95,6 @@ def update_user_cache(instance, **kwargs):
 @receiver(post_save, sender=Bookmark)
 def delete_status_cache(instance, **kwargs):
     key = make_template_fragment_key(
-        'thread_status', [instance.thread.pk, instance.user.pk, instance.user.resetDateTime])
+        'thread_status',
+        [instance.thread.pk, instance.user.pk, instance.user.resetDateTime])
     cache.delete(key)

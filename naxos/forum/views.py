@@ -4,6 +4,7 @@ from django.views.generic import View, ListView, CreateView, UpdateView,\
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
@@ -53,16 +54,27 @@ class ThreadStatusMixin(object):
 
         context = super().get_context_data(**kwargs)
         for t in context['object_list']:
-            is_contributor = Thread.objects.filter(
-                pk=t.pk, contributors=self.request.user).exists()
+            # gets thread status cache key for this topic and user
+            key = make_template_fragment_key(
+                'thread_status',
+                [t.pk, self.request.user.pk, self.request.user.resetDateTime])
             try:
                 b = Bookmark.objects.values_list('timestamp')\
                         .get(user=self.request.user, thread=t)[0]
                 unread_items = t.modified > b
                 t.bookmark, t.page = get_bookmarked_post(t, b)
-            except ObjectDoesNotExist:
+            except ObjectDoesNotExist:  # 'Object being Bookmark here'
                 unread_items = (True if t.modified > 
                                 self.request.user.resetDateTime else False)
+            # handle caching
+            if unread_items:
+                cache.delete(key)
+            elif not cache.has_key(key):
+                pass
+            else:  # no unread items? cache exists? then good to go!
+                continue
+            is_contributor = Thread.objects.filter(
+                pk=t.pk, contributors=self.request.user).exists()
             if unread_items and is_contributor:
                 status = "unread_contributor"
                 if not hasattr(t, 'bookmark'):

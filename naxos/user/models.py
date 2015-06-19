@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from forum.util import keygen
 
@@ -90,3 +91,9 @@ class TokenPool(models.Model):
 @receiver(post_save, sender=ForumUser)
 def update_user_cache(instance, **kwargs):
     cache.set('user/{}'.format(instance.pk), instance, None)
+
+@receiver(post_save, sender=Bookmark)
+def delete_status_cache(instance, **kwargs):
+    key = make_template_fragment_key(
+        'thread_status', [instance.thread.pk, instance.user.pk, instance.user.resetDateTime])
+    cache.delete(key)

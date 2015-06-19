@@ -36,12 +36,14 @@
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
+        {% cache 9999999 thread_status thread.pk user.pk user.resetDateTime %}
         {% if thread.bookmark %}
           <a href="{% url 'forum:thread' category.slug thread.slug %}?page={{ thread.page }}#{{ thread.bookmark.pk }}">
           <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% else %}
           <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% endif %}
+        {% endcache %}
         </td>
         {% cache 9999999 thread thread.pk %}
         <td class="vert-align">

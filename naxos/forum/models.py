@@ -211,6 +211,10 @@ def update_post_cache(created, instance, **kwargs):
                   instance, None)
 
 @receiver(post_save, sender=Post)
+def update_thread_cache(created, instance, **kwargs):
+    cache.delete(make_template_fragment_key('thread', [instance.thread.pk]))
+
+@receiver(post_save, sender=Post)
 def increment_thread_postCount(created, instance, **kwargs):
     thread = instance.thread
     thread.postCount = thread.posts.count()

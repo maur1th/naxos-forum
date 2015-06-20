@@ -62,7 +62,6 @@
             <span style="color:#d9534f">(perso)</span>
           {% endif %}
         </td>
-        {% endcache %}
         <td class="text-center vert-align importantData hidden-xs">
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
@@ -78,6 +77,7 @@
           </a>
           </small>
         </td>
+        {% endcache %}
       </tr>
       {% endfor %}
     </tbody>

@@ -253,7 +253,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         "Update remaining form fields"
         user = self.request.user
         if (datetime.now() - user.posts.latest().created).seconds < 2:
-            get_success_url(self)
+            self.get_success_url(self)
         form.instance.thread = self.t
         form.instance.author = user
         return super().form_valid(form)

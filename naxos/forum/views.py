@@ -232,6 +232,10 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
             Thread,
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
+        if (datetime.now() - user.posts.latest().created).seconds < 2:
+            return HttpResponseRedirect(
+                reverse_lazy('forum:thread', kwargs=self.kwargs)
+                + '?page=last#' + str(self.t.latest_post.pk))
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -251,11 +255,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
     def form_valid(self, form):
         "Update remaining form fields"
-        user = self.request.user
-        if (datetime.now() - user.posts.latest().created).seconds < 2:
-            self.get_success_url(self)
         form.instance.thread = self.t
-        form.instance.author = user
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):

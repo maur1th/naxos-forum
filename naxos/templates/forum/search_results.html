@@ -35,17 +35,14 @@
       {% for thread in object_list %}
       <tr>
         <td class="text-center vert-align" style="padding:0">
-        {% if thread.readCaret %}
-          {% ifequal thread.readCaret 'not_visited'  %}
-            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}">
-          {% else %}
-            <a href="{% url 'forum:thread' thread.category.slug thread.slug %}?page={{ thread.readCaret.page }}#{{ thread.readCaret.pk }}">
-          {% endifequal %}
-              <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
-            </a>
+        {% cache 9999999 thread_status thread.pk user.pk user.resetDateTime %}
+        {% if thread.bookmark %}
+          <a href="{% url 'forum:thread' category.slug thread.slug %}?page={{ thread.page }}#{{ thread.bookmark.pk }}">
+          <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% else %}
-            <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
+          <img src="{% static thread.status %}" style="vertical-align:middle;padding:0 0 3px 0;">
         {% endif %}
+        {% endcache %}
         </td>
         {% cache 9999999 thread thread.pk %}
         <td class="vert-align">
@@ -64,16 +61,13 @@
             <span style="color:#d9534f">(perso)</span>
           {% endif %}
         </td>
-        {% endcache %}
         <td class="text-center vert-align importantData hidden-xs">
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count|add:"-1" }}</small></td>
         {# View count #}
-        {% cache 9999999 thread_view_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-        {% endcache %}
         {# Latest post #}
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>
@@ -82,6 +76,7 @@
           </a>
           </small>
         </td>
+        {% endcache %}
       </tr>
       {% endfor %}
     </tbody>

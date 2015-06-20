@@ -41,7 +41,7 @@
     $('label:regex(for,^id_choices)').text(function(index) {
         return "Choix " + (index + 1);
     });
-    $('#less').attr("disabled", "disabled");
+    $('#less').attr("disabled", "true");
 
     $('#more').click(function() {
         var $firstHiddenChoice = $("div[id^='div_id_choices']:hidden:first");
@@ -49,7 +49,7 @@
         $firstHiddenChoice.show();
         $firstHiddenChoice = $("div[id^='div_id_choices']:hidden");
         if (!$firstHiddenChoice.length) {
-            $('#more').attr("disabled", "disabled");
+            $('#more').attr("disabled", "true");
         };
         if ($('#less').attr("disabled")) {
             $('#less').removeAttr("disabled");
@@ -65,7 +65,7 @@
         $lastUnhiddenChoice.attr("data-hidden", false);
         $lastUnhiddenChoice = $("div[data-hidden=true]");
         if (!$lastUnhiddenChoice.length) {
-            $('#less').attr("disabled", "disabled");
+            $('#less').attr("disabled", "true");
         };
         if ($('#more').attr("disabled")) {
             $('#more').removeAttr("disabled");

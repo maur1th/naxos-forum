@@ -83,15 +83,11 @@ class Thread(CachedAuthorModel):
         if self.pk is not None:  # This is an existing thread
             orig = Thread.objects.get(pk=self.pk)
             # Delete template cache when needed and create new slug
-            if orig.slug != new_slug:
+            if orig.slug != new_slug or orig.icon != self.icon:
                 self.slug = new_slug
                 key = make_template_fragment_key(
                     'thread', [self.pk])
                 cache.delete(key)  # Fails silently
-            if orig.icon != self.icon:
-                key = make_template_fragment_key(
-                    'thread', [self.pk])
-                cache.delete(key)
             # Change cessionToken if the author has changed or db migration
             if orig.author != self.author or self.cessionToken == 'tmp':
                 self.cessionToken = create_token(self)

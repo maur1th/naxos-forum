@@ -228,8 +228,6 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/new_post.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if (datetime.now() - request.user.posts.latest().created).seconds < 2:
-            return
         self.t = get_object_or_404(
             Thread,
             slug=self.kwargs['thread_slug'],
@@ -253,8 +251,11 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
     def form_valid(self, form):
         "Update remaining form fields"
+        user = self.request.user
+        if (datetime.now() - user.posts.latest().created).seconds < 2:
+            get_success_url(self)
         form.instance.thread = self.t
-        form.instance.author = self.request.user
+        form.instance.author = user
         return super().form_valid(form)
 
     def get_success_url(self):

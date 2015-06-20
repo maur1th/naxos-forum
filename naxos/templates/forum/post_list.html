@@ -8,11 +8,7 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
-    <li class="active">{% if question %}Sondage : {% else %}Sujet : {% endif %}{{ thread.title|capfirst }}
-    {% if thread.personal %}
-        <span style="color:#d9534f">(perso)</span>
-    {% endif %}
-    </li>
+    <li class="active">{{ thread.title|capfirst }}{% if thread.personal %}<span style="color:#d9534f">(perso)</span>{% endif %}</li>
 </ol>
 {# Poll results #}
 {% if question %}

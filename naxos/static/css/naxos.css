@@ -54,6 +54,20 @@ div.post {
 .post blockquote {
     background-color: #f9f9f9;
 }
+/* Search specific view */
+a.category {
+    background: #5171ae;
+    color: white;
+    font-size: 12px;
+    padding: 0 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+}
+a.category:hover {
+    background: white;
+    color: #5171ae;
+    text-decoration: none;
+}
 /* django-crispy-forms customization */
 .asteriskField {
     display: none;

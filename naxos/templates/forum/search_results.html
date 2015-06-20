@@ -59,8 +59,9 @@
           {% if thread.personal %}
             <span style="color:#d9534f">(perso)</span>
           {% endif %}
+          <strong><a class="category" href="{% url 'forum:category' thread.category %}">{{ thread.category.slug }}</a></strong>
         </td>
-        <td class="text-center vert-align importantData hidden-xs">
+        <td class="text-center vert-align importantData">
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}

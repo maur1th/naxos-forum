@@ -154,15 +154,11 @@ class PostView(LoginRequiredMixin, ListView):
         if not request.user.is_authenticated():  # redirect to login page
             return super().dispatch(request, *args, **kwargs)
         # Decide whether Post.viewCount should be incremented
-        try:
-            b = Bookmark.objects.values_list('timestamp')\
-                    .get(user=request.user, thread=self.t)[0]
-            # If b > t.modified then request.user has already
-            # visited this Thread since last post, so no incrementation
-            increment = self.t.modified > b
-        except ObjectDoesNotExist:
-            # Post has never been visited, so increment
-            increment = True
+        bookmarks = self.request.user.cached_bookmarks
+        b = bookmarks.get(self.t.pk, None)
+        # If b > t.modified, user has visited this thread since last post
+        # (so no incr), if None, post has never been visited (so incr)
+        increment = self.t.modified > b if b else True
         if increment:
             self.t.viewCount += 1  # Increment views
             self.t.save()

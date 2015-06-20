@@ -92,10 +92,6 @@ class Thread(CachedAuthorModel):
                 key = make_template_fragment_key(
                     'thread', [self.pk])
                 cache.delete(key)
-            if orig.viewCount != self.viewCount:
-                key = make_template_fragment_key(
-                    'thread_view_count', [self.pk])
-                cache.delete(key)
             # Change cessionToken if the author has changed or db migration
             if orig.author != self.author or self.cessionToken == 'tmp':
                 self.cessionToken = create_token(self)

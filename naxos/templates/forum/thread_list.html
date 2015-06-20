@@ -69,9 +69,7 @@
         {# Post count #}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.postCount|add:"-1" }}</small></td>
         {# View count #}
-        {% cache 9999999 thread_view_count thread.pk %}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
-        {% endcache %}
         {# Latest post #}
         <td class="text-center vert-align importantData" style="line-height:100%">
           <small>

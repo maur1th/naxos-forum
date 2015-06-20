@@ -7,10 +7,10 @@ from django.core.cache.utils import make_template_fragment_key
 
 from forum.util import keygen
 
-from datetime import datetime
+import datetime
 
 
-FORUM_INIT = datetime(2013,1,1)
+FORUM_INIT = datetime.datetime(2013,1,1)
 
 ### Model classes ###
 class ForumUser(AbstractUser):

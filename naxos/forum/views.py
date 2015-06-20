@@ -461,11 +461,11 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         cls = Thread
         if not self.query:  # An empty string was submitted
             return
-        elif re.findall(r'^user:', self.query):
-            entry_query = get_query(self.query[5:], ['author__username'])
-        elif re.findall(r'^post:', self.query):
-            cls = Post
-            entry_query = get_query(self.query[5:], ['content_plain'])
+        # elif re.findall(r'^user:', self.query):
+        #     entry_query = get_query(self.query[5:], ['author__username'])
+        # elif re.findall(r'^post:', self.query):
+        #     cls = Post
+        #     entry_query = get_query(self.query[5:], ['content_plain'])
         else:
             entry_query = get_query(self.query, ['title'])
         return cls.objects.filter(entry_query)

@@ -228,6 +228,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/new_post.html'
 
     def dispatch(self, request, *args, **kwargs):
+        if (datetime.now() - request.user.posts.latest().created).seconds < 2:
+            return
         self.t = get_object_or_404(
             Thread,
             slug=self.kwargs['thread_slug'],

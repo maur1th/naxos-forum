@@ -232,7 +232,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
             Thread,
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
-        if (datetime.now() - user.posts.latest().created).seconds < 2:
+        if (datetime.now() - request.user.posts.latest().created).seconds < 2:
             return HttpResponseRedirect(
                 reverse_lazy('forum:thread', kwargs=self.kwargs)
                 + '?page=last#' + str(self.t.latest_post.pk))

@@ -232,10 +232,6 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
             Thread,
             slug=self.kwargs['thread_slug'],
             category__slug=self.kwargs['category_slug'])
-        if (datetime.now() - request.user.posts.latest().created).seconds < 2:
-            return HttpResponseRedirect(
-                reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '?page=last#' + str(self.t.latest_post.pk))
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -250,7 +246,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
-                       'thread': self.t})
+                       'thread': self.t,
+                       'user':self.request.user})
         return kwargs
 
     def form_valid(self, form):

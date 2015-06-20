@@ -6,6 +6,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit, Button
 from crispy_forms.bootstrap import InlineRadios
 
+import datetime
+
 from .models import Post, PollQuestion, PollChoice
 from .util import normalize_query
 
@@ -103,6 +105,7 @@ class PostForm(forms.ModelForm):
     title = forms.CharField(max_length=140, label='Titre', required=False)
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
         self.c_slug = kwargs.pop('category_slug')
         self.t = kwargs.pop('thread')
         super().__init__(*args, **kwargs)
@@ -116,6 +119,12 @@ class PostForm(forms.ModelForm):
             Field('content_plain'))
         self.helper.add_input(Submit('submit', 'Répondre', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
+
+    def clean(self):
+        if ((datetime.datetime.now() - self.user.posts.latest().created)
+                < datetime.timedelta(seconds=5)):
+            raise forms.ValidationError("Merci d'attendre au moins 5 secondes"
+                                        " entre deux messages.")
 
     class Meta:
         model = Post

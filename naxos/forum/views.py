@@ -470,7 +470,9 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         #     entry_query = get_query(self.query[5:], ['content_plain'])
         else:
             entry_query = get_query(self.query, ['title'])
-        return cls.objects.filter(entry_query)
+        results = cls.objects.filter(entry_query)
+        self.results_count = results.count()
+        return results
 
     def get_context_data(self, **kwargs):
         model = self.object_list.model._meta.model_name
@@ -480,5 +482,6 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
             context = ListView.get_context_data(self, **kwargs)
         context['model'] = model
         context['query'] = self.query
+        context['results_count'] = self.results_count
         context['query_url'] = 'q=' + self.query + '&amp;'
         return context

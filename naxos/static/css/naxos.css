@@ -35,6 +35,9 @@ table#view tbody tr:hover td {
 table.table tbody>tr>td.vert-align{
     vertical-align: middle;
 }
+#caption {
+    padding:0 0 40px 0;
+}
 /* Post specific view */
 div.post-header {
     background: linear-gradient(#425e8e, #5171ae);

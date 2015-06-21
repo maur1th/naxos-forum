@@ -28,11 +28,11 @@
     <tr>
       <th class="text-center" style="padding:5px 0;width:25px"><img src="{% static 'img/detail_search.gif' %}" style="vertical-align:bottom;padding-bottom:3px"></th>
       <th>Message</th>
-      <th class="col-xs-2 text-center">Auteur</th>
+      <th class="text-center col-xs-2 hidden-xs">Auteur</th>
       <th class="text-center col-xs-1 hidden-xs">Rép.</th>
       <th class="text-center col-xs-1 hidden-xs">Vues</th>
       <th class="text-center col-xs-2 hidden-xs">Dernier message</th>
-      <th class="text-center col-xs-2 visible-xs">Dernier</th>
+      <th class="text-center col-xs-2 visible-xs">Der. msg.</th>
     </tr>
     </thead>
     <tbody>
@@ -65,7 +65,7 @@
           {% endif %}
           <strong><a class="category" href="{% url 'forum:category' thread.category %}">{{ thread.category.slug }}</a></strong>
         </td>
-        <td class="text-center vert-align importantData">
+        <td class="text-center vert-align hidden-xs importantData">
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}

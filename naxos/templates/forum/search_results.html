@@ -18,6 +18,10 @@
 </div>
 <hr style="margin:8px; border-top:0">
 {% else %}
+  <div class="alert alert-success">
+    <p>xxx résultat(s) trouvé(s).</p>
+  </div>
+<hr style="margin:8px; border-top:0">
   {% ifequal model 'thread' %}
   <table class="table table-condensed table-bordered" id="view">
     <thead>
@@ -82,94 +86,92 @@
   </table>
 </div>
 {% include "pagination.html" %}
-  {% endifequal %}
-  {% ifequal model 'post' %}
-        <strong>
-            <div class="col-sm-2 hidden-xs text-left post-header" style="border-right:1px solid #f9f9f9">
-              Auteur
-            </div>
-            <div class="col-sm-10 post-header">
-              Messages
-            </div>
-        </strong>
+{# Caption #}
+<hr style="margin:8px; border-top:0">
+<div class="row">
+    <div class="col-xs-12">
+        <h6 style="text-decoration:underline">Légende</h6>
     </div>
-    <hr style="margin:1px; border-top:0">
-    {% for post in object_list %}
-    <div class="row">
-        <a name="{{ post.pk }}"></a>
-        {# Author panel #}
-        <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
-          <p style="word-wrap: break-word">
-              <strong>{{ post.author }}</strong><br>
-              {% if post.author.quote %}
-                  <small>{{ post.author.quote }}</small>
-              {% endif %}
-          </p>
-          {% if post.author.logo %}
-              <p><img src="{{ media }}{{ post.author.logo }}" alt=""></p>
-          {% endif %}
-          <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
-        </div>
-        {# Content #}
-        <div class="col-sm-10 post equal-divs">
-          <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ post.author }}</strong> | </span>
-          <small>
-            Posté le {{ post.created|date:"j F Y à H:i:s" }} | 
-            {% if post.thread.question %}
-                Sondage : 
-            {% else %}
-                Sujet : 
-            {% endif %}
-            <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
-          </small>
-          <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
-          <div class="post-content" style="word-wrap: break-word">
-              {{ post.html|safe }}
-          </div>
-          {% if post.modified %}
-              <br><br>
-              <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
-          {% endif %}
-        </div>
+</div>
+<div class="row hidden-sm hidden-xs">  {# Large #}
+    <div class="col-md-4">
+        <small>Sujets auxquels vous avez participé</small>
+        <p class="legend"><img src="{% static 'img/unread_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/read_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
     </div>
-    <hr style="margin:8px; border-top:0">
-    {% endfor %}
-    <hr style="margin:8px; border-top:0">
-  {% include "pagination.html" %}
-  {% endifequal %}
-{% endif %}
-{% ifequal model 'thread' %} 
-  {# Caption #}
-  <hr style="margin:8px; border-top:0">
-  <div class="row">
-      <div class="col-xs-12">
-          <h6 style="text-decoration:underline">Légende</h6>
-      </div>
-  </div>
-  <div class="row hidden-sm hidden-xs">  {# Large #}
-      <div class="col-md-4">
-          <small>Sujets auxquels vous avez participé</small>
-          <p class="legend"><img src="{% static 'img/unread_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-          <p class="legend"><img src="{% static 'img/read_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-      </div>
-      <div class="col-md-4">
-          <small>Sujets auxquels vous n'avez pas participé</small>
-          <p class="legend"><img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-          <p class="legend"><img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-      </div>
-  </div>
-  <div class="row hidden-lg hidden-md">  {# Small #}
-      <div class="col-xs-6">
-          <small>Sujets auxquels vous avez participé</small>
-          <p class="legend"><img src="{% static 'img/unread_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-          <p class="legend"><img src="{% static 'img/read_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-      </div>
-      <div class="col-xs-6">
-          <small>Sujets auxquels vous n'avez pas participé</small>
-          <p class="legend"><img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
-          <p class="legend"><img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
-      </div>
-  </div>
-  <br><br>
+    <div class="col-md-4">
+        <small>Sujets auxquels vous n'avez pas participé</small>
+        <p class="legend"><img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+    </div>
+</div>
+<div class="row hidden-lg hidden-md">  {# Small #}
+    <div class="col-xs-6">
+        <small>Sujets auxquels vous avez participé</small>
+        <p class="legend"><img src="{% static 'img/unread_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/read_contributor.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+    </div>
+    <div class="col-xs-6">
+        <small>Sujets auxquels vous n'avez pas participé</small>
+        <p class="legend"><img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Des messages non lus depuis votre dernière visite</small></p>
+        <p class="legend"><img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 5px 3px 0;"><small>Aucun message non lu depuis votre dernière visite</small></p>
+    </div>
+</div>
+<br><br>
 {% endifequal %}
+{% ifequal model 'post' %}
+    <strong>
+        <div class="col-sm-2 hidden-xs text-left post-header" style="border-right:1px solid #f9f9f9">
+          Auteur
+        </div>
+        <div class="col-sm-10 post-header">
+          Messages
+        </div>
+    </strong>
+</div>
+<hr style="margin:1px; border-top:0">
+{% for post in object_list %}
+<div class="row">
+    <a name="{{ post.pk }}"></a>
+    {# Author panel #}
+    <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
+      <p style="word-wrap: break-word">
+          <strong>{{ post.author }}</strong><br>
+          {% if post.author.quote %}
+              <small>{{ post.author.quote }}</small>
+          {% endif %}
+      </p>
+      {% if post.author.logo %}
+          <p><img src="{{ media }}{{ post.author.logo }}" alt=""></p>
+      {% endif %}
+      <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
+    </div>
+    {# Content #}
+    <div class="col-sm-10 post equal-divs">
+      <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ post.author }}</strong> | </span>
+      <small>
+        Posté le {{ post.created|date:"j F Y à H:i:s" }} | 
+        {% if post.thread.question %}
+            Sondage : 
+        {% else %}
+            Sujet : 
+        {% endif %}
+        <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
+      </small>
+      <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
+      <div class="post-content" style="word-wrap: break-word">
+          {{ post.html|safe }}
+      </div>
+      {% if post.modified %}
+          <br><br>
+          <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
+      {% endif %}
+    </div>
+</div>
+<hr style="margin:8px; border-top:0">
+{% endfor %}
+<hr style="margin:8px; border-top:0">
+{% include "pagination.html" %}
+{% endifequal %}
+{% endif %}
 {% endblock %}

@@ -461,6 +461,8 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         cls = Thread
         if not self.query:  # An empty string was submitted
             return
+        # Additional search options disabled since they make the server 500
+        # for apparently no other reason than load
         # elif re.findall(r'^user:', self.query):
         #     entry_query = get_query(self.query[5:], ['author__username'])
         # elif re.findall(r'^post:', self.query):

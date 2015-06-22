@@ -225,7 +225,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
 class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     form_class = PostForm
-    template_name = 'forum/new_post.html'
+    template_name = 'forum/post_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.t = get_object_or_404(
@@ -417,7 +417,7 @@ def NewPoll(request, category_slug):
                         'forum:category',
                         kwargs={'category_slug': category_slug}))
 
-    return render(request, 'forum/new_poll.html', {
+    return render(request, 'forum/poll_form.html', {
         'question_form': question_form,
         'thread_form': thread_form,
         'choices_formset': choices_formset,

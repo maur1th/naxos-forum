@@ -472,7 +472,7 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
             entry_query = get_query(self.query, ['title'])
         results = cls.objects.filter(entry_query)
         if 'visible' in [field.name for field in cls._meta.fields]:
-            results = cls.objects.filter(visible="True")
+            results = results.filter(visible="True")
         self.results_count = results.count()
         return results
 

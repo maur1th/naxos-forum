@@ -468,9 +468,11 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         # elif re.findall(r'^post:', self.query):
         #     cls = Post
         #     entry_query = get_query(self.query[5:], ['content_plain'])
-        else:
-            entry_query = get_query(self.query, ['title'])
-        results = cls.objects.filter(entry_query)
+        # else:
+        #     entry_query = get_query(self.query, ['title'])
+        # print(entry_query)
+        # results = cls.objects.filter(entry_query)
+        results = Thread.objects.filter(title__icontains=self.query)
         if 'visible' in [field.name for field in cls._meta.fields]:
             results = results.filter(visible="True")
         self.results_count = results.count()

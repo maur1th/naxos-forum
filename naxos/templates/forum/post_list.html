@@ -93,7 +93,7 @@
     {# Author #}
     <div class="col-xs-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
         <p style="margin-bottom:5px">
-            <strong>{{ post.cached_author }}</strong>
+            <strong><a class="author" role="button" tabindex="0" role="button" data-toggle="popover" data-content="<a class='send-pm btn btn-sm btn-default' role='button' data-toggle='modal' data-target='#pm-modal'>Envoyer un message privé</a>">{{ post.cached_author }}</a></strong>
         </p>
         {% if post.cached_author.quote %}
             <p style="line-height:100%"><small>{{ post.cached_author.quote }}</small></p>
@@ -172,6 +172,29 @@
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
     <li class="active">{{ thread.title|capfirst }}</li>
 </ol>
+<!-- PM Modal -->
+<div class="modal fade" id="pm-modal" tabindex="-1" role="dialog" aria-labelledby="pmModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="pmModal"></h4>
+      </div>
+      <form method="post" action="{% url 'pm:new_conv' %}">
+        {% csrf_token %}
+        <input type="hidden" name="recipient" id="id_recipient"> 
+        <div class="modal-body">
+          <textarea cols="80" id="id_content_plain" class="textarea form-control" name="content_plain" rows="5" maxlength="100000"></textarea>
+        </div>
+        <div class="modal-footer">
+          <a type="button" role="button" class="btn btn-default" href="{% url 'pm:new_conv' %}">Editeur complet</a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endwith %}
 {% endwith %}
 {% endblock %}

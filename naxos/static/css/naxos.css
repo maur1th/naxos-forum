@@ -35,6 +35,38 @@ table#view tbody tr:hover td {
 table.table tbody>tr>td.vert-align{
     vertical-align: middle;
 }
+.author {
+    color: #333;
+    font-size: 14px;
+}
+.author:hover {
+    color: #333;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background-color: #F9F9F9;
+    border-color: #CCC;
+    padding: 1px 5px;
+    font-size: 14px;
+    border-radius: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+.author:focus {
+    color: #333;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background-color: #F9F9F9;
+    border-color: #CCC;
+    padding: 1px 5px;
+    font-size: 14px;
+    border-radius: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
 #caption {
     padding:0 0 40px 0;
 }

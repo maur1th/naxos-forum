@@ -82,6 +82,18 @@ $(document).ready(function(){
           $(this).text("");
       };
   });
+  // PostView author popover
+  $('.author').popover({
+    html: true,
+    trigger: "focus",
+    placement: "bottom",
+  });
+  $(document).on("click", ".send-pm", function() {
+    var user = $(this).parents('div.popover').siblings('a.author').text();
+    $('#pmModal').text("Envoyer un message privé à " + user);
+    $('.modal-content #id_recipient').attr('value', user);
+    $('.modal-content input.recipient').addClass('toto');
+  })
 
   // Ensure presentation is ok while spoiler animation is playing
   // Give spoiler tags unique ids and hyperlink adresses
@@ -109,9 +121,9 @@ $(document).ready(function(){
 });
 
 // socket.io
-$(document).ready(function(){
-  var socket = io('http://geekattitude.org:80');
-  $(window).on('beforeunload', function(){
-    socket.close();
-  });
-});
+// $(document).ready(function(){
+//   var socket = io('http://geekattitude.org:80');
+//   $(window).on('beforeunload', function(){
+//     socket.close();
+//   });
+// });

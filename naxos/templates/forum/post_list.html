@@ -170,13 +170,7 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>
     <li><a href="{% url 'forum:category' category %}">{{ category.title }}</a></li>
-    <li class="active">
-    {% if question %}
-        Sondage : {{ thread.title|capfirst }}
-    {% else %}
-        Sujet : {{ thread.title|capfirst }} 
-    {% endif %}
-    </li>
+    <li class="active">{{ thread.title|capfirst }}</li>
 </ol>
 {% endwith %}
 {% endwith %}

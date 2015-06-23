@@ -89,10 +89,11 @@ $(document).ready(function(){
     placement: "bottom",
   });
   $(document).on("click", ".send-pm", function() {
-    var user = $(this).parents('div.popover').siblings('a.author').text();
-    $('#pmModal').text("Envoyer un message privé à " + user);
-    $('.modal-content #id_recipient').attr('value', user);
-    $('.modal-content input.recipient').addClass('toto');
+    var user = $(this).parents('div.popover').siblings('a.author');
+    var user_id = user.attr('data-id');
+    var user_name = user.text();
+    $('#pmModal').text("Envoyer un message privé à " + user_name);
+    $('.modal-content #id_recipient').attr('value', user_id);
   })
 
   // Ensure presentation is ok while spoiler animation is playing

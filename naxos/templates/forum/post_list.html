@@ -93,7 +93,7 @@
     {# Author #}
     <div class="col-xs-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
         <p style="margin-bottom:5px">
-            <strong><a class="author" role="button" tabindex="0" role="button" data-toggle="popover" data-content="<a class='send-pm btn btn-sm btn-default' role='button' data-toggle='modal' data-target='#pm-modal'>Envoyer un message privé</a>">{{ post.cached_author }}</a></strong>
+            <strong><a class="author" role="button" tabindex="0" role="button" data-toggle="popover" data-id="{{ post.cached_author.pk }}" data-content="<a class='send-pm btn btn-sm btn-default' role='button' data-toggle='modal' data-target='#pm-modal'>Envoyer un message privé</a>">{{ post.cached_author }}</a></strong>
         </p>
         {% if post.cached_author.quote %}
             <p style="line-height:100%"><small>{{ post.cached_author.quote }}</small></p>

@@ -6,12 +6,16 @@ from crispy_forms.layout import Layout, Field, HTML, Submit
 
 from user.models import ForumUser
 
+
 toolbar = "{% include \"toolbar.html\" %}"  # Text formatting
 
 
-def get_user_list(user):
-    q = ForumUser.objects.extra(select={'username_lower': 'lower(username)'})
-    return q.exclude(username=user).order_by('username_lower')
+def get_user_list(user_pk):
+    q = ForumUser.objects.exclude(pk=user_pk)\
+                         .exclude(is_active=False)\
+                         .extra(select={'username_lower': 'lower(username)'})\
+                         .order_by('username_lower')
+    return q
 
 
 class ConversationForm(forms.ModelForm):
@@ -21,10 +25,12 @@ class ConversationForm(forms.ModelForm):
                                        widget=forms.Select())
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
+        user, initial = kwargs.pop('user'), kwargs.pop('recipient')
         super().__init__(*args, **kwargs)
         # Exclude author from available recipients so no cleaning needed
         self.fields['recipient'].queryset = get_user_list(user)
+        # Update recipient field initial value from kwargs
+        self.fields['recipient'].initial = initial
         self.helper = FormHelper()
         self.helper.layout = Layout(Field('recipient'),
                                     HTML(toolbar),

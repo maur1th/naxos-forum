@@ -21,6 +21,11 @@ urlpatterns = patterns(
         name='new_conv'
     ),
     url(
+        regex=r'^\+/(?P<recipient>[0-9]+)/$',
+        view=views.NewConversation.as_view(),
+        name='new_conv'
+    ),
+    url(
         regex=r'^(?P<pk>[0-9]+)/\+$',
         view=views.NewMessage,
         name='new_msg'

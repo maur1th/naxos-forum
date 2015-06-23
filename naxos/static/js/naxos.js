@@ -94,6 +94,8 @@ $(document).ready(function(){
     var user_name = user.text();
     $('#pmModal').text("Envoyer un message privé à " + user_name);
     $('.modal-content #id_recipient').attr('value', user_id);
+    $('#full-editor-link').attr(
+      'href', $('#full-editor-link').attr('href') + '/' + user_id);
   })
 
   // Ensure presentation is ok while spoiler animation is playing

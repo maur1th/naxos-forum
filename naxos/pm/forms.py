@@ -23,6 +23,7 @@ class ConversationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
+        # Exclude author from available recipients so no cleaning needed
         self.fields['recipient'].queryset = get_user_list(user)
         self.helper = FormHelper()
         self.helper.layout = Layout(Field('recipient'),

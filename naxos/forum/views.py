@@ -186,7 +186,7 @@ class PostDetailView(DetailView):
 ### Thread and Post creation and edit ###
 class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     form_class = ThreadForm
-    template_name = 'forum/new_thread.html'
+    template_name = 'forum/thread_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.c = get_object_or_404(

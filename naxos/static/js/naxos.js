@@ -121,9 +121,9 @@ $(document).ready(function(){
 });
 
 // socket.io
-// $(document).ready(function(){
-//   var socket = io('http://geekattitude.org:80');
-//   $(window).on('beforeunload', function(){
-//     socket.close();
-//   });
-// });
+$(document).ready(function(){
+  var socket = io('http://geekattitude.org:80');
+  $(window).on('beforeunload', function(){
+    socket.close();
+  });
+});

@@ -52,7 +52,6 @@
     </div>
   </div>
 </div>
-{% include "pagination.html" %}
 <hr style="margin:8px; border-top:0">
 {# Delete modal #}
 <div class="modal fade" id="deleteModal-{{ msg.pk }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -74,6 +73,7 @@
 </div>
 {% endif %}
 {% endfor %}
+{% include "pagination.html" %}
 {# Quick reply #}
 <hr style="margin:20px; border-top: 1px solid #ccc">
 <div class="row">

@@ -4,9 +4,7 @@
 {% load static %}
 {# Path #}
 <ol class="breadcrumb">
-    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
-    <li><a href="{% url 'forum:category' post.thread.category %}">{{ post.thread.category.title }}</a></li>
-    <li><a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title|capfirst }}</a>{% if thread.personal %}<span style="color:#d9534f">(perso)</span>{% endif %}</li>
+    {% include "forum/post_path.html" %}
     <li class="active">Message de {{ post.author }}</li>
 </ol>
 <br>

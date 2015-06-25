@@ -284,7 +284,7 @@ class QuotePost(NewPost):
 class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     form_class = ThreadForm
     model = Post
-    template_name = 'forum/edit.html'
+    template_name_suffix = '_edit'
 
     def dispatch(self, request, *args, **kwargs):
         "Get the right post and thread"

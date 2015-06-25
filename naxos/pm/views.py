@@ -26,12 +26,9 @@ class PMTopView(LoginRequiredMixin, ListView):
     paginate_by = 30
     paginate_orphans = 2
 
-    def dispatch(self, request, *args, **kwargs):
+    def get_queryset(self):
         self.request.user.pmUnreadCount = 0
         self.request.user.save()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
         return Conversation.objects.filter(participants=self.request.user)
 
 

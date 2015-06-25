@@ -111,7 +111,7 @@ def NewMessage(request, pk):
                 content_plain=request.POST['content_plain'])
         pm_counter(request, c)
         return HttpResponseRedirect(reverse_lazy('pm:msg',
-            kwargs={'pk': pk}) + '#' + str(m.pk))
+            kwargs={'pk': pk}) + '?page=last#' + str(m.pk))
 
     else:
         return HttpResponseRedirect(reverse_lazy('pm:top'))

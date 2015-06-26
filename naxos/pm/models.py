@@ -51,11 +51,11 @@ class Message(models.Model):
 
     @property
     def html(self):
-        html = cache.get('post/{}/html'.format(self.pk))
+        html = cache.get('message/{}/html'.format(self.pk))
         if not html:
             html = convert_text_to_html(self.content_plain, self.markup)
             if self.markup == 'bbcode': html = smilify(html)
-            cache.set('post/{}/html'.format(self.pk), html, None)
+            cache.set('message/{}/html'.format(self.pk), html, None)
         return html
 
     class Meta:

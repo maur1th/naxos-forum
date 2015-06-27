@@ -74,7 +74,6 @@ class NewConversation(LoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        print(self.kwargs.get('recipient', 0))
         kwargs.update({'user': self.request.user.pk,
                        'recipient': self.kwargs.get('recipient', 0)})
         return kwargs

@@ -20,8 +20,8 @@ from .util import get_query
 from user.models import Bookmark
 
 
-THREADVIEW_PAGINATE_BY = 2
-POSTVIEW_PAGINATE_BY = 5
+THREADVIEW_PAGINATE_BY = 30
+POSTVIEW_PAGINATE_BY = 30
 
 
 ### Helpers ###
@@ -39,7 +39,6 @@ def get_post_page(thread, post):
     index = queryset.filter(pk__lt=post.pk).count()
     page_number = index // PostView.paginate_by
     page = paginator.page(page_number)
-    print(post in page.object_list)
     if post in page.object_list:
         return page_number
     else:

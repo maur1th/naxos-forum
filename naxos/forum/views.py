@@ -53,6 +53,7 @@ class ThreadStatusMixin(object):
     def get_context_data(self, **kwargs):
            
         def get_bookmarked_post(thread, bookmark):
+            """Return latest read post and page from bookmark timestamp."""
             post = Post.objects.filter(
                         thread=thread, created__gt=bookmark).first()
             if post:
@@ -106,6 +107,7 @@ class ThreadStatusMixin(object):
 
 
 class PreviewPostMixin(object):
+    """Handle post preview by creating a temporary object."""
 
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
@@ -148,7 +150,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_orphans = 2
 
     def get_queryset(self):
-        "Return threads of the current category ordered by latest post"
+        """Get the threads to be displayed."""
         self.c = get_object_or_404(Category,
                                    slug=self.kwargs['category_slug'])
         return self.c.threads.filter(visible=True)
@@ -186,11 +188,11 @@ class PostView(LoginRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        "Return list of posts given thread and category slugs"
+        """Get the posts to be displayed."""
         return self.t.posts.all()
 
     def get_context_data(self, **kwargs):
-        "Pass thread from url to context"
+        """Add context data for template."""
         context = super().get_context_data(**kwargs)
         context['thread'] = self.t
         return context
@@ -212,7 +214,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        "Pass Category from url to context"
+        """Pass Category from url to context"""
         context = super().get_context_data(**kwargs)
         context['category'] = self.c
         return context
@@ -223,7 +225,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        "Handle thread and 1st post creation in the db"
+        """Handle thread and 1st post creation in the db"""
         # Create the thread
         t = Thread.objects.create(
             title=form.cleaned_data['title'],

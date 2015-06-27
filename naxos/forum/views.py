@@ -31,14 +31,13 @@ def get_post_page(thread, post):
     Let's build a paginator object and check if our post is on the expected
     page. If not (because of PostView.paginate_orphans), return next page.
     """
-    return 1
     queryset = Post.objects.filter(thread=thread)
     page_size = PostView.paginate_by
     paginator = Paginator(
         queryset, page_size, orphans=PostView.paginate_orphans,
         allow_empty_first_page=False)
     index = queryset.filter(pk__lt=post.pk).count()
-    page_number = index // PostView.paginate_by
+    page_number = index // PostView.paginate_by + 1
     page = paginator.page(page_number)
     if post in page.object_list:
         return page_number

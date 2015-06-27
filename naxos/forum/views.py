@@ -26,7 +26,7 @@ POSTVIEW_PAGINATE_BY = 5
 
 ### Helpers ###
 def get_preview(content):
-    "Redirect to post preview"
+    """Redirect to PreviewView."""
     p = Preview.objects.create(content_plain=content)
     return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
 
@@ -54,7 +54,7 @@ def get_post_page(thread, post):
 
 ### Mixins ###
 class ThreadStatusMixin(object):
-    "Populate thread status and readCaret where needed"
+    """Populate thread status and readCaret where needed."""
 
     def get_context_data(self, **kwargs):
            
@@ -121,6 +121,7 @@ class PreviewPostMixin(object):
 
 ### Main Forum Views ###
 class TopView(LoginRequiredMixin, ListView):
+    """View of the different categories."""
     model = Category
     context_object_name = 'categories'
 

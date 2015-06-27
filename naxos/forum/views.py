@@ -25,12 +25,6 @@ POSTVIEW_PAGINATE_BY = 5
 
 
 ### Helpers ###
-def get_preview(content):
-    """Redirect to PreviewView."""
-    p = Preview.objects.create(content_plain=content)
-    return HttpResponseRedirect(reverse('forum:preview', kwargs={'pk': p.pk}))
-
-
 def get_post_page(thread, post):
     """Return page number the post is on.
     
@@ -112,11 +106,19 @@ class ThreadStatusMixin(object):
 
 
 class PreviewPostMixin(object):
+
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
-            return get_preview(request.POST['content_plain'])
+            return self.get_preview(request.POST['content_plain'])
         else:
             return super().post(request, *args, **kwargs)
+
+    @staticmethod
+    def get_preview(content):
+        """Redirect to PreviewView."""
+        p = Preview.objects.create(content_plain=content)
+        return HttpResponseRedirect(
+            reverse('forum:preview', kwargs={'pk': p.pk}))
 
 
 ### Main Forum Views ###
@@ -403,7 +405,8 @@ def NewPoll(request, category_slug):
 
     if request.method == 'POST':
         if "preview" in request.POST:
-            return get_preview(request.POST['thread-content_plain'])
+            return PreviewPostMixin.get_preview(
+                request.POST['thread-content_plain'])
         else:
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")

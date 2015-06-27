@@ -3,10 +3,14 @@
 {% block content %}
 {% load static %}
 {# Path #}
+{% with post.thread as thread %}
+{% with thread.category as category %}
 <ol class="breadcrumb">
     {% include "forum/post_path.html" %}
     <li class="active">Message de {{ post.author }}</li>
 </ol>
+{% endwith %}
+{% endwith %}
 <br>
 {# Header #}
 <hr style="margin:8px; border-top:0">

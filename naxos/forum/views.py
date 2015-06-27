@@ -3,6 +3,7 @@ from django.views.generic import View, ListView, CreateView, UpdateView,\
     DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.http import HttpResponseRedirect
@@ -19,6 +20,10 @@ from .util import get_query
 from user.models import Bookmark
 
 
+THREADVIEW_PAGINATE_BY = 2
+POSTVIEW_PAGINATE_BY = 5
+
+
 ### Helpers ###
 def get_preview(content):
     "Redirect to post preview"
@@ -27,14 +32,24 @@ def get_preview(content):
 
 
 def get_post_page(thread, post):
-    num_posts = thread.posts.count()
-    if num_posts % PostView.paginate_by > PostView.paginate_orphans:
-        return post.position // PostView.paginate_by + 1
+    """Return page number the post is on.
+    
+    Let's build a paginator object and check if our post is on the expected
+    page. If not (because of PostView.paginate_orphans), return next page.
+    """
+    queryset = Post.objects.filter(thread=thread)
+    page_size = PostView.paginate_by
+    paginator = Paginator(
+        queryset, page_size, orphans=PostView.paginate_orphans,
+        allow_empty_first_page=False)
+    index = queryset.filter(pk__lt=post.pk).count()
+    page_number = index // PostView.paginate_by
+    page = paginator.page(page_number)
+    print(post in page.object_list)
+    if post in page.object_list:
+        return page_number
     else:
-        if num_posts - post.position <= PostView.paginate_orphans:
-            return post.position // PostView.paginate_by
-        else:
-            return post.position // PostView.paginate_by + 1
+        return page_number + 1 
 
 
 ### Mixins ###
@@ -126,7 +141,7 @@ class TopView(LoginRequiredMixin, ListView):
 
 
 class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
-    paginate_by = 30
+    paginate_by = THREADVIEW_PAGINATE_BY
     paginate_orphans = 2
 
     def get_queryset(self):
@@ -142,7 +157,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
 
 class PostView(LoginRequiredMixin, ListView):
-    paginate_by = 30
+    paginate_by = POSTVIEW_PAGINATE_BY
     paginate_orphans = 2
 
     def dispatch(self, request, *args, **kwargs):

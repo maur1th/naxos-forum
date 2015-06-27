@@ -148,10 +148,6 @@ class Post(CachedAuthorModel):
             cache.set('post/{}/html'.format(self.pk), html, None)
         return html
     
-    @property
-    def position(self):
-        return Post.objects.filter(thread=self.thread, pk__lt=self.pk).count()
-
     class Meta:
         ordering = ["pk"]
         # Permit thread.posts.latest in template

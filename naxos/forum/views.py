@@ -72,7 +72,6 @@ class ThreadStatusMixin(object):
             b = bookmarks.get(t.pk, None)
             if b:
                 unread_items = t.modified > b
-                t.bookmark, t.page = get_bookmarked_post(t, b)
             else:
                 # in case there is no bookmark for this thread
                 unread_items = (True if t.modified > 
@@ -84,6 +83,11 @@ class ThreadStatusMixin(object):
                 pass
             else:  # no unread items & cache exists? then skip the rest!
                 continue
+            # add bookmark and page to thread object
+            if b:
+                t.bookmark, t.page = get_bookmarked_post(t, b)
+            else:
+                t.bookmark, t.page = t.posts.first(), 1
             # now check if user is a contributor in this thread
             is_contributor = Thread.objects.filter(
                 pk=t.pk, contributors=self.request.user).exists()
@@ -91,12 +95,8 @@ class ThreadStatusMixin(object):
             # status icon and behaviour
             if unread_items and is_contributor:
                 status = "unread_contributor"
-                if not hasattr(t, 'bookmark'):
-                    t.bookmark, t.page = t.posts.first(), 1
             elif unread_items:
                 status = "unread"
-                if not hasattr(t, 'bookmark'):
-                    t.bookmark, t.page = t.posts.first(), 1
             elif is_contributor:
                 status, t.bookmark = "read_contributor", None
             else:

@@ -37,7 +37,7 @@ def get_post_page(thread, post):
         queryset, page_size, orphans=PostView.paginate_orphans,
         allow_empty_first_page=False)
     index = queryset.filter(pk__lt=post.pk).count()
-    page_number = index // PostView.paginate_by + 1
+    page_number = max(index // PostView.paginate_by, 1)
     page = paginator.page(page_number)
     if post in page.object_list:
         return page_number

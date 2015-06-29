@@ -78,8 +78,6 @@ textarea {
     float: left;
 }
 .thread-title {
-    float: auto;
-    clear: none;
     margin-left:20px;
 }
 /* Post specific view */

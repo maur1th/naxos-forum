@@ -47,7 +47,7 @@ def get_post_page(thread, post):
 
 ### Mixins ###
 class ThreadStatusMixin(object):
-    """Populate thread status and readCaret where needed."""
+    """Populate thread status."""
 
     def get_context_data(self, **kwargs):
            

@@ -47,9 +47,12 @@
         </td>
         {% cache 9999999 thread thread.pk %}
         <td class="vert-align">
+          <div class="thread-icon">
           {% with 'img/thread/'|add:thread.icon as icon %}
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
+          </div>
+          <div class="thread-title">
           {% if thread.isSticky and thread.question %}
             Annonce/Sondage : 
           {% elif thread.isSticky %}
@@ -61,6 +64,7 @@
           {% if thread.personal %}
             <span style="color:#d9534f">(perso)</span>
           {% endif %}
+          </div>
         </td>
         <td class="text-center vert-align importantData hidden-xs">
           <small><strong>{{ thread.cached_author }}</strong></small>

@@ -73,6 +73,15 @@ table.table tbody>tr>td.vert-align{
 textarea {
     resize: vertical;
 }
+/* Thread specific view */
+.thread-icon {
+    float: left;
+}
+.thread-title {
+    float: auto;
+    clear: none;
+    margin-left:20px;
+}
 /* Post specific view */
 div.post-header {
     background: linear-gradient(#425e8e, #5171ae);

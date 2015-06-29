@@ -70,6 +70,9 @@ table.table tbody>tr>td.vert-align{
 #caption {
     padding:0 0 40px 0;
 }
+textarea {
+    resize: vertical;
+}
 /* Post specific view */
 div.post-header {
     background: linear-gradient(#425e8e, #5171ae);

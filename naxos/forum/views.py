@@ -482,11 +482,11 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
             return
         # Additional search options disabled since they make the server 500
         # for apparently no other reason than load
-        # elif re.findall(r'^user:', self.query):
-        #     entry_query = get_query(self.query[5:], ['author__username'])
-        # elif re.findall(r'^post:', self.query):
-        #     cls = Post
-        #     entry_query = get_query(self.query[5:], ['content_plain'])
+        elif re.findall(r'^user:', self.query):
+            entry_query = get_query(self.query[5:], ['author__username'])
+        elif re.findall(r'^post:', self.query):
+            cls = Post
+            entry_query = get_query(self.query[5:], ['content_plain'])
         else:
             entry_query = get_query(self.query, ['title'])
         results = cls.objects.filter(entry_query)

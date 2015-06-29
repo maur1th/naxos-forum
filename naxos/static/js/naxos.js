@@ -55,6 +55,12 @@ $(document).ready(function(){
   // Make URL in posts open in a new window/tab
   $('.post-content a').attr('target', '_blank');
 
+  // Correct 'post_path' template rendering in posts
+  $('a.post-crumb').parent('li').addClass('active');
+  $('a.post-crumb').replaceWith(function() {
+    return $(this).text();
+  });
+
   // Animate poll results
   var $chart = $('.poll-chart');
   var $bar = $('.poll-bar');

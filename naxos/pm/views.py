@@ -39,7 +39,7 @@ class MessageView(LoginRequiredMixin, ListView):
     paginate_by = 30
     paginate_orphans = 2
 
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         self.c = get_object_or_404(Conversation, pk=self.kwargs['pk'])
         # Handle forbidden user
         if self.request.user not in self.c.participants.all():
@@ -53,7 +53,7 @@ class MessageView(LoginRequiredMixin, ListView):
         if caret != m:
             self.request.user.pmReadCaret.remove(caret)
             self.request.user.pmReadCaret.add(m)
-        return super().dispatch(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         return Message.objects.filter(conversation=self.c).all()

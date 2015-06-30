@@ -168,14 +168,12 @@ class PostView(LoginRequiredMixin, ListView):
     paginate_by = POSTVIEW_PAGINATE_BY
     paginate_orphans = 2
 
-    def dispatch(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         c_slug = self.kwargs['category_slug']
         t_slug = self.kwargs['thread_slug']
         self.t = get_object_or_404(Thread, slug=t_slug, category__slug=c_slug)
         if not self.t.visible:  # 403 if the thread has been removed
             raise PermissionDenied
-        if not request.user.is_authenticated():  # redirect to login page
-            return super().dispatch(request, *args, **kwargs)
         # Decide whether Post.viewCount should be incremented
         bookmarks = self.request.user.cached_bookmarks
         b = bookmarks.get(self.t.pk, None)
@@ -188,7 +186,7 @@ class PostView(LoginRequiredMixin, ListView):
         # Now update or create Bookmark's timestamp (see user.models)
         Bookmark.objects.update_or_create(user=request.user,
                                           thread=self.t)
-        return super().dispatch(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """Get the posts to be displayed."""

@@ -17,7 +17,7 @@ from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
-from user.models import Bookmark
+from user.models import CategoryTimeStamp, Bookmark
 
 
 THREADVIEW_PAGINATE_BY = 30
@@ -130,16 +130,14 @@ class TopView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        timestamps = CategoryTimeStamp.objects.filter(user=self.request.user)
         for c in context['categories']:
-            try:
-                latest_bookmark = Bookmark.objects\
-                    .filter(user=self.request.user, thread__category=c)\
-                    .values_list('timestamp').latest()[0]
-            except ObjectDoesNotExist:
-                latest_bookmark = self.request.user.resetDateTime
-            c.latest_thread = c.threads.latest()
-            status = ('unread' if c.latest_thread.modified >
-                      latest_bookmark else 'read')
+            # to avoid non existent timestamps
+            timestamp, created = timestamps.get_or_create(
+                category=c, user=self.request.user)
+            # compute and add read/unread status to category object
+            status = ('unread' if c.threads.latest().modified >
+                      timestamp.timestamp else 'read')
             c.status = 'img/{}.png'.format(status)
         return context
 
@@ -148,10 +146,16 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_by = THREADVIEW_PAGINATE_BY
     paginate_orphans = 2
 
+    def get(self, request, *args, **kwargs):
+        self.c = get_object_or_404(
+            Category, slug=self.kwargs['category_slug'])
+        # Update user timestamp for this category
+        CategoryTimeStamp.objects.update_or_create(
+            category=self.c, user=request.user)
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         """Get the threads to be displayed."""
-        self.c = get_object_or_404(Category,
-                                   slug=self.kwargs['category_slug'])
         return self.c.threads.filter(visible=True)
 
     def get_context_data(self, **kwargs):

@@ -82,6 +82,20 @@ class Bookmark(models.Model):
         return "{} {} {}".format(self.user, self.thread, self.timestamp)
 
 
+class CategoryTimeStamp(models.Model):
+    """A table to record when a user has visited a category"""
+    user = models.ForeignKey(ForumUser, related_name='categoryTimeStamps')
+    category = models.ForeignKey('forum.Category')
+    timestamp = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'category')
+        index_together = ('user', 'category')
+
+    def __str__(self):
+        return "{} {} {}".format(self.user, self.category, self.timestamp)
+
+
 class TokenPool(models.Model):
     "Contains tokens for user creation"
     token = models.CharField(unique=True, max_length=50)

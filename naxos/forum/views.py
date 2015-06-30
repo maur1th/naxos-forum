@@ -42,7 +42,14 @@ def get_post_page(thread, post):
     if post in page.object_list:
         return page_number
     else:
-        return page_number + 1 
+        return page_number + 1
+
+
+def update_category_timestamp(category, user):
+    """Update CategoryTimeStamp so category doesn't display unread status"""
+    timestamp, created = CategoryTimeStamp.objects.get_or_create(
+        category=category, user=user)
+    timestamp.save()
 
 
 ### Mixins ###
@@ -210,14 +217,14 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/thread_form.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.c = get_object_or_404(
+        self.category = get_object_or_404(
             Category, slug=kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Pass Category from url to context"""
         context = super().get_context_data(**kwargs)
-        context['category'] = self.c
+        context['category'] = self.category
         return context
 
     def get_form_kwargs(self):
@@ -228,16 +235,17 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def form_valid(self, form):
         """Handle thread and 1st post creation in the db"""
         # Create the thread
-        t = Thread.objects.create(
+        thread = Thread.objects.create(
             title=form.cleaned_data['title'],
             icon=form.cleaned_data['icon'],
             author=self.request.user,
-            category=self.c,
+            category=self.category,
             personal=form.cleaned_data['personal'])
         # Complete the post and save it
-        form.instance.thread = t
+        form.instance.thread = thread
         form.instance.author = self.request.user
         form.save()
+        update_category_timestamp(self.category, self.request.user)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -249,7 +257,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     template_name = 'forum/post_form.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.t = get_object_or_404(
+        self.thread = get_object_or_404(
             Thread,
             slug=kwargs['thread_slug'],
             category__slug=kwargs['category_slug'])
@@ -258,23 +266,24 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super().get_context_data(**kwargs)
-        context['category'] = self.t.category
-        context['thread'] = self.t
+        context['category'] = self.thread.category
+        context['thread'] = self.thread
         context['history'] = Post.objects.filter(
-            thread=self.t).order_by('-pk')[:10]
+            thread=self.thread).order_by('-pk')[:10]
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
-                       'thread': self.t,
+                       'thread': self.thread,
                        'user': self.request.user})
         return kwargs
 
     def form_valid(self, form):
         "Update remaining form fields"
-        form.instance.thread = self.t
+        form.instance.thread = self.thread
         form.instance.author = self.request.user
+        update_category_timestamp(self.thread.category, self.request.user)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -400,7 +409,7 @@ class PreviewView(LoginRequiredMixin, DetailView):
 ### Poll Views ###
 @login_required
 def NewPoll(request, category_slug):
-    c = get_object_or_404(Category, slug=category_slug)
+    category = get_object_or_404(Category, slug=category_slug)
     thread_form = PollThreadForm(prefix="thread")
     question_form = QuestionForm(prefix="question")
     choices_formset = ChoicesFormSet(instance=PollQuestion())
@@ -417,23 +426,24 @@ def NewPoll(request, category_slug):
             if (thread_form.is_valid() and question_form.is_valid()
                     and choices_formset.is_valid()):
                 # Create the thread
-                t = Thread.objects.create(
+                thread = Thread.objects.create(
                     title=thread_form.cleaned_data['title'],
                     icon=thread_form.cleaned_data['icon'],
                     author=request.user,
-                    category=c,
+                    category=category,
                     personal=thread_form.cleaned_data['personal'])
                 # Complete the post and save it
-                thread_form.instance.thread = t
+                thread_form.instance.thread = thread
                 thread_form.instance.author = request.user
                 p = thread_form.save()
                 # Complete the poll and save it
-                question_form.instance.thread = t
+                question_form.instance.thread = thread
                 question = question_form.save()
                 choices_formset = ChoicesFormSet(request.POST,
                                                  instance=question)
                 if choices_formset.is_valid():
                     choices_formset.save()
+                    update_category_timestamp(category, request.user)
                     return HttpResponseRedirect(reverse(
                         'forum:category',
                         kwargs={'category_slug': category_slug}))
@@ -444,7 +454,7 @@ def NewPoll(request, category_slug):
         'choices_formset': choices_formset,
         'formset_helper': formset_helper,
         'category_slug': category_slug,
-        'category': c,
+        'category': category,
     })
 
 

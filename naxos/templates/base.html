@@ -119,10 +119,13 @@
     </nav>
     {# Page content #}
     <div class="container">
-    {% if user.pmUnreadCount == 1 %}
-      <div class="alert alert-info"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveau message privé.</a></div>
-    {% elif user.pmUnreadCount > 1 %}
-      <div class="alert alert-info"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveaux messages privés.</a></div>
+    {% if user.pmUnreadCount >= 1 %}
+      <div class="alert alert-info messages"><span class="glyphicon glyphicon-exclamation-sign"></span> <a href="{% url 'pm:top' %}">Vous avez reçu {{ user.pmUnreadCount }} nouveau(x) message(s) privé(s).</a></div>
+    {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% ifequal message.tags 'error'  %}danger{% else %}{{ message.tags }}{% endifequal %} messages"><span class="glyphicon glyphicon-exclamation-sign"></span> </span>{{ message }}</div>
+        {% endfor %}
     {% endif %}
     {% block content %}
     {% endblock content %}

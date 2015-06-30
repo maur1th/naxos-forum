@@ -10,16 +10,7 @@
 </ol><br>
 {# Threads #}
 <div class="row">
-{% if not object_list %}
-  <div class="alert alert-danger">
-    <p>Aucun résultat ne correspond à cette recherche.</p>
-  </div>
-</div>
-<hr style="margin:8px; border-top:0">
-{% else %}
-  <div class="alert alert-success">
-    <p>{{ results_count }} résultat(s) trouvé(s).</p>
-  </div>
+{% if object_list %}
 {% include "pagination.html" %}
 <hr style="margin:8px; border-top:0">
   {% ifequal model 'thread' %}

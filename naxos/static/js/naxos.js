@@ -61,6 +61,9 @@ $(document).ready(function(){
     return $(this).text();
   });
 
+  // Move messages after breadcrumb
+  $('.breadcrumb').after($('.messages'));
+
   // Animate poll results
   var $chart = $('.poll-chart');
   var $bar = $('.poll-bar');

@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.contrib import messages
 
 import re
 from datetime import datetime
@@ -176,33 +177,37 @@ class PostView(LoginRequiredMixin, ListView):
     paginate_orphans = 2
 
     def get(self, request, *args, **kwargs):
-        c_slug = kwargs['category_slug']
-        t_slug = kwargs['thread_slug']
-        self.t = get_object_or_404(Thread, slug=t_slug, category__slug=c_slug)
-        if not self.t.visible:  # 403 if the thread has been removed
+        self.thread = get_object_or_404(
+            Thread,
+            slug=kwargs['thread_slug'],
+            category__slug=kwargs['category_slug'])
+        if not self.thread.visible:  # 403 if the thread has been removed
             raise PermissionDenied
         # Decide whether Post.viewCount should be incremented
         bookmarks = request.user.cached_bookmarks
-        b = bookmarks.get(self.t.pk, None)
+        b = bookmarks.get(self.thread.pk, None)
         # If b > t.modified, user has visited this thread since last post
         # (so no incr), if None, post has never been visited (so incr)
-        increment = self.t.modified > b if b else True
+        increment = self.thread.modified > b if b else True
         if increment:
-            self.t.viewCount += 1  # Increment views
-            self.t.save()
-        # Now update or create Bookmark's timestamp (see user.models)
-        Bookmark.objects.update_or_create(user=request.user,
-                                          thread=self.t)
+            self.thread.viewCount += 1  # Increment views
+            self.thread.save()
+        # Update thread's bookmark
+        Bookmark.objects.update_or_create(
+            user=request.user, thread=self.thread)
+        # Update category timestamp
+        CategoryTimeStamp.objects.update_or_create(
+            user=request.user, category=self.thread.category)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """Get the posts to be displayed."""
-        return self.t.posts.all()
+        return self.thread.posts.all()
 
     def get_context_data(self, **kwargs):
         """Add context data for template."""
         context = super().get_context_data(**kwargs)
-        context['thread'] = self.t
+        context['thread'] = self.thread
         return context
 
 
@@ -484,17 +489,18 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_orphans = 2
     template_name = 'forum/search_results.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        """Return an error message if the query was empty."""
+        self.query = request.GET['q']
+        if not self.query:
+            messages.error(request, "Aucun terme précisé pour la recherche.")
+            return HttpResponseRedirect(reverse('forum:top'))
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
-        self.query = self.request.GET['q']
+        """Handle search parameters & process search computation."""
         cls = Thread
-        if not self.query:  # An empty string was submitted
-            return
-        # Additional search options disabled since they make the server 500
-        # for apparently no other reason than load
-        elif re.findall(r'^user:', self.query):
+        if re.findall(r'^user:', self.query):
             entry_query = get_query(self.query[5:], ['author__username'])
         elif re.findall(r'^post:', self.query):
             cls = Post
@@ -505,9 +511,18 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         if 'visible' in [field.name for field in cls._meta.fields]:
             results = results.filter(visible="True")
         self.results_count = results.count()
+        if not self.results_count:
+            messages.error(
+                self.request,
+                "Aucun résultat ne correspond à cette recherche.")
+        else:
+            messages.success(
+                self.request,
+                "{} résultat(s) trouvé(s).".format(self.results_count))
         return results
 
     def get_context_data(self, **kwargs):
+        """Add context data for the template."""
         model = self.object_list.model._meta.model_name
         if model == 'thread':
             context = super().get_context_data(**kwargs)

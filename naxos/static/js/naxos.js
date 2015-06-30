@@ -56,13 +56,16 @@ $(document).ready(function(){
   $('.post-content a').attr('target', '_blank');
 
   // Correct 'post_path' template rendering in posts
-  $('a.post-crumb').parent('li').addClass('active');
-  $('a.post-crumb').replaceWith(function() {
-    return $(this).text();
-  });
+  var $postCrumb = $('a.post-crumb');
+  if ( !$postCrumb.parent().next().length ) {
+    $postCrumb.parent().addClass('active');
+    $postCrumb.replaceWith(function() {
+      return $(this).text();
+    });
+  };
 
   // Move messages after breadcrumb
-  $('.breadcrumb').after($('.messages'));
+  $('.breadcrumb').first().after($('.messages'));
 
   // Animate poll results
   var $chart = $('.poll-chart');

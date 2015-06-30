@@ -54,6 +54,15 @@ def update_category_timestamp(category, user):
 
 
 ### Mixins ###
+class CategoryReadMixin(object):
+    """Mark category as read."""
+
+    def render_to_response(self, context, **response_kwargs):
+        CategoryTimeStamp.objects.update_or_create(
+            user=self.request.user, category=self.category)
+        return super().render_to_response(context, **response_kwargs)
+
+
 class ThreadStatusMixin(object):
     """Populate thread status."""
 
@@ -150,29 +159,27 @@ class CategoryView(LoginRequiredMixin, ListView):
         return context
 
 
-class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
+class ThreadView(LoginRequiredMixin, ThreadStatusMixin, CategoryReadMixin,
+                 ListView):
     paginate_by = THREADVIEW_PAGINATE_BY
     paginate_orphans = 2
 
     def get(self, request, *args, **kwargs):
-        self.c = get_object_or_404(
+        self.category = get_object_or_404(
             Category, slug=kwargs['category_slug'])
-        # Update user timestamp for this category
-        CategoryTimeStamp.objects.update_or_create(
-            category=self.c, user=request.user)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """Get the threads to be displayed."""
-        return self.c.threads.filter(visible=True)
+        return self.category.threads.filter(visible=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['category'] = self.c
+        context['category'] = self.category
         return context
 
 
-class PostView(LoginRequiredMixin, ListView):
+class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
     paginate_by = POSTVIEW_PAGINATE_BY
     paginate_orphans = 2
 
@@ -181,6 +188,7 @@ class PostView(LoginRequiredMixin, ListView):
             Thread,
             slug=kwargs['thread_slug'],
             category__slug=kwargs['category_slug'])
+        self.category = self.thread.category
         if not self.thread.visible:  # 403 if the thread has been removed
             raise PermissionDenied
         # Decide whether Post.viewCount should be incremented
@@ -195,9 +203,6 @@ class PostView(LoginRequiredMixin, ListView):
         # Update thread's bookmark
         Bookmark.objects.update_or_create(
             user=request.user, thread=self.thread)
-        # Update category timestamp
-        CategoryTimeStamp.objects.update_or_create(
-            user=request.user, category=self.thread.category)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -217,7 +222,8 @@ class PostDetailView(DetailView):
 
 
 ### Thread and Post creation and edit ###
-class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
+class NewThread(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
+                CreateView):
     form_class = ThreadForm
     template_name = 'forum/thread_form.html'
 
@@ -250,14 +256,14 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
         form.instance.thread = thread
         form.instance.author = self.request.user
         form.save()
-        update_category_timestamp(self.category, self.request.user)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy('forum:category', kwargs=self.kwargs)
 
 
-class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
+class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
+              CreateView):
     form_class = PostForm
     template_name = 'forum/post_form.html'
 
@@ -266,12 +272,13 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
             Thread,
             slug=kwargs['thread_slug'],
             category__slug=kwargs['category_slug'])
+        self.category = self.thread.category
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         "Pass category and thread from url to context"
         context = super().get_context_data(**kwargs)
-        context['category'] = self.thread.category
+        context['category'] = self.category
         context['thread'] = self.thread
         context['history'] = Post.objects.filter(
             thread=self.thread).order_by('-pk')[:10]
@@ -288,7 +295,6 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         "Update remaining form fields"
         form.instance.thread = self.thread
         form.instance.author = self.request.user
-        update_category_timestamp(self.thread.category, self.request.user)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -448,7 +454,9 @@ def NewPoll(request, category_slug):
                                                  instance=question)
                 if choices_formset.is_valid():
                     choices_formset.save()
-                    update_category_timestamp(category, request.user)
+                    # Mark category as read
+                    CategoryTimeStamp.objects.update_or_create(
+                        category=category, user=request.user)
                     return HttpResponseRedirect(reverse(
                         'forum:category',
                         kwargs={'category_slug': category_slug}))

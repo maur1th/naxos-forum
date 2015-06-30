@@ -7,7 +7,7 @@ urlpatterns = patterns(
     '',
     url(
         regex=r'^$',
-        view=views.TopView.as_view(),
+        view=views.CategoryView.as_view(),
         name='top'
     ),
     url(

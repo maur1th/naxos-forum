@@ -123,7 +123,7 @@ class PreviewPostMixin(object):
 
 
 ### Main Forum Views ###
-class TopView(LoginRequiredMixin, ListView):
+class CategoryView(LoginRequiredMixin, ListView):
     """View of the different categories."""
     model = Category
     context_object_name = 'categories'

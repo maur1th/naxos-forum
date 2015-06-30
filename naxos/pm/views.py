@@ -40,19 +40,19 @@ class MessageView(LoginRequiredMixin, ListView):
     paginate_orphans = 2
 
     def get(self, request, *args, **kwargs):
-        self.c = get_object_or_404(Conversation, pk=self.kwargs['pk'])
+        self.c = get_object_or_404(Conversation, pk=kwargs['pk'])
         # Handle forbidden user
-        if self.request.user not in self.c.participants.all():
+        if request.user not in self.c.participants.all():
             return HttpResponseForbidden()
         # Handle user read caret
         m = self.c.messages.latest()
         try:
-            caret = self.request.user.pmReadCaret.get(conversation=self.c)
+            caret = request.user.pmReadCaret.get(conversation=self.c)
         except:
             caret = False
         if caret != m:
-            self.request.user.pmReadCaret.remove(caret)
-            self.request.user.pmReadCaret.add(m)
+            request.user.pmReadCaret.remove(caret)
+            request.user.pmReadCaret.add(m)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -119,7 +119,7 @@ def NewMessage(request, pk):
 class DeleteMessage(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        m = get_object_or_404(Message, pk=self.kwargs['pk'])
+        m = get_object_or_404(Message, pk=kwargs['pk'])
         c = m.conversation
         if m.author not in m.conversation.participants.all():
             raise PermissionDenied

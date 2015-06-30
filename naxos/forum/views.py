@@ -148,7 +148,7 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         self.c = get_object_or_404(
-            Category, slug=self.kwargs['category_slug'])
+            Category, slug=kwargs['category_slug'])
         # Update user timestamp for this category
         CategoryTimeStamp.objects.update_or_create(
             category=self.c, user=request.user)
@@ -169,13 +169,13 @@ class PostView(LoginRequiredMixin, ListView):
     paginate_orphans = 2
 
     def get(self, request, *args, **kwargs):
-        c_slug = self.kwargs['category_slug']
-        t_slug = self.kwargs['thread_slug']
+        c_slug = kwargs['category_slug']
+        t_slug = kwargs['thread_slug']
         self.t = get_object_or_404(Thread, slug=t_slug, category__slug=c_slug)
         if not self.t.visible:  # 403 if the thread has been removed
             raise PermissionDenied
         # Decide whether Post.viewCount should be incremented
-        bookmarks = self.request.user.cached_bookmarks
+        bookmarks = request.user.cached_bookmarks
         b = bookmarks.get(self.t.pk, None)
         # If b > t.modified, user has visited this thread since last post
         # (so no incr), if None, post has never been visited (so incr)
@@ -211,7 +211,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.c = get_object_or_404(
-            Category, slug=self.kwargs['category_slug'])
+            Category, slug=kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -251,8 +251,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         self.t = get_object_or_404(
             Thread,
-            slug=self.kwargs['thread_slug'],
-            category__slug=self.kwargs['category_slug'])
+            slug=kwargs['thread_slug'],
+            category__slug=kwargs['category_slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -268,7 +268,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs.update({'category_slug': self.kwargs['category_slug'],
                        'thread': self.t,
-                       'user':self.request.user})
+                       'user': self.request.user})
         return kwargs
 
     def form_valid(self, form):
@@ -286,7 +286,7 @@ class QuotePost(NewPost):
     """Quote the content of another post"""
 
     def dispatch(self, request, *args, **kwargs):
-        self.p = get_object_or_404(Post, pk=self.kwargs['pk'])
+        self.p = get_object_or_404(Post, pk=kwargs['pk'])
         self.t = self.p.thread
         return super().dispatch(request, *args, **kwargs)
 
@@ -309,8 +309,8 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         "Get the right post and thread"
-        self.p = get_object_or_404(Post, pk=self.kwargs['pk'])
-        if self.p.author != self.request.user:
+        self.p = get_object_or_404(Post, pk=kwargs['pk'])
+        if self.p.author != request.user:
             raise PermissionDenied
         self.t = self.p.thread
         self.c = self.t.category
@@ -377,8 +377,8 @@ class ResetBookmarks(LoginRequiredMixin, View):
 class DeleteThread(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        t = get_object_or_404(Thread, pk=self.kwargs['pk'])
-        if t.author != self.request.user or not t.personal:
+        t = get_object_or_404(Thread, pk=kwargs['pk'])
+        if t.author != request.user or not t.personal:
             raise PermissionDenied
         else:
             t.visible = False

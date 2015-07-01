@@ -175,6 +175,8 @@ class VideoTag(postmarkup.TagBase):
 
     _re_domain = re.compile(r"//([a-z0-9-\.]*)", re.UNICODE)
 
+    iframe_domains = ['youtube.com', 'player.vimeo.com', 'dailymotion.com']
+
     def __init__(self, name, annotate_links=False, **kwargs):
         super().__init__(name, inline=True)
         self.annotate_links = annotate_links
@@ -232,13 +234,15 @@ class VideoTag(postmarkup.TagBase):
         if not self.url:
             return ""
 
-        if self.domain == 'youtube.com':
+        if self.domain in self.iframe_domains:
+            print(self.domain)
             return ('<div class="embed-responsive embed-responsive-16by9">'
                     '<iframe class="embed-responsive-item" src="{}" '
                     'frameborder="0" allowfullscreen="true"></iframe></div>')\
                         .format(postmarkup.PostMarkup\
                                 .standard_replace_no_break(self.url))
         elif self.domain:
+            print(self.domain)
             return '<video loop="true" controls="true" src="{}"></video>'\
                         .format(postmarkup.PostMarkup\
                                 .standard_replace_no_break(self.url))

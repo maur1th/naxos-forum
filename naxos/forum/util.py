@@ -248,7 +248,7 @@ render_bbcode.add_tag(VideoTag, 'video')
 def convert_text_to_html(text, markup='bbcode'):
     if markup == 'bbcode':
         text = rm_legacy_tags(text)
-        text = render_bbcode(text)
+        text = render_bbcode(text, cosmetic_replace=False)
     elif markup == 'markdown':
         text = markdown.markdown(text, safe_mode='escape')
     text = urlize(text)

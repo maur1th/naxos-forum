@@ -240,7 +240,7 @@ class VideoTag(postmarkup.TagBase):
             return ""
 
 
-render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, cosmetic_replace=False)
+render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False)
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
 render_bbcode.add_tag(VideoTag, 'video')
 

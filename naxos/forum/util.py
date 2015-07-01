@@ -269,12 +269,12 @@ def compileSmileys():
     SMILEYS_PATH = ("<img class=\"smiley\" src=\""
                     "/static/img/smileys/{:s}.gif\">")
 
-    specialSmileys = [(r':\)', SMILEYS_PATH.format('special-smile')),
-                      (r';\)', SMILEYS_PATH.format('special-wink')),
-                      (r':\(', SMILEYS_PATH.format('special-sad')),
-                      (r':\/', SMILEYS_PATH.format('bof')),
+    specialSmileys = [(r':-?\)', SMILEYS_PATH.format('special-smile')),
+                      (r';-?\)', SMILEYS_PATH.format('special-wink')),
+                      (r':-?\(', SMILEYS_PATH.format('special-sad')),
+                      (r':-?\/', SMILEYS_PATH.format('bof')),
                       (r':o', SMILEYS_PATH.format('-o')),
-                      (r':D', SMILEYS_PATH.format('green')),
+                      (r':-?D', SMILEYS_PATH.format('green')),
                       (r':\?:', SMILEYS_PATH.format('special-question')),
                       (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
                       (r':jap:', SMILEYS_PATH.format('respect')),

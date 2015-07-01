@@ -39,23 +39,18 @@ $(document).ready(function(){
     clearInterval(x);
   });
 
-  // Responsive images in posts
+  // Post customization
   $('.post-content img').load(function() {
       if ($(this).width() > 100) {
         $(this).addClass("img-responsive");
       }
   });
-
-  // Remove inner spoiler tags
-  $(".panel-body .panel").remove();
-
-  // Remove inner quotes
-  $("blockquote blockquote").remove();
-
-  // Make URL in posts open in a new window/tab
+  $('.panel-body .panel').remove();  // Remove inner spoiler tags
+  $('blockquote blockquote').remove();
   $('.post-content a').attr('target', '_blank');
+  $('.post-content iframe').next('a').remove();
 
-  // Correct 'post_path' template rendering in posts
+  // Repair post_path template rendering in post_list
   var $postCrumb = $('a.post-crumb');
   if ( !$postCrumb.parent().next().length ) {
     $postCrumb.parent().addClass('active');

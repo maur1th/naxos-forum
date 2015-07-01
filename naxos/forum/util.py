@@ -235,14 +235,12 @@ class VideoTag(postmarkup.TagBase):
             return ""
 
         if self.domain in self.iframe_domains:
-            print(self.domain)
             return ('<div class="embed-responsive embed-responsive-16by9">'
                     '<iframe class="embed-responsive-item" src="{}" '
                     'frameborder="0" allowfullscreen="true"></iframe></div>')\
                         .format(postmarkup.PostMarkup\
                                 .standard_replace_no_break(self.url))
         elif self.domain:
-            print(self.domain)
             return '<video loop="true" controls="true" src="{}"></video>'\
                         .format(postmarkup.PostMarkup\
                                 .standard_replace_no_break(self.url))

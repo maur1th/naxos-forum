@@ -232,10 +232,16 @@ class VideoTag(postmarkup.TagBase):
         if not self.url:
             return ""
 
-        if self.domain:
-            return ('<iframe width="420" height="315" src="{}"'\
-                    'frameborder="0" allowfullscreen="true"></iframe>').format(
-                    postmarkup.PostMarkup.standard_replace_no_break(self.url))
+        if self.domain == 'youtube.com':
+            return ('<div class="embed-responsive embed-responsive-16by9">'
+                    '<iframe class="embed-responsive-item" src="{}" '
+                    'frameborder="0" allowfullscreen="true"></iframe></div>')\
+                        .format(postmarkup.PostMarkup\
+                                .standard_replace_no_break(self.url))
+        elif self.domain:
+            return '<video loop="true" controls="true" src="{}"></video>'\
+                        .format(postmarkup.PostMarkup\
+                                .standard_replace_no_break(self.url))
         else:
             return ""
 

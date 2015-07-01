@@ -48,7 +48,8 @@ $(document).ready(function(){
   $('.panel-body .panel').remove();  // Remove inner spoiler tags
   $('blockquote blockquote').remove();
   $('.post-content a').attr('target', '_blank');
-  $('.post-content iframe').next('a').remove();
+  $('.post-content div.embed-responsive').next('a').remove();
+  $('.post-content video').next('a').remove();
 
   // Repair post_path template rendering in post_list
   var $postCrumb = $('a.post-crumb');

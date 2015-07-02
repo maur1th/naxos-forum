@@ -4,7 +4,7 @@ import os
 import django
 from datetime import datetime
 from heapq import nlargest
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.dev")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.prod")
 django.setup()
 
 from user.models import ForumUser

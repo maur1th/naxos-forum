@@ -275,7 +275,7 @@ def compileSmileys():
                       (r':-?\/', SMILEYS_PATH.format('bof')),
                       (r':o', SMILEYS_PATH.format('-o')),
                       (r':-?D', SMILEYS_PATH.format('green')),
-                      (r':-?v', SMILEYS_PATH.format('v'))
+                      (r':-?v', SMILEYS_PATH.format('v')),
                       (r':\?:', SMILEYS_PATH.format('special-question')),
                       (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
                       (r':jap:', SMILEYS_PATH.format('respect')),

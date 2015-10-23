@@ -5,10 +5,14 @@ upstream naxos_app_server {
  
   server unix:/var/forum/run/gunicorn.sock fail_timeout=0;
 }
- 
+
+upstream socket {
+    server localhost:4000;
+} 
+
 server {
     listen   80;
-    server_name '.geekattitude.org' 'www.geekattitude.org' 'localhost';
+    server_name 'beta.geekattitude.org' 'localhost';
  
     #client_max_body_size 5M;
  
@@ -56,12 +60,13 @@ server {
     }
 
     location /socket.io {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;
-        proxy_pass http://127.0.0.1:4000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_http_version	1.1;
+        proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header	Host $http_host;
+        proxy_set_header	Upgrade $http_upgrade;
+        proxy_set_header	Connection "upgrade";
+        proxy_redirect		off;
+        proxy_pass		http://socket;
     }
 }
 

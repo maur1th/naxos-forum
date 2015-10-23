@@ -1,4 +1,4 @@
-Django>=1.8,<1.9
+Django>=1.7,<1.8
 Pillow
 django-braces
 django-crispy-forms

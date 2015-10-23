@@ -3,7 +3,7 @@ upstream naxos_app_server {
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
  
-  server unix:/var/forum/run/gunicorn.sock fail_timeout=0;
+  server unix:/var/www/forum/run/gunicorn.sock fail_timeout=0;
 }
 
 upstream socket {
@@ -16,15 +16,15 @@ server {
  
     #client_max_body_size 5M;
  
-    access_log /var/forum/logs/nginx-access.log;
-    error_log /var/forum/logs/nginx-error.log;
+    access_log /var/www/forum/logs/nginx-access.log;
+    error_log /var/www/forum/logs/nginx-error.log;
  
     location /static/ {
-        alias   /var/forum/naxos-project/naxos/static/;
+        alias   /var/www/forum/naxos-project/naxos/static/;
     }
     
     location /media/ {
-        alias   /var/forum/naxos-project/naxos/media/;
+        alias   /var/www/forum/naxos-project/naxos/media/;
     }
  
     location / {

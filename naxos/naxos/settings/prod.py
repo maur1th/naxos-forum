@@ -1,4 +1,4 @@
-# settings/local.py
+# settings/prod.py
 from os import environ as env
 from .base import *
 

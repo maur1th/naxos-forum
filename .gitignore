@@ -16,10 +16,8 @@
 *.sublime-workspace
 secret.txt
 util/data/
-naxos/manage.py
 naxos/templates/ads/
-naxos/naxos/settings/local.py
-naxos/naxos/settings/dev.py
+naxos/naxos/settings/prod.py
 
 ## nodejs
 naxos/nodejs/node_modules

@@ -17,7 +17,6 @@
 secret.txt
 util/data/
 naxos/templates/ads/
-naxos/naxos/settings/prod.py
 
 ## nodejs
 naxos/nodejs/node_modules

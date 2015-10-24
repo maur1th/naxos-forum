@@ -13,7 +13,7 @@ const io = require('socket.io')(app);
 const connected_users = {};
 
 io.use(function(socket, next) {
-    var handshakeData = socket.request;
+    const handshakeData = socket.request;
     if(handshakeData.headers.cookie){
         next();
     }

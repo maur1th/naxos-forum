@@ -479,13 +479,17 @@ def VotePoll(request, category_slug, thread_slug):
     question = thread.question
 
     if request.method == 'POST':
-        if request.user not in question.voters.all():
-            choice = question.choices.get(
-                choice_text=request.POST['choice_text'])
+        choice_text = request.POST.get('choice_text')
+        if request.user not in question.voters.all() and choice_text:
+            choice = question.choices.get(choice_text=choice_text)
             choice.votes += 1
             question.voters.add(request.user)
             choice.save()
             question.save()
+        elif not choice_text:
+            messages.error(request, "Aucun choix sélectionné.")
+        else:
+            messages.error(request, "Vous avez déjà voté.")
         return HttpResponseRedirect(reverse(
             'forum:thread', kwargs={'category_slug': category_slug,
                                     'thread_slug': thread_slug}))

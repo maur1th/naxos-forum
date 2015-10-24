@@ -21,7 +21,6 @@ from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 
 # Configuring directories
 MEDIA_ROOT = root('media')
-# STATIC_ROOT = root('static')
 
 STATICFILES_DIRS = (root('static'),)
 TEMPLATE_DIRS = (
@@ -31,10 +30,16 @@ TEMPLATE_DIRS = (
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# Security
+
 ALLOWED_HOSTS = []
 
 SECRET_KEY = SECRET_KEY
 
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
 
 # Application definition
 
@@ -67,6 +72,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'naxos.urls'

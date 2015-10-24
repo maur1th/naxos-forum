@@ -1,15 +1,16 @@
-var http = require('http');
-var app = http.createServer();
-var io = require('socket.io')(app);
-var cookie_reader = require('cookie');
-var querystring = require('querystring');
-var settings = require('./settings');
+'use strict';
+const http = require('http');
+const cookie_reader = require('cookie');
+const querystring = require('querystring');
 
-var HOST = settings.host;
-var HOST_PORT = settings.host_port;
-var DEBUG = settings.debug;
+const NODE_PORT = process.env.NODE_PORT;
+const HOST = process.env.NODE_HOST;
+const HOST_PORT = process.env.NODE_HOST_PORT;
+const DEBUG = true;
 
-app.listen(settings.app_port);
+const app = http.createServer().listen(NODE_PORT);
+const io = require('socket.io')(app);
+const connected_users = {};
 
 io.use(function(socket, next) {
     var handshakeData = socket.request;
@@ -19,16 +20,13 @@ io.use(function(socket, next) {
     next(new Error('not authorized'));
 });
 
-var connected_users = {};
 io.on('connection', function(socket){
-    var user = cookie_reader.parse(socket.request.headers.cookie).sessionid
+    const user = cookie_reader.parse(socket.request.headers.cookie).sessionid
     if (user in connected_users) {
         connected_users[user] += 1;
     } else {
         connected_users[user] = 1;
-        if (DEBUG) {
-            console.log(user + ' connected');
-        }
+        if (DEBUG) console.log(user + ' connected');
         // Tell django the user has come online
         var data = querystring.stringify({
             sessionid: user,

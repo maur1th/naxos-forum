@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib import messages
 from datetime import datetime
@@ -114,15 +114,14 @@ class Top10(LoginRequiredMixin, TemplateView):
 # Set disconnection timestamp
 @csrf_exempt
 def node_api(request):
-    if request.method == 'GET': raise PermissionDenied
-    session = Session.objects.get(
-        session_key=request.POST['sessionid'])
-    user_id = session.get_decoded().get('_auth_user_id')
-    status = request.POST['status']
+    if request.method != 'GET': raise PermissionDenied
     try:
+        session = Session.objects.get(session_key=request.GET.get('sessionid'))
+        user_id = session.get_decoded().get('_auth_user_id')
+        status = request.GET['status']
         user = ForumUser.objects.get(pk=user_id)
-    except ForumUser.DoesNotExist:
-        return HttpResponseServerError()
+    except (ObjectDoesNotExist, NameError):
+        raise PermissionDenied
     if status == 'connected':
         user.is_online = True
     elif status == 'disconnected':

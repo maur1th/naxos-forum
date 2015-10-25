@@ -1,8 +1,3 @@
-# SQL Database
-*.db
-*.sqlite3
-*.sqlite3-journal
-
 ## generic files to ignore
 *~
 *.lock
@@ -19,7 +14,7 @@ util/data/
 naxos/templates/ads/
 
 ## nodejs
-naxos/nodejs/node_modules
+**node_modules
 naxos/nodejs/settings.js
 
 ## GitHub .gitignore for Python
@@ -67,3 +62,6 @@ coverage.xml
 *.pot
 **/migrations/
 media/
+
+# Misc
+list.gz

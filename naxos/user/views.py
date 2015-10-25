@@ -2,13 +2,12 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render
 from django.contrib import messages
 from datetime import datetime
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.http import HttpResponse, HttpResponseServerError
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
 

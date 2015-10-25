@@ -133,7 +133,7 @@ $(document).ready(function(){
 
 // socket.io
 $(document).ready(function(){
-  var socket = io('http://geekattitude.org:80');
+  var socket = io();
   $(window).on('beforeunload', function(){
     socket.close();
   });

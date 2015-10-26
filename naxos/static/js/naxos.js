@@ -69,7 +69,7 @@ $(document).ready(function (){
   // Animate poll results
   const $chart = $('.poll-chart');
   const $bar = $('.poll-bar');
-  const highestNumber = 0;
+  let highestNumber = 0;
   let sum = 0;
   // Get highest number and use that as 100%
   $chart.find($bar).each(function () {
@@ -116,15 +116,16 @@ $(document).ready(function (){
     return '#spoiler-panel-' + (index+1);
   });
   $('a[href^=\'#spoiler-panel-\']').click(function () {
+    const $spoiler = $(this);
     const spoiler_anim = setInterval(function () {
-      const $container = $(this).parents('.spoiler-container');
+      const $container = $spoiler.parents('.spoiler-container');
       $container.children('div[id^=\'spoiler-panel-\']').on('shown.bs.collapse', function () {
         clearInterval(spoiler_anim);
       });
       $container.children('div[id^=\'spoiler-panel-\']').on('hidden.bs.collapse', function () {
         clearInterval(spoiler_anim);
       });
-      const $row = $(this).parents('.row');
+      const $row = $spoiler.parents('.row');
       $row.children('.equal-divs').responsiveEqualHeightGrid();
     }, 20);
   });

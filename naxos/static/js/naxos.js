@@ -128,13 +128,10 @@ $(document).ready(function(){
       $row.children('.equal-divs').responsiveEqualHeightGrid();
     }, 20);
   });
-
 });
 
 // socket.io
-$(document).ready(function(){
-  var socket = io();
-  $(window).on('beforeunload', function(){
-    socket.close();
-  });
+const socket = io.connect();
+window.addEventListener('unload', function () {
+  socket.close();
 });

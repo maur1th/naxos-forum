@@ -40,10 +40,10 @@ function handleDisconnection(socket, user) {
         delete connected_users[user];
         if (DEBUG) console.log(user + ' disconnected');
         // Tell django the user is now offline
-  request({
-    url: HOST + '/user/node_api',
-    qs: {sessionid: user, status: 'disconnected'}
-  });
+        request({
+          url: HOST + '/user/node_api',
+          qs: {sessionid: user, status: 'disconnected'}
+        });
       } else {
         connected_users[user] -= 1;
       }

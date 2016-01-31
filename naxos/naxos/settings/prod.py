@@ -2,7 +2,7 @@
 from os import environ as env
 from .base import *
 
-DEBUG = True 
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = ((env.get('ADMIN_NAME'), env.get('ADMIN_EMAIL')),)

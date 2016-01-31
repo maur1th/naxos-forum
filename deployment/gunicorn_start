@@ -1,11 +1,11 @@
 #!/bin/bash
 
-NAME="forum"	                                  # Name of the application
+NAME="forum"	                                # Name of the application
 DJANGODIR=/var/www/forum/naxos-project/naxos    # Django project directory
-SOCKFILE=/var/www/forum/run/gunicorn.sock 	 	  # we will communicte using this unix socket
+SOCKFILE=/var/www/forum/run/gunicorn.sock       # we will communicte using this unix socket
 USER=forum                                      # the user to run as
-GROUP=web                                     # the group to run as
-NUM_WORKERS=9                                   # how many worker processes should Gunicorn spawn
+GROUP=web                                       # the group to run as
+NUM_WORKERS=8                                   # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=naxos.settings.prod      # which settings file should Django use
 DJANGO_WSGI_MODULE=naxos.wsgi                   # WSGI module name
  
@@ -28,5 +28,5 @@ exec gunicorn ${DJANGO_WSGI_MODULE}:application \
   --workers $NUM_WORKERS \
   --user=$USER --group=$GROUP \
   --bind=unix:$SOCKFILE \
-  --log-level=debug \
+# --log-level=debug \
   --log-file=-

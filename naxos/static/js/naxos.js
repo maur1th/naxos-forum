@@ -1,40 +1,37 @@
-/* jshint jquery: true */
-/* globals io */
-'use strict';
-
-// regex: http://james.padolsey.com/javascript/regex-selector-for-jquery/
-jQuery.expr[':'].regex = function (elem, index, match) {
-  const matchParams = match[3].split(','),
-  validLabels = /^(data|css):/,
-  attr = {
-    method: matchParams[0].match(validLabels) ?
-            matchParams[0].split(':')[0] : 'attr',
-    property: matchParams.shift().replace(validLabels,'')
-  },
-  regexFlags = 'ig',
-  regex = new RegExp(matchParams.join('')
-                      .replace(/^\s+|\s+$/g,''), regexFlags);
-  return regex.test(jQuery(elem)[attr.method](attr.property));
+// regex
+// http://james.padolsey.com/javascript/regex-selector-for-jquery/
+jQuery.expr[':'].regex = function(elem, index, match) {
+var matchParams = match[3].split(','),
+    validLabels = /^(data|css):/,
+    attr = {
+        method: matchParams[0].match(validLabels) ?
+                    matchParams[0].split(':')[0] : 'attr',
+        property: matchParams.shift().replace(validLabels,'')
+    },
+    regexFlags = 'ig',
+    regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
+return regex.test(jQuery(elem)[attr.method](attr.property));
 };
 
 // Scroll to caret position in a text field
 function scrollToPosition($textarea, caret) {
-  const text = $textarea.val();
-  const textBeforePosition = text.substring(0, caret);
-  $textarea.blur();
-  $textarea.val(textBeforePosition);
-  $textarea.focus();
-  $textarea.val(text);
-  $textarea[0].setSelectionRange(caret, caret);
+    var text = $textarea.val();
+    var textBeforePosition = text.substring(0, caret);
+    $textarea.blur();
+    $textarea.val(textBeforePosition);
+    $textarea.focus();
+    $textarea.val(text);
+    $textarea[0].setSelectionRange(caret, caret);
 }
 
+// Document ready jquery
 $(document).ready(function (){
 
   // Ensure author div and content div stay the same size
   // supporting code in grid.js
   $('.equal-divs').responsiveEqualHeightGrid();
   // Ensure presentation is ok while media still loading
-  const x = setInterval(function () {
+  var x = setInterval(function () {
     $('.equal-divs').responsiveEqualHeightGrid();
   }, 500);
   $(window).load(function () {
@@ -55,7 +52,7 @@ $(document).ready(function (){
   $('.post-content video').next('a').remove();
 
   // Repair post_path template rendering in post_list
-  const $postCrumb = $('a.post-crumb');
+  var $postCrumb = $('a.post-crumb');
   if ( !$postCrumb.parent().next().length ) {
     $postCrumb.parent().addClass('active');
     $postCrumb.replaceWith(function () {
@@ -67,22 +64,24 @@ $(document).ready(function (){
   $('.breadcrumb').first().after($('.messages'));
 
   // Animate poll results
-  const $chart = $('.poll-chart');
-  const $bar = $('.poll-bar');
-  let highestNumber = 0;
-  let sum = 0;
+  var $chart = $('.poll-chart');
+  var $bar = $('.poll-bar');
+  var highestNumber = 0;
+  var sum = 0;
   // Get highest number and use that as 100%
   $chart.find($bar).each(function () {
-      const num = parseInt($(this).text(),10);
+      var num = parseInt($(this).text(),10);
       sum += num;
-      if (num > highestNumber) highestNumber = num;
+      if (num > highestNumber) {
+          highestNumber = num;
+      }
   });
   // Set the progress bar data
   $chart.find($bar).each(function () {
-      const num = $(this).text();
+      num = $(this).text();
       // Convert to percentage and round
-      const dispPerc = Math.round((num / highestNumber) * 100);
-      const realPerc = Math.round((num / sum) * 100);
+      dispPerc = Math.round((num / highestNumber) * 100);
+      realPerc = Math.round((num / sum) * 100);
       if(!isNaN(realPerc) && realPerc !== 0) {
           $(this).animate({width: dispPerc + '%'}, {duration:'fast'});
           $(this).text(Math.round(realPerc) + '%');
@@ -98,9 +97,9 @@ $(document).ready(function (){
     placement: 'bottom',
   });
   $(document).on('click', '.send-pm', function () {
-    const user = $(this).parents('div.popover').siblings('a.author');
-    const user_id = user.attr('data-id');
-    const user_name = user.text();
+    var user = $(this).parents('div.popover').siblings('a.author');
+    var user_id = user.attr('data-id');
+    var user_name = user.text();
     $('#pmModal').text('Envoyer un message privé à ' + user_name);
     $('.modal-content #id_recipient').attr('value', user_id);
     $('#full-editor-link').attr(
@@ -116,22 +115,24 @@ $(document).ready(function (){
     return '#spoiler-panel-' + (index+1);
   });
   $('a[href^=\'#spoiler-panel-\']').click(function () {
-    const $spoiler = $(this);
-    const spoiler_anim = setInterval(function () {
-      const $container = $spoiler.parents('.spoiler-container');
-      $container.children('div[id^=\'spoiler-panel-\']').on('shown.bs.collapse', function () {
-        clearInterval(spoiler_anim);
+    $spoiler = $(this);
+    var spoiler_anim = setInterval(function () {
+      $container = $spoiler.parents('.spoiler-container');
+      $container.children('div[id^=\'spoiler-panel-\']')
+        .on('shown.bs.collapse', function () {
+          clearInterval(spoiler_anim);
       });
-      $container.children('div[id^=\'spoiler-panel-\']').on('hidden.bs.collapse', function () {
-        clearInterval(spoiler_anim);
+      $container.children('div[id^=\'spoiler-panel-\']')
+        .on('hidden.bs.collapse', function () {
+          clearInterval(spoiler_anim);
       });
-      const $row = $spoiler.parents('.row');
+      $row = $spoiler.parents('.row');
       $row.children('.equal-divs').responsiveEqualHeightGrid();
     }, 20);
   });
 });
 
-const socket = io.connect();
+var socket = io.connect();
 window.addEventListener('unload', function () {
   socket.close();
 });

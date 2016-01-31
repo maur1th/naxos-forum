@@ -70,54 +70,55 @@ class ThreadStatusMixin(object):
            
         def get_bookmarked_post(thread, bookmark):
             """Return latest read post and page from bookmark timestamp."""
-            post = Post.objects.filter(
-                        thread=thread, created__gt=bookmark).first()
+            post = Post.objects\
+                       .filter(thread=thread, created__gt=bookmark)\
+                       .only('id', 'pk').first()
             if post:
                 page = get_post_page(thread, post)
                 return post, page
             else:
                 return post, None
 
+        user_id = self.request.user.id
         context = super().get_context_data(**kwargs)
         bookmarks = self.request.user.cached_bookmarks
         for t in context['object_list']:
-            # get thread status cache key for this thread / user
-            key = make_template_fragment_key(
-                'thread_status',
-                [t.pk, self.request.user.pk, self.request.user.resetDateTime])
             # get thread's bookmark and check if there are unread items
             b = bookmarks.get(t.pk, None)
             if b:
                 unread_items = t.modified > b
             else:
-                # in case there is no bookmark for this thread
                 unread_items = (True if t.modified > 
                                 self.request.user.resetDateTime else False)
+            key = make_template_fragment_key('thread_status', [t.pk,
+                self.request.user.pk, self.request.user.resetDateTime])
+            cached = cache.get('read_status/{}/{}'.format(user_id, t.id)) 
             # check whether additional calculation is needed
-            if unread_items:
-                cache.delete(key)
-            elif not cache.has_key(key):
-                pass
-            else:  # no unread items & cache exists? then skip the rest!
+            tmp = cache.has_key(key)
+            if cache.has_key(key) and cached == 'unread' and unread_items:
                 continue
+            elif cache.has_key(key) and cached == 'read' and not unread_items:
+                continue
+            else:
+                cache.delete(key)
+            print(t.title, tmp, cached, unread_items)
             # add bookmark and page to thread object
             if b:
                 t.bookmark, t.page = get_bookmarked_post(t, b)
             else:
-                t.bookmark, t.page = t.posts.first(), 1
+                t.bookmark, t.page = True, 1
             # now check if user is a contributor in this thread
-            is_contributor = Thread.objects.filter(
-                pk=t.pk, contributors=self.request.user).exists()
+            is_contributor = (True if
+                t.contributors.filter(id=user_id) else False)
             # now we've got all the data we needed, let's choose the correct
             # status icon and behaviour
-            if unread_items and is_contributor:
-                status = "unread_contributor"
-            elif unread_items:
-                status = "unread"
-            elif is_contributor:
-                status, t.bookmark = "read_contributor", None
+            if unread_items:
+                status = 'unread_contributor' if is_contributor else 'unread'
+                cache.set('read_status/{}/{}'.format(user_id, t.id), 'unread', None)
             else:
-                status, t.bookmark = "read", None
+                status = 'read_contributor' if is_contributor else 'read'
+                t.bookmark = None
+                cache.set('read_status/{}/{}'.format(user_id, t.id), 'read', None)
             t.status = 'img/{}.png'.format(status)
         return context
 
@@ -201,8 +202,10 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
             self.thread.viewCount += 1  # Increment views
             self.thread.save()
         # Update thread's bookmark
-        Bookmark.objects.update_or_create(
-            user=request.user, thread=self.thread)
+        Bookmark.objects.update_or_create(user=request.user,
+            thread=self.thread)
+        cache.set('read_status/{}/{}'.format(self.request.user.id,
+            self.thread.id), 'read', None)
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):

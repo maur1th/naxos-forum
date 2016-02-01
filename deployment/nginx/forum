@@ -12,9 +12,7 @@ upstream socket {
 
 server {
     listen   80;
-    server_name 'geekattitude.org';
- 
-    #client_max_body_size 5M;
+    server_name geekattitude.org;
  
     access_log /var/www/forum/logs/nginx-access.log;
     error_log /var/www/forum/logs/nginx-error.log;

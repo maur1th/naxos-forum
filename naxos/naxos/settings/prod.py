@@ -30,6 +30,8 @@ DATABASES = {
     }
 }
 
+CONN_MAX_AGE = None
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',

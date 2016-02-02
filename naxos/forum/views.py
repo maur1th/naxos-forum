@@ -101,7 +101,6 @@ class ThreadStatusMixin(object):
                 continue
             else:
                 cache.delete(key)
-            print(t.title, tmp, cached, unread_items)
             # add bookmark and page to thread object
             if b:
                 t.bookmark, t.page = get_bookmarked_post(t, b)

@@ -28,7 +28,7 @@ POSTVIEW_PAGINATE_BY = 30
 ### Helpers ###
 def get_post_page(thread, post):
     """Return page number the post is on.
-    
+
     Let's build a paginator object and check if our post is on the expected
     page. If not (because of PostView.paginate_orphans), return next page.
     """
@@ -67,7 +67,7 @@ class ThreadStatusMixin(object):
     """Populate thread status."""
 
     def get_context_data(self, **kwargs):
-           
+
         def get_bookmarked_post(thread, bookmark):
             """Return latest read post and page from bookmark timestamp."""
             post = Post.objects\
@@ -88,11 +88,11 @@ class ThreadStatusMixin(object):
             if b:
                 unread_items = t.modified > b
             else:
-                unread_items = (True if t.modified > 
+                unread_items = (True if t.modified >
                                 self.request.user.resetDateTime else False)
             key = make_template_fragment_key('thread_status', [t.pk,
                 self.request.user.pk, self.request.user.resetDateTime])
-            cached = cache.get('read_status/{}/{}'.format(user_id, t.id)) 
+            cached = cache.get('read_status/{}/{}'.format(user_id, t.id))
             # check whether additional calculation is needed
             tmp = cache.has_key(key)
             if cache.has_key(key) and cached == 'unread' and unread_items:
@@ -218,7 +218,7 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
         return context
 
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, DetailView):
     "Displays a single post"
     model = Post
 

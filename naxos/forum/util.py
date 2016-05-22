@@ -10,27 +10,31 @@ import markdown
 from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
 
 
-### Process search queries ###
+# Process search queries
 # Code from Julien Phalip: http://goo.gl/EctTVy
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in invidual keywords, getting rid of
-        unecessary spaces and grouping quoted words together.
-        Example:
-        >>> normalize_query('  some random  words "with   quotes  " and   spaces')
-        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-    '''
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)] 
+    """
+    Splits the query string in invidual keywords, getting rid of
+    unecessary spaces and grouping quoted words together.
+    Example:
+    >>> normalize_query(' some random  words "with   quotes  " and   spaces  ')
+    ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+    """
+    return [normspace(' ', (t[0] or t[1]).strip()) for
+            t in findterms(query_string)]
+
 
 def get_query(query_string, search_fields):
-    ''' Returns a query, that is a combination of Q objects. That combination
-        aims to search keywords within a model by testing the given search fields.
-    '''
-    query = None # Query to search for every search term        
+    """
+    Returns a query, that is a combination of Q objects. That combination
+    aims to search keywords within a model by testing the given search fields.
+    """
+    query = None  # Query to search for every search term
     terms = normalize_query(query_string)
     for term in terms:
-        or_query = None # Query to search for a given term in each field
+        or_query = None  # Query to search for a given term in each field
         for field_name in search_fields:
             q = Q(**{"%s__icontains" % field_name: term})
             if or_query is None:
@@ -44,7 +48,7 @@ def get_query(query_string, search_fields):
     return query
 
 
-### Urlize + BBCode filters ###
+# Urlize + BBCode filters
 # Forked from https://github.com/slav0nic/DjangoBB/
 class HTMLFilter(HTMLParser):
 
@@ -151,15 +155,17 @@ class SpoilerTag(postmarkup.TagBase):
         super().__init__(name)
 
     def render_open(self, parser, node_index):
-        return ("<div class=\"panel panel-default spoiler-container\">"
-               "<div class=\"panel-heading\" role=\"tab\" id=\"heading\">"
-               "<h5 class=\"panel-title\">"
-               "<a data-toggle=\"collapse\" href=\"#spoiler-panel\" "
-               "aria-expanded=\"false\" aria-controls=\"spoiler-panel\" "
-               "style=\"display:block\">Spoiler</a></h5></div>"
-               "<div id=\"spoiler-panel\" class=\"panel-collapse collapse\" "
-               "role=\"tabpanel\" aria-labelledby=\"heading\">"
-               "<div class=\"panel-body\">")
+        return (
+            "<div class=\"panel panel-default spoiler-container\">"
+            "<div class=\"panel-heading\" role=\"tab\" id=\"heading\">"
+            "<h5 class=\"panel-title\">"
+            "<a data-toggle=\"collapse\" href=\"#spoiler-panel\" "
+            "aria-expanded=\"false\" aria-controls=\"spoiler-panel\" "
+            "style=\"display:block\">Spoiler</a></h5></div>"
+            "<div id=\"spoiler-panel\" class=\"panel-collapse collapse\" "
+            "role=\"tabpanel\" aria-labelledby=\"heading\">"
+            "<div class=\"panel-body\">"
+        )
 
     def render_close(self, parser, node_index):
         return '</div></div></div>'
@@ -171,7 +177,10 @@ class VideoTag(postmarkup.TagBase):
     Forked from postmarkup.LinkTag.
     """
 
-    _safe_chars = frozenset(u'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-=/&?:%&#')
+    _safe_chars = frozenset(
+        u'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg'
+        u'hijklmnopqrstuvwxyz0123456789_.-=/&?:%&#'
+    )
 
     _re_domain = re.compile(r"//([a-z0-9-\.]*)", re.UNICODE)
 
@@ -185,7 +194,8 @@ class VideoTag(postmarkup.TagBase):
 
         self.domain = u''
         tag_data = parser.tag_data
-        nest_level = tag_data[u'link_nest_level'] = tag_data.setdefault(u'link_nest_level', 0) + 1
+        name = u'link_nest_level'
+        nest_level = tag_data[name] = tag_data.setdefault(name, 0) + 1
 
         if nest_level > 1:
             return u""
@@ -220,6 +230,7 @@ class VideoTag(postmarkup.TagBase):
 
         def percent_encode(s):
             safe_chars = self._safe_chars
+
             def replace(c):
                 if c not in safe_chars:
                     return u"%%%02X" % ord(c)
@@ -227,7 +238,6 @@ class VideoTag(postmarkup.TagBase):
                     return c
             return u"".join([replace(c) for c in s])
 
-        #self.url = percent_encode(url.encode(u'utf-8', u'replace'))
         self.url = percent_encode(url)
         self.domain = domain
 
@@ -235,15 +245,15 @@ class VideoTag(postmarkup.TagBase):
             return ""
 
         if self.domain in self.iframe_domains:
-            return ('<div class="embed-responsive embed-responsive-16by9">'
-                    '<iframe class="embed-responsive-item" src="{}" '
-                    'frameborder="0" allowfullscreen="true"></iframe></div>')\
-                        .format(postmarkup.PostMarkup\
-                                .standard_replace_no_break(self.url))
+            return (
+                '<div class="embed-responsive embed-responsive-16by9">'
+                '<iframe class="embed-responsive-item" src="{}" '
+                'frameborder="0" allowfullscreen="true"></iframe></div>'
+            ).format(postmarkup.PostMarkup.standard_replace_no_break(self.url))
         elif self.domain:
-            return '<video loop="true" controls="true" src="{}"></video>'\
-                        .format(postmarkup.PostMarkup\
-                                .standard_replace_no_break(self.url))
+            return (
+                '<video loop="true" controls="true" src="{}"></video>'
+            ).format(postmarkup.PostMarkup.standard_replace_no_break(self.url))
         else:
             return ""
 
@@ -263,23 +273,25 @@ def convert_text_to_html(text, markup='bbcode'):
     return text
 
 
-### Smiley stuff ###
+# Smiley stuff
 def compileSmileys():
 
     SMILEYS_PATH = ("<img class=\"smiley\" src=\""
                     "/static/img/smileys/{:s}.gif\">")
 
-    specialSmileys = [(r':-?\)', SMILEYS_PATH.format('special-smile')),
-                      (r';-?\)', SMILEYS_PATH.format('special-wink')),
-                      (r':-?\(', SMILEYS_PATH.format('special-sad')),
-                      (r':-?\/', SMILEYS_PATH.format('bof')),
-                      (r':o', SMILEYS_PATH.format('-o')),
-                      (r':-?D', SMILEYS_PATH.format('green')),
-                      (r':-?v', SMILEYS_PATH.format('v')),
-                      (r':\?:', SMILEYS_PATH.format('special-question')),
-                      (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
-                      (r':jap:', SMILEYS_PATH.format('respect')),
-                      (r':clap:', SMILEYS_PATH.format('bravo')),]
+    specialSmileys = [
+        (r':-?\)', SMILEYS_PATH.format('special-smile')),
+        (r';-?\)', SMILEYS_PATH.format('special-wink')),
+        (r':-?\(', SMILEYS_PATH.format('special-sad')),
+        (r':-?\/', SMILEYS_PATH.format('bof')),
+        (r':o', SMILEYS_PATH.format('-o')),
+        (r':-?D', SMILEYS_PATH.format('green')),
+        (r':-?v', SMILEYS_PATH.format('v')),
+        (r':\?:', SMILEYS_PATH.format('special-question')),
+        (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
+        (r':jap:', SMILEYS_PATH.format('respect')),
+        (r':clap:', SMILEYS_PATH.format('bravo')),
+    ]
 
     def get_smileys(path):
         "Get all smileys"
@@ -322,7 +334,7 @@ def smilify(html):
     return smiled_html
 
 
-### Misc ###
+# Misc
 def keygen():
     import random
     return ''.join([random.SystemRandom().choice(

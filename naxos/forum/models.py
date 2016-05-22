@@ -13,7 +13,7 @@ from user.models import ForumUser, Bookmark
 SLUG_LENGTH = 50
 
 
-### Abstract models ###
+# Abstract models
 class CachedAuthorModel(models.Model):
     """Gets author from cache else from db and create cache"""
 
@@ -29,7 +29,7 @@ class CachedAuthorModel(models.Model):
         abstract = True
 
 
-### Basic Forum models ###
+# Basic Forum models
 class Category(models.Model):
     """Contains threads."""
     slug = models.SlugField(blank=False, unique=True, db_index=True)
@@ -144,10 +144,11 @@ class Post(CachedAuthorModel):
         html = cache.get('post/{}/html'.format(self.pk))
         if not html:
             html = convert_text_to_html(self.content_plain, self.markup)
-            if self.markup == 'bbcode': html = smilify(html)
+            if self.markup == 'bbcode':
+                html = smilify(html)
             cache.set('post/{}/html'.format(self.pk), html, None)
         return html
-    
+
     class Meta:
         ordering = ["pk"]
         # Permit thread.posts.latest in template
@@ -172,7 +173,7 @@ class Preview(models.Model):
         return "{:d}".format(self.pk)
 
 
-### Poll models ###
+# Poll models
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
     thread = models.OneToOneField(Thread, related_name='question')
@@ -194,7 +195,7 @@ class PollChoice(models.Model):
         return self.choice_text
 
 
-### Model signal handlers ###
+# Model signal handlers
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):
     html = convert_text_to_html(instance.content_plain, instance.markup)
@@ -206,13 +207,16 @@ def update_post_cache(created, instance, **kwargs):
         cache.set('thread/{}/latest_post'.format(instance.thread.pk),
                   instance, None)
 
+
 @receiver(post_save, sender=Post)
 def update_thread_cache(created, instance, **kwargs):
     cache.delete(make_template_fragment_key('thread', [instance.thread.pk]))
 
+
 @receiver(post_save, sender=Thread)
 def update_thread_cache(created, instance, **kwargs):
     cache.delete(make_template_fragment_key('thread', [instance.pk]))
+
 
 @receiver(post_save, sender=Post)
 def increment_thread_postCount(created, instance, **kwargs):
@@ -223,5 +227,8 @@ def increment_thread_postCount(created, instance, **kwargs):
 
 @receiver(post_save, sender=Thread)
 def add_bookmark(created, instance, **kwargs):
-    if created: Bookmark.objects.update_or_create(user=instance.author,
-                                                  thread=instance)
+    if created:
+        Bookmark.objects.update_or_create(
+            user=instance.author,
+            thread=instance
+        )

@@ -25,10 +25,10 @@ THREADVIEW_PAGINATE_BY = 30
 POSTVIEW_PAGINATE_BY = 30
 
 
-### Helpers ###
+# Helpers #
 def get_post_page(thread, post):
-    """Return page number the post is on.
-
+    """
+    Return page number the post is on.
     Let's build a paginator object and check if our post is on the expected
     page. If not (because of PostView.paginate_orphans), return next page.
     """
@@ -53,7 +53,7 @@ def update_category_timestamp(category, user):
     timestamp.save()
 
 
-### Mixins ###
+# Mixins #
 class CategoryReadMixin(object):
     """Mark category as read."""
 
@@ -90,14 +90,16 @@ class ThreadStatusMixin(object):
             else:
                 unread_items = (True if t.modified >
                                 self.request.user.resetDateTime else False)
-            key = make_template_fragment_key('thread_status', [t.pk,
-                self.request.user.pk, self.request.user.resetDateTime])
+            key = make_template_fragment_key(
+                'thread_status',
+                [t.pk, self.request.user.pk, self.request.user.resetDateTime]
+            )
             cached = cache.get('read_status/{}/{}'.format(user_id, t.id))
             # check whether additional calculation is needed
-            tmp = cache.has_key(key)
-            if cache.has_key(key) and cached == 'unread' and unread_items:
+            tmp = key in cache
+            if key in cache and cached == 'unread' and unread_items:
                 continue
-            elif cache.has_key(key) and cached == 'read' and not unread_items:
+            elif key in cache and cached == 'read' and not unread_items:
                 continue
             else:
                 cache.delete(key)
@@ -107,17 +109,22 @@ class ThreadStatusMixin(object):
             else:
                 t.bookmark, t.page = True, 1
             # now check if user is a contributor in this thread
-            is_contributor = (True if
-                t.contributors.filter(id=user_id) else False)
+            is_contributor = (
+                True if t.contributors.filter(id=user_id) else False
+            )
             # now we've got all the data we needed, let's choose the correct
             # status icon and behaviour
             if unread_items:
                 status = 'unread_contributor' if is_contributor else 'unread'
-                cache.set('read_status/{}/{}'.format(user_id, t.id), 'unread', None)
+                cache.set(
+                    'read_status/{}/{}'.format(user_id, t.id), 'unread', None
+                )
             else:
                 status = 'read_contributor' if is_contributor else 'read'
                 t.bookmark = None
-                cache.set('read_status/{}/{}'.format(user_id, t.id), 'read', None)
+                cache.set(
+                    'read_status/{}/{}'.format(user_id, t.id), 'read', None
+                )
             t.status = 'img/{}.png'.format(status)
         return context
 
@@ -139,7 +146,7 @@ class PreviewPostMixin(object):
             reverse('forum:preview', kwargs={'pk': p.pk}))
 
 
-### Main Forum Views ###
+# Main Forum Views #
 class CategoryView(LoginRequiredMixin, ListView):
     """View of the different categories."""
     model = Category
@@ -201,10 +208,13 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
             self.thread.viewCount += 1  # Increment views
             self.thread.save()
         # Update thread's bookmark
-        Bookmark.objects.update_or_create(user=request.user,
-            thread=self.thread)
-        cache.set('read_status/{}/{}'.format(self.request.user.id,
-            self.thread.id), 'read', None)
+        Bookmark.objects.update_or_create(
+            user=request.user, thread=self.thread)
+        cache.set(
+            'read_status/{}/{}'.format(self.request.user.id, self.thread.id),
+            'read',
+            None
+        )
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -223,7 +233,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
 
 
-### Thread and Post creation and edit ###
+# Thread and Post creation and edit #
 class NewThread(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
                 CreateView):
     form_class = ThreadForm
@@ -300,8 +310,10 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         return super().form_valid(form)
 
     def get_success_url(self):
-        return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '?page=last#' + str(self.object.pk))
+        return '{}?page=last#{}'.format(
+            reverse_lazy('forum:thread', kwargs=self.kwargs),
+            str(self.object.pk)
+        )
 
 
 class QuotePost(NewPost):
@@ -373,9 +385,11 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     def get_success_url(self):
         self.kwargs.pop('pk')  # remove useless pk
         self.kwargs['thread_slug'] = self.t.slug
-        post_page = get_post_page(self.t, self.p)
-        return (reverse_lazy('forum:thread', kwargs=self.kwargs)
-                + '?page=' + str(post_page) + '#' + str(self.object.pk))
+        return '{}?page={}#{}'.format(
+            reverse_lazy('forum:thread', kwargs=self.kwargs),
+            get_post_page(self.t, self.p),
+            self.object.pk
+        )
 
 
 class ResetBookmarks(LoginRequiredMixin, View):
@@ -405,8 +419,8 @@ class DeleteThread(LoginRequiredMixin, View):
         else:
             t.visible = False
             t.save()
-            return HttpResponseRedirect(reverse('forum:category',
-                kwargs={'category_slug': t.category}))
+            return HttpResponseRedirect(
+                reverse('forum:category', kwargs={'category_slug': t.category}))
 
 
 class PreviewView(LoginRequiredMixin, DetailView):
@@ -419,7 +433,7 @@ class PreviewView(LoginRequiredMixin, DetailView):
         return self.render_to_response(context)
 
 
-### Poll Views ###
+# Poll Views #
 @login_required
 def NewPoll(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
@@ -436,8 +450,8 @@ def NewPoll(request, category_slug):
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")
             choices_formset = ChoicesFormSet(request.POST)
-            if (thread_form.is_valid() and question_form.is_valid()
-                    and choices_formset.is_valid()):
+            if (thread_form.is_valid() and question_form.is_valid() and
+                    choices_formset.is_valid()):
                 # Create the thread
                 thread = Thread.objects.create(
                     title=thread_form.cleaned_data['title'],
@@ -497,7 +511,7 @@ def VotePoll(request, category_slug, thread_slug):
                                     'thread_slug': thread_slug}))
 
 
-### Search View ###
+# Search View #
 class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
     paginate_by = 30
     paginate_orphans = 2
@@ -528,11 +542,13 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         if not self.results_count:
             messages.error(
                 self.request,
-                "Aucun résultat ne correspond à cette recherche.")
+                'Aucun résultat ne correspond à cette recherche.'
+            )
         else:
             messages.success(
                 self.request,
-                "{} résultat(s) trouvé(s).".format(self.results_count))
+                "{} résultat(s) trouvé(s).".format(self.results_count)
+            )
         return results
 
     def get_context_data(self, **kwargs):

@@ -25,8 +25,10 @@ class GenericThreadForm(forms.ModelForm):
                ('13', 'icon13.gif',), ('14', 'icon14.gif',),
                ('15', 'icon15.gif',), ('16', 'icon16.gif',))
     title = forms.CharField(max_length=140, label='Titre')
-    icon = forms.ChoiceField(widget=forms.RadioSelect,
-        choices=CHOICES, label="Icône")
+    icon = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=CHOICES, label="Icône"
+    )
     personal = forms.BooleanField(label=("Sujet personnel : permet la suppres"
                                          "sion du sujet."),
                                   required=False)
@@ -121,8 +123,8 @@ class PostForm(forms.ModelForm):
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     def clean(self):
-        if ((datetime.datetime.now() - self.user.posts.latest().created)
-                < datetime.timedelta(seconds=5)):
+        if ((datetime.datetime.now() - self.user.posts.latest().created) <
+                datetime.timedelta(seconds=5)):
             raise forms.ValidationError("Merci d'attendre au moins 5 secondes"
                                         " entre deux messages.")
 

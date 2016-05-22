@@ -6,21 +6,22 @@ import json
 import django
 from django.core.mail import send_mail
 from datetime import datetime
+from user.models import ForumUser
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "naxos.settings.dev")
 django.setup()
-
-from user.models import ForumUser
 
 here = lambda *dirs: join(abspath(dirname(__file__)), *dirs)
 ADMIN_ADDRESS = 'geekattitude.forum@gmail.com'
 
-m = "Bonjour !\n\n"\
-    "L'adresse du FoRuM a changé, "\
-    "vous êtes désormais les bienvenus à l'adresse suivante : htt"\
-    "p://geekattitude.org/. Un mot de passe temporaire vous a été attribué. "\
-    "Voici vos nouveaux identifiants :\n\n"\
-    "Nom d'utilisateur : {}\nMot de passe"\
+message = (
+    "Bonjour !\n\n"
+    "L'adresse du FoRuM a changé, "
+    "vous êtes désormais les bienvenus à l'adresse suivante : htt"
+    "p://geekattitude.org/. Un mot de passe temporaire vous a été attribué. "
+    "Voici vos nouveaux identifiants :\n\n"
+    "Nom d'utilisateur : {}\nMot de passe"
     " : {}\n\nA bientôt sur le FoRuM !\nThomas / équi"
+)
 
 
 with open('new_users.json', 'r') as f:
@@ -30,11 +31,13 @@ with open('new_users.json', 'r') as f:
             user = ForumUser.objects.get(username=username)
         except ForumUser.DoesNotExist:
             continue
-        if not user.is_active: continue
+        if not user.is_active:
+            continue
         print(user.email, i, len(credentials))
         send_mail(
             "L'adresse du FoRuM a changé !",
-            m.format(username, credentials[username]),
+            message.format(username, credentials[username]),
             ADMIN_ADDRESS,
             [user.email],
-            fail_silently=False)
+            fail_silently=False
+        )

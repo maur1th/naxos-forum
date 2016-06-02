@@ -14,3 +14,28 @@
     - git
     - ntp
     - vim
+
+# Common configuration
+- name: set timezone variables
+  copy:
+    content: "Europe/Paris\n"
+    dest: "/etc/timezone"
+    owner: root
+    group: root
+    mode: 0644
+  notify: update_timezone
+- name: generate locale
+  locale_gen:
+    name: "en_US"
+    state: present
+- name: set locale
+  copy:
+    content: "LANG=en_US\nLC_ALL=en_US"
+    dest: "/etc/default/locale"
+    owner: root
+    group: root
+    mode: 0644
+- name: set default editor to emacs
+  alternatives:
+    name: editor
+    path: "/usr/bin/emacs"

@@ -5,6 +5,7 @@
 *.swp
 *.out
 *.venv
+/.vagrant/
 
 ## project specific
 *.sublime-project

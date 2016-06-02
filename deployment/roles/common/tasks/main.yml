@@ -1,0 +1,16 @@
+---
+# Install common dependencies
+- name: update package repo
+  apt: update_cache=yes upgrade=safe
+- name: install packages
+  apt:
+    name: "{{item}}"
+    state: installed
+  with_items:
+    - acl  # required by Ansible 2.1 to become_user
+    - build-essential
+    - curl
+    - emacs24-nox
+    - git
+    - ntp
+    - vim

@@ -5,7 +5,6 @@
 *.swp
 *.out
 *.venv
-/.vagrant/
 
 ## project specific
 *.sublime-project
@@ -13,6 +12,12 @@
 secret.txt
 util/data/
 naxos/templates/ads/
+
+# vagrant
+/.vagrant/
+
+# ansible
+*.retry
 
 ## nodejs
 **node_modules

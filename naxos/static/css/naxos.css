@@ -78,14 +78,22 @@ textarea {
     float: left;
 }
 .thread-title {
-    margin-left:20px;
+    margin-left: 20px;
+    word-break: break-all;
 }
 /* Post specific view */
+.breadcrumb {
+    word-break: break-all;
+}
 div.post-header {
     background: linear-gradient(#425e8e, #5171ae);
     padding: 6px;
     font-size: 12px;
     color: white;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 div.post-author {
     background-color: #f2f2f2;

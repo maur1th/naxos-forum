@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(
         regex=r'^$',
         view=views.CategoryView.as_view(),
@@ -77,4 +76,4 @@ urlpatterns = patterns(
         view=views.PreviewView.as_view(),
         name='preview'
     ),
-)
+]

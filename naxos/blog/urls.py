@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(
         regex=r'^$',
         view=views.TopView.as_view(),
@@ -25,4 +24,4 @@ urlpatterns = patterns(
         view=views.EditPost.as_view(),
         name='edit'
     ),
-)
+]

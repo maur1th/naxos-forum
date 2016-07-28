@@ -2,12 +2,16 @@ from django.utils.six.moves.html_parser import HTMLParser, HTMLParseError
 from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 
+import importlib
 import re
 import os
 import postmarkup
 import markdown
 
-from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
+# from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
+settings = importlib.import_module(os.environ.get('DJANGO_SETTINGS_MODULE'))
+static = getattr(settings, 'STATICFILES_DIRS')
+DEBUG = getattr(settings, 'DEBUG')
 
 
 # Process search queries
@@ -57,7 +61,7 @@ class HTMLFilter(HTMLParser):
     """
 
     def __init__(self):
-        HTMLParser.__init__(self)
+        HTMLParser.__init__(self, convert_charrefs=True)
         self.html = str()
 
     def handle_starttag(self, tag, attrs):
@@ -140,9 +144,9 @@ def rm_legacy_tags(text):
     base_tags = [(r'ita', 'i'),
                  (r'bold', 'b'),
                  (r'under', 'u')]
-    allTags = ([(re.escape('['+old+']'), '['+new+']')
+    allTags = ([(re.escape('[' + old + ']'), '[' + new + ']')
                 for old, new in base_tags] +
-               [(re.escape('[/'+old+']'), '[/'+new+']')
+               [(re.escape('[/' + old + ']'), '[/' + new + ']')
                 for old, new in base_tags])
     query = [(re.compile(old), new) for old, new in allTags]
     for old_match, new in query:

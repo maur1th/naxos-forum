@@ -8,7 +8,7 @@ from user.models import ForumUser
 from forum.util import convert_text_to_html, smilify
 
 
-### PM models ###
+# PM models
 class Conversation(models.Model):
     """Contains PMs between two participants"""
 
@@ -54,7 +54,8 @@ class Message(models.Model):
         html = cache.get('message/{}/html'.format(self.pk))
         if not html:
             html = convert_text_to_html(self.content_plain, self.markup)
-            if self.markup == 'bbcode': html = smilify(html)
+            if self.markup == 'bbcode':
+                html = smilify(html)
             cache.set('message/{}/html'.format(self.pk), html, None)
         return html
 

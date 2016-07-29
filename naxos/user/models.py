@@ -9,10 +9,10 @@ from forum.util import keygen
 
 import datetime
 
+FORUM_INIT = datetime.datetime(2013, 1, 1)
 
-FORUM_INIT = datetime.datetime(2013,1,1)
 
-### Model classes ###
+# Model classes
 class ForumUser(AbstractUser):
 
     """Custom user model"""
@@ -31,14 +31,19 @@ class ForumUser(AbstractUser):
     fullscreen = models.BooleanField(
         default=False,
         verbose_name='Utilisation de la largeur de l\'écran')
-    showLogosOnSmartphone = models.BooleanField(default=True, verbose_name='Afficher les logos sur smartphone')
-    logo = models.ImageField(upload_to="logo",
-                             blank=True)
-    quote = models.CharField(max_length=50,
-                             blank=True,
-                             verbose_name='Citation')
-    website = models.URLField(blank=True,
-                              verbose_name='Site web')
+    showLogosOnSmartphone = models.BooleanField(
+        default=True,
+        verbose_name='Afficher les logos sur smartphone')
+    logo = models.ImageField(
+        upload_to="logo",
+        blank=True)
+    quote = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name='Citation')
+    website = models.URLField(
+        blank=True,
+        verbose_name='Site web')
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
     resetDateTime = models.DateTimeField(default=FORUM_INIT)
@@ -64,7 +69,8 @@ class ForumUser(AbstractUser):
             this = ForumUser.objects.get(pk=self.pk)
             if this.logo != self.logo:
                 this.logo.delete()
-        except: pass
+        except:
+            pass
         super().save(*args, **kwargs)
 
 
@@ -111,10 +117,11 @@ class TokenPool(models.Model):
         return self.token
 
 
-### Model signal handlers ###
+# Model signal handlers
 @receiver(post_save, sender=ForumUser)
 def update_user_cache(instance, **kwargs):
     cache.set('user/{}'.format(instance.pk), instance, None)
+
 
 @receiver(post_save, sender=Bookmark)
 def delete_status_cache(instance, **kwargs):
@@ -122,6 +129,7 @@ def delete_status_cache(instance, **kwargs):
         'thread_status',
         [instance.thread.pk, instance.user.pk, instance.user.resetDateTime])
     cache.delete(key)
+
 
 @receiver(post_save, sender=Bookmark)
 def cache_bookmarks(instance, **kwargs):

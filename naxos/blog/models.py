@@ -3,6 +3,7 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 
+import os
 from uuslug import uuslug
 from socket import gethostname
 
@@ -10,11 +11,11 @@ from forum.util import convert_text_to_html
 from forum.models import Category, Thread, Post, SLUG_LENGTH
 from user.models import ForumUser
 
+
 def import_from(module, name):
     module = __import__(module, fromlist=[name])
     return getattr(module, name)
 
-import os
 SITE_URL = import_from(
     os.environ.get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
 ROBOT_NAME = import_from(
@@ -48,29 +49,31 @@ class BlogPost(models.Model):
             this = BlogPost.objects.get(pk=self.pk)
             if this.image != self.image:
                 this.image.delete()
-        except: pass
+        except:
+            pass
         super().save(*args, **kwargs)
 
     @property
     def html(self):
-      return convert_text_to_html(self.content, 'markdown')
+        return convert_text_to_html(self.content, 'markdown')
 
     def __str__(self):
         return self.title
 
     class Meta:
-      ordering = ['-pk']
+        ordering = ['-pk']
 
 
-## Model signal handlers ###
+# Model signal handlers
 @receiver(pre_save, sender=BlogPost)
 def new_post_pre_save(instance, **kwargs):
     """Create related thread and link it to the blog post"""
-    if instance.pk: return
+    if instance.pk:
+        return
     c = Category.objects.get(slug='jep')
     title = "empty"  # For now, need post pk first
     author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
-        else instance.author)
+              else instance.author)
     t = Thread.objects.create(title=title,
                               author=author,
                               category=c)
@@ -89,8 +92,9 @@ def new_post_post_save(instance, created, **kwargs):
     url_text = "**{} a posté [un nouveau billet]({}) :**\n".format(
         instance.author, url)
     # Prepare image text
-    if instance.image: image = "![Image]({})\n".format(
-        SITE_URL + '/media/' + str(instance.image))
+    if instance.image:
+        url = "{}/media/{}".format(SITE_URL, str(instance.image))
+        image = "![Image]({})\n".format(url)
     # Aggregate
     try:
         content = '\n'.join([url_text, image, instance.content])
@@ -99,7 +103,7 @@ def new_post_post_save(instance, created, **kwargs):
     # Create or update Post
     if created:
         author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
-            else instance.author)
+                  else instance.author)
         Post.objects.create(
             author=author,
             thread=instance.forum_thread,

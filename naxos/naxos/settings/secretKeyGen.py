@@ -20,7 +20,8 @@ except NameError:
     from .base import BASE_DIR
     SECRET_FILE = join(BASE_DIR, 'secret.txt')
     try:
-        SECRET_KEY = open(SECRET_FILE).read().strip()
+        with open(SECRET_FILE) as f:
+            SECRET_KEY = f.read().strip()
     except IOError:
         try:
             import random

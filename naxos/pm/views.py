@@ -3,16 +3,15 @@ from django.views.generic import View, ListView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-
-from braces.views import LoginRequiredMixin
 
 from user.models import ForumUser
 from .models import Conversation, Message
 from .forms import ConversationForm
 
 
-### Helper stuff ###
+# Helper stuff
 def pm_counter(request, c):
     """Increment conversation recipient's pm counter"""
     recipient = c.participants.exclude(username=request.user).get()
@@ -20,7 +19,7 @@ def pm_counter(request, c):
     recipient.save()
 
 
-### PM views ###
+# PM views
 class PMTopView(LoginRequiredMixin, ListView):
     model = Conversation
     paginate_by = 30
@@ -82,8 +81,8 @@ class NewConversation(LoginRequiredMixin, CreateView):
         recipient = self.request.POST['recipient']
         # Check if conversation already exists
         query = Conversation.objects\
-                    .filter(participants=self.request.user)\
-                    .filter(participants=recipient)
+            .filter(participants=self.request.user)\
+            .filter(participants=recipient)
         if query:
             c = query.get()
         else:  # Create the conversation
@@ -105,13 +104,13 @@ def NewMessage(request, pk):
     if request.method == 'POST':
         c = get_object_or_404(Conversation, pk=pk)
         m = Message.objects.create(
-                conversation = c,
-                author = request.user,
-                content_plain=request.POST['content_plain'])
+            conversation=c,
+            author=request.user,
+            content_plain=request.POST['content_plain'])
         pm_counter(request, c)
-        return HttpResponseRedirect(reverse_lazy('pm:msg',
-            kwargs={'pk': pk}) + '?page=last#' + str(m.pk))
-
+        qs = '?page=last#' + str(m.pk)
+        return HttpResponseRedirect(
+            reverse_lazy('pm:msg', kwargs={'pk': pk}) + qs)
     else:
         return HttpResponseRedirect(reverse_lazy('pm:top'))
 
@@ -129,7 +128,7 @@ class DeleteMessage(LoginRequiredMixin, View):
             # Set conversation modified timestamp again in case
             # the latest message was the one deleted
             latest_message_shown = c.messages.filter(shown=True)\
-                                            .order_by('created').last()
+                .order_by('created').last()
             if latest_message_shown:
                 c.modified = latest_message_shown.created
                 c.save()
@@ -141,27 +140,33 @@ class DeleteMessage(LoginRequiredMixin, View):
                     reverse('pm:top'))
 
 
-### Search form ###
+# Search form
 @login_required
 def GetConversation(request):
     """Conversation search form"""
     if request.method == 'POST':
-        u = ForumUser.objects.exclude(username=request.user).filter(
-                username__istartswith=request.POST['query'])
+        u = ForumUser.objects.exclude(username=request.user)\
+            .filter(username__istartswith=request.POST['query'])
         if u.count() == 1:
-            c = Conversation.objects.filter(participants=request.user).filter(
-                    participants=u.get())
+            c = Conversation.objects.filter(participants=request.user)\
+                .filter(participants=u.get())
             if c.count() == 1:
                 c = c.get()
-                return HttpResponseRedirect(reverse_lazy('pm:msg',
-                    kwargs={'pk': c.pk}) + '#' + str(c.messages.latest().pk))
+                tag = '#' + str(c.messages.latest().pk)
+                return HttpResponseRedirect(
+                    reverse_lazy('pm:msg', kwargs={'pk': c.pk}) + tag)
             else:
-                messages.error(request, ("Il n'existe pas de conversation avec"
-                     " cet utilisateur : {:s}.".format(u.get().username)))
+                messages.error(
+                    request,
+                    ("Il n'existe pas de conversation avec"
+                        " cet utilisateur : {:s}.".format(u.get().username))
+                )
         elif u.count() > 1:
-            messages.error(request,
+            messages.error(
+                request,
                 "Plusieurs utilisateurs possibles : {:s}.".format(
-                    ", ".join([u.username for u in u])))
+                    ", ".join([u.username for u in u]))
+            )
         else:
             messages.error(request, "Aucun utilisateur trouvé.")
     return HttpResponseRedirect(reverse_lazy('pm:top'))

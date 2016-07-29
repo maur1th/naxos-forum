@@ -1,8 +1,10 @@
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, \
+    HttpResponseServerError
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib import messages
@@ -11,8 +13,6 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
-
-from braces.views import LoginRequiredMixin
 
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
 from .models import ForumUser
@@ -114,7 +114,8 @@ class Top10(LoginRequiredMixin, TemplateView):
 # Set disconnection timestamp
 @csrf_exempt
 def node_api(request):
-    if request.method != 'GET': raise PermissionDenied
+    if request.method != 'GET':
+        raise PermissionDenied
     try:
         session = Session.objects.get(session_key=request.GET.get('sessionid'))
         user_id = session.get_decoded().get('_auth_user_id')

@@ -57,7 +57,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     # Third-party Apps
-    'braces',
     'crispy_forms',
 
     # Project Apps

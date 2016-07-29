@@ -3,6 +3,7 @@ from django.views.generic import View, ListView, CreateView, UpdateView,\
     DetailView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
@@ -12,7 +13,6 @@ from django.contrib import messages
 
 import re
 from datetime import datetime
-from braces.views import LoginRequiredMixin
 
 from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \

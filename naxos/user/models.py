@@ -75,8 +75,14 @@ class ForumUser(AbstractUser):
 
 
 class Bookmark(models.Model):
-    user = models.ForeignKey(ForumUser, related_name='bookmarks')
-    thread = models.ForeignKey('forum.Thread', related_name='bookmarks')
+    user = models.ForeignKey(
+        ForumUser,
+        related_name='bookmarks',
+        on_delete=models.CASCADE)
+    thread = models.ForeignKey(
+        'forum.Thread',
+        related_name='bookmarks',
+        on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -90,8 +96,11 @@ class Bookmark(models.Model):
 
 class CategoryTimeStamp(models.Model):
     """A table to record when a user has visited a category"""
-    user = models.ForeignKey(ForumUser, related_name='categoryTimeStamps')
-    category = models.ForeignKey('forum.Category')
+    user = models.ForeignKey(
+        ForumUser,
+        related_name='categoryTimeStamps',
+        on_delete=models.CASCADE)
+    category = models.ForeignKey('forum.Category', on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
 
     class Meta:

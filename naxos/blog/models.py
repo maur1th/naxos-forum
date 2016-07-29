@@ -25,14 +25,20 @@ ROBOT_NAME = import_from(
 class BlogPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=80, verbose_name='Titre')
-    author = models.ForeignKey(ForumUser, related_name='blogposts')
+    author = models.ForeignKey(
+        ForumUser,
+        related_name='blogposts',
+        on_delete=models.CASCADE)
     content = models.TextField(verbose_name='Message',
                                max_length=100000)
     image = models.ImageField(upload_to="images", blank=True, null=True)
     views = models.IntegerField(default=0)
     slug = models.CharField(max_length=SLUG_LENGTH, unique=True)
     forum_thread = models.OneToOneField(
-        Thread, null=True, related_name='blog_post')
+        Thread,
+        null=True,
+        related_name='blog_post',
+        on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         # Create unique slug

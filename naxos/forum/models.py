@@ -48,11 +48,19 @@ class Thread(CachedAuthorModel):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=140, verbose_name='Titre')
-    author = models.ForeignKey(ForumUser, related_name='threads')
+    author = models.ForeignKey(
+        ForumUser,
+        related_name='threads',
+        on_delete=models.CASCADE)
     contributors = models.ManyToManyField(ForumUser)
-    category = models.ForeignKey(Category, related_name='threads')
+    category = models.ForeignKey(
+        Category,
+        related_name='threads',
+        on_delete=models.CASCADE)
     icon = models.CharField(
-        max_length=80, default="icon1.gif", verbose_name='Icône')
+        max_length=80,
+        default="icon1.gif",
+        verbose_name='Icône')
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
@@ -127,8 +135,14 @@ class Post(CachedAuthorModel):
     content_plain = models.TextField(verbose_name='Message',
                                      max_length=100000)
     markup = models.CharField(default='bbcode', max_length=10)
-    author = models.ForeignKey(ForumUser, related_name='posts')
-    thread = models.ForeignKey(Thread, related_name='posts')
+    author = models.ForeignKey(
+        ForumUser,
+        related_name='posts',
+        on_delete=models.CASCADE)
+    thread = models.ForeignKey(
+        Thread,
+        related_name='posts',
+        on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         self.thread.contributors.add(self.author)
@@ -176,7 +190,10 @@ class Preview(models.Model):
 # Poll models
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
-    thread = models.OneToOneField(Thread, related_name='question')
+    thread = models.OneToOneField(
+        Thread,
+        related_name='question',
+        on_delete=models.CASCADE)
     voters = models.ManyToManyField(ForumUser, blank=True)
 
     def __str__(self):
@@ -184,7 +201,10 @@ class PollQuestion(models.Model):
 
 
 class PollChoice(models.Model):
-    question = models.ForeignKey(PollQuestion, related_name='choices')
+    question = models.ForeignKey(
+        PollQuestion,
+        related_name='choices',
+        on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=80)
     votes = models.IntegerField(default=0)
 

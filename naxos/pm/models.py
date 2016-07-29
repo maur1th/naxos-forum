@@ -39,8 +39,14 @@ class Message(models.Model):
                                    editable=False)
     content_plain = models.TextField(verbose_name='Message')
     markup = models.TextField(default='bbcode')
-    author = models.ForeignKey(ForumUser, related_name='pvt_messages')
-    conversation = models.ForeignKey(Conversation, related_name='messages')
+    author = models.ForeignKey(
+        ForumUser,
+        related_name='pvt_messages',
+        on_delete=models.CASCADE)
+    conversation = models.ForeignKey(
+        Conversation,
+        related_name='messages',
+        on_delete=models.CASCADE)
     shown = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):

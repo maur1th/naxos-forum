@@ -6,6 +6,7 @@ from .forms import CrispyLoginForm, CrispyPasswordResetForm, \
     CrispySetPasswordForm
 
 
+app_name = 'user'
 urlpatterns = [
     url(
         regex=r'^$',

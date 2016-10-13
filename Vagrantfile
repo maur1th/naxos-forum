@@ -65,6 +65,13 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision :ansible do |ansible|
+    ansible.vault_password_file = "~/.vault_pass"
     ansible.playbook = "deployment/site.yml"
+    ansible.extra_vars = {
+      env_type: "dev",
+      debug_mode: "True",
+      app_user: "vagrant",
+      ssh_user: "vagrant",
+    }
   end
 end

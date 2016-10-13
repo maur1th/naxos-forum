@@ -1,6 +1,8 @@
 ---
-# Install project-specific packages
-- name: install packages
+- name: load vaulted variables
+  include_vars: vault/main.yml
+
+- name: install apt packages
   apt:
     name: "{{item}}"
     state: installed
@@ -20,3 +22,8 @@
     - memcached
     - libmemcached-dev
     - supervisor
+
+- name: copy django settings module
+  template:
+    src: django-settings.py
+    dest: /vagrant/naxos/naxos/settings/local.py

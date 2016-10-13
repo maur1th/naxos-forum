@@ -7,10 +7,8 @@
 *.venv
 
 ## project specific
-*.sublime-project
-*.sublime-workspace
+/naxos/naxos/settings/local.py
 secret.txt
-util/data/
 naxos/templates/ads/
 
 # vagrant

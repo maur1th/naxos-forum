@@ -13,11 +13,12 @@
     - ntp
     - python-pip
     - vim
-- name: install Python dependencies
+- name: install Python dependencies  # else apt-key would fail
   pip: name={{item}}
   with_items:
     - ndg-httpsclient
     - pyasn1
+
 
 # Common configuration
 - name: set timezone variables
@@ -43,3 +44,20 @@
   alternatives:
     name: editor
     path: "/usr/bin/emacs"
+
+# User configuration
+- name: Create user
+  user: name="{{app_user}}" shell="/bin/bash"
+- debug: msg="Copy github credential token"  # TODO
+- name: Install emacs conf & color scheme
+  unarchive:
+    src: emacs.tgz
+    dest: /home/{{ app_user }}
+    creates: /home/{{ app_user }}/.emacs.d/themes/tangotango-theme.el
+    owner: "{{ app_user }}"
+- name: Install vim conf & color scheme
+  unarchive:
+    src: vim.tgz
+    dest: /home/{{ app_user }}
+    creates: /home/{{ app_user }}/.vim/colors/jellybeans.vim
+    owner: "{{ app_user }}"

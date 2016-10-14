@@ -23,7 +23,21 @@
     - libmemcached-dev
     - supervisor
 
+- name: Create global directory
+  file:
+    path: "{{project_dir}}"
+    state: directory
+    owner: "{{app_user}}"
+    group: "{{app_user}}"
+- name: create log directory
+  file:
+    path: /var/log/{{project_name}}
+    state: directory
+    group: "{{app_user}}"
+    owner: "{{app_user}}"
+    mode: 0755
+
 - name: copy django settings module
   template:
     src: django-settings.py
-    dest: /vagrant/naxos/naxos/settings/local.py
+    dest: "{{project_dir}}/naxos/naxos/settings/local.py"

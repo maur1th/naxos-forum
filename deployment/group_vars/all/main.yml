@@ -1,2 +1,4 @@
 ---
+project_name: naxos
 node_version: 6.x
+project_dir: /opt/{{project_name}}

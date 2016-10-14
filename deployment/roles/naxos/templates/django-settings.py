@@ -15,7 +15,7 @@ EMAIL_HOST_USER = "{{server_email}}"
 EMAIL_HOST_PASSWORD = "{{email_host_password}}"
 EMAIL_SUBJECT_PREFIX = ""
 
-SITE_URL = "http://www" + "{{allowed_hosts}}"
+SITE_URL = "http://www.{{allowed_hosts}}"
 ALLOWED_HOSTS = ("{{allowed_hosts}}",)
 
 DATABASES = {

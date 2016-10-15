@@ -2,7 +2,7 @@
 - name: load vaulted variables
   include_vars: vault/main.yml
 
-- name: Create global directory
+- name: create global directory
   file:
     path: "{{project_dir}}"
     state: directory
@@ -15,6 +15,14 @@
     group: "{{app_user}}"
     owner: "{{app_user}}"
     mode: 0755
+- name: store user configuration
+  template:
+    src: templates/{{item.name}}
+    dest: /home/{{app_user}}/{{item.dest}}
+    owner: "{{app_user}}"
+    mode: 0600
+  with_items:
+    - { name: "sh_env", dest: ".bash_profile" }
 
 - name: clone git repo
   become_user: "{{app_user}}"

@@ -42,7 +42,12 @@
 # User configuration
 - name: Create user
   user: name="{{app_user}}" shell="/bin/bash"
-- debug: msg="Copy github credential token"  # TODO
+- name: Copy github credential token
+  template:
+    src: dotnetrc
+    dest: /home/{{app_user}}/.netrc
+    owner: "{{app_user}}"
+    mode: 0600
 - name: Install emacs conf & color scheme
   unarchive:
     src: emacs.tgz

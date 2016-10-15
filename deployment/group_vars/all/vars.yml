@@ -1,0 +1,9 @@
+---
+project_name: naxos
+project_dir: /opt/{{project_name}}
+
+node_version: 6.x
+
+git_host: "{{vault_git_host}}"
+git_login: "{{vault_git_login}}"
+git_token: "{{vault_git_token}}"

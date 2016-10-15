@@ -6,19 +6,13 @@
   apt: name={{item}} state=installed
   with_items:
     - acl  # required by Ansible 2.1 to become_user
+    - apt-transport-https
     - build-essential
     - curl
     - emacs24-nox
     - git
     - ntp
-    - python-pip
     - vim
-- name: install Python dependencies  # else apt-key would fail
-  pip: name={{item}}
-  with_items:
-    - ndg-httpsclient
-    - pyasn1
-
 
 # Common configuration
 - name: set timezone variables

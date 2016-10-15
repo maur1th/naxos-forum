@@ -34,7 +34,7 @@
   with_items:
     - python3
     - python3-pip
-    - virtualenvwrapper
+    - virtualenv
     - python-imaging
     - libjpeg-dev
     - libtiff5-dev
@@ -47,6 +47,13 @@
     - memcached
     - libmemcached-dev
     - supervisor
+
+- name: install pip dependencies
+  pip:
+    extra_args: "--upgrade"
+    requirements: "{{project_dir}}/requirements/{{env_type}}.txt"
+    virtualenv: "{{project_dir}}/env"
+    virtualenv_python: python3
 
 - name: copy django settings module
   template:

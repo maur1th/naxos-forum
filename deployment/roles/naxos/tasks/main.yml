@@ -54,7 +54,6 @@
     - postgresql-server-dev-9.4
     - memcached
     - libmemcached-dev
-    - supervisor
 
 - name: install pip dependencies
   pip:

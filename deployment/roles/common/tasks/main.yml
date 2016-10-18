@@ -9,9 +9,10 @@
     - apt-transport-https
     - build-essential
     - curl
-    - emacs24-nox
     - git
     - ntp
+    - supervisor
+    - emacs24-nox
     - vim
 
 # Common configuration
@@ -40,21 +41,21 @@
     path: "/usr/bin/emacs"
 
 # User configuration
-- name: Create user
+- name: create user
   user: name="{{app_user}}" shell="/bin/bash"
-- name: Copy github credential token
+- name: copy github credential token
   template:
     src: dotnetrc
     dest: /home/{{app_user}}/.netrc
     owner: "{{app_user}}"
     mode: 0600
-- name: Install emacs conf & color scheme
+- name: install emacs conf & color scheme
   unarchive:
     src: emacs.tgz
     dest: /home/{{ app_user }}
     creates: /home/{{ app_user }}/.emacs.d/themes/tangotango-theme.el
     owner: "{{ app_user }}"
-- name: Install vim conf & color scheme
+- name: install vim conf & color scheme
   unarchive:
     src: vim.tgz
     dest: /home/{{ app_user }}

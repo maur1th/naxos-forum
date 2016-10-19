@@ -49,7 +49,7 @@ LOGGING = {
         "logfile": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/var/www/forum/logs/django.log",
+            "filename": "/var/log/{{project_name}}/django.log",
         },
     },
     "root": {

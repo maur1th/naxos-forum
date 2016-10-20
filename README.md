@@ -13,7 +13,7 @@ $ # Install Homebrew
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 $ # Install deps
 $ brew cask install virtualbox
-$ brew cask install vagrant
+$ brew cask install vagrant && vagrant plugin install vagrant-hostsupdater
 $ brew install ansible
 $ # run
 $ vagrant up

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAME="forum"	                                # Name of the application
+NAME="forum"	                                  # Name of the application
 DJANGODIR=/var/www/forum/naxos-project/naxos    # Django project directory
 SOCKFILE=/var/www/forum/run/gunicorn.sock       # we will communicte using this unix socket
 USER=forum                                      # the user to run as
@@ -8,19 +8,19 @@ GROUP=web                                       # the group to run as
 NUM_WORKERS=8                                   # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=naxos.settings.prod      # which settings file should Django use
 DJANGO_WSGI_MODULE=naxos.wsgi                   # WSGI module name
- 
+
 echo "Starting $NAME as `whoami`"
- 
+
 # Activate the virtual environment
 cd $DJANGODIR
 source ../../.virtualenvs/v-env/bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
- 
+
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR
- 
+
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 exec gunicorn ${DJANGO_WSGI_MODULE}:application \

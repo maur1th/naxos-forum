@@ -17,7 +17,7 @@
     mode: 0755
 - name: store user configuration
   template:
-    src: templates/{{item.name}}
+    src: "{{item.name}}"
     dest: /home/{{app_user}}/{{item.dest}}
     owner: "{{app_user}}"
     mode: 0600
@@ -66,3 +66,15 @@
   template:
     src: django-settings.py
     dest: "{{project_dir}}/naxos/naxos/settings/local.py"
+
+- name: remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart_nginx
+- name: add site in nginx
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/sites-enabled/{{project_name}}.conf"
+    mode: 0644
+  notify: restart_nginx

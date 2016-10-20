@@ -17,7 +17,7 @@ try:
     SECRET_KEY
 except NameError:
     from os.path import join
-    from .base import BASE_DIR
+    from .util import BASE_DIR
     SECRET_FILE = join(BASE_DIR, 'secret.txt')
     try:
         with open(SECRET_FILE) as f:

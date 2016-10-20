@@ -8,7 +8,6 @@ import os
 import postmarkup
 import markdown
 
-# from naxos.settings.base import STATICFILES_DIRS as static, DEBUG
 settings = importlib.import_module(os.environ.get('DJANGO_SETTINGS_MODULE'))
 static = getattr(settings, 'STATICFILES_DIRS')
 DEBUG = getattr(settings, 'DEBUG')

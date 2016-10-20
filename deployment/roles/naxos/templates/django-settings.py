@@ -15,15 +15,15 @@ from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 DEBUG = {{debug_mode}}
 
 # Configuring directories
-MEDIA_ROOT = root('media')
-STATICFILES_DIRS = (root('static'),)
+MEDIA_ROOT = root("media")
+STATICFILES_DIRS = (root("static"),)
 
 # Security
 ALLOWED_HOSTS = ("{{allowed_hosts}}",)
 SITE_URL = "http://www.{{allowed_hosts}}"
 SECRET_KEY = SECRET_KEY
 CSRF_COOKIE_HTTPONLY = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
@@ -31,73 +31,73 @@ SECURE_BROWSER_XSS_FILTER = True
 ADMINS = (("{{admin_name}}", "{{admin_email}}"),)
 INSTALLED_APPS = (
     # Django Apps
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.humanize',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.humanize",
 
     # Third-party Apps
-    'crispy_forms',
+    "crispy_forms",
 
     # Project Apps
-    'forum',
-    'user',
-    'pm',
-    'blog',
+    "forum",
+    "user",
+    "pm",
+    "blog",
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
 )
 
-ROOT_URLCONF = 'naxos.urls'
+ROOT_URLCONF = "naxos.urls"
 
-WSGI_APPLICATION = 'naxos.wsgi.application'
+WSGI_APPLICATION = "naxos.wsgi.application"
 
-LANGUAGE_CODE = 'fr-fr'
-TIME_ZONE = 'Europe/Paris'
+LANGUAGE_CODE = "fr-fr"
+TIME_ZONE = "Europe/Paris"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = False
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
-AUTH_USER_MODEL = 'user.ForumUser'
+AUTH_USER_MODEL = "user.ForumUser"
 
-LOGIN_URL = 'user:login'
-LOGIN_REDIRECT_URL = 'forum:top'
+LOGIN_URL = "user:login"
+LOGIN_REDIRECT_URL = "forum:top"
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            root('templates'),
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            root("templates"),
         ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
+                "django.contrib.messages.context_processors.messages",
             ],
-            'debug': DEBUG,
+            "debug": DEBUG,
         },
     },
 ]

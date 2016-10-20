@@ -25,12 +25,10 @@
     mode: 0644
   notify: update_timezone
 - name: generate locale
-  locale_gen:
-    name: "en_US"
-    state: present
+  locale_gen: name=en_US.UTF-8 state=present
 - name: set locale
   copy:
-    content: "LANG=en_US\nLC_ALL=en_US"
+    content: "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8"
     dest: "/etc/default/locale"
     owner: root
     group: root

@@ -65,7 +65,7 @@
 - name: copy django settings module
   template:
     src: django-settings.py
-    dest: "{{project_dir}}/naxos/naxos/settings/local.py"
+    dest: "{{project_dir}}/naxos/naxos/settings.py"
 
 - name: remove default nginx site
   file:

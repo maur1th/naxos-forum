@@ -1,2 +1,2 @@
-export DJANGO_SETTINGS_MODULE=naxos.settings.local
+export DJANGO_SETTINGS_MODULE=naxos.settings
 source {{project_dir}}/env/bin/activate

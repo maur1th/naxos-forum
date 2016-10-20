@@ -7,7 +7,7 @@
 *.venv
 
 ## project specific
-/naxos/naxos/settings/local.py
+/naxos/naxos/settings.py
 secret.txt
 naxos/templates/ads/
 

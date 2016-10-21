@@ -122,7 +122,7 @@
 - name: add site in nginx
   template:
     src: nginx.conf
-    dest: /etc/nginx/sites-enabled/{{project_name}}.conf"
+    dest: /etc/nginx/sites-enabled/{{project_name}}.conf
     mode: 0644
   notify: restart_nginx
 

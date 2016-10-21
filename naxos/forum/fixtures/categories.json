@@ -1,0 +1,72 @@
+[
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Problèmes matériel | Installation | Conseils d'achat | Overclocking | Multimédia",
+      "postCount": 0,
+      "title": "Informatique - Matériel",
+      "slug": "materiel"
+    },
+    "pk": 1
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Problèmes logiciel | Internet | Optimisation | Audio | Vidéo | Graphisme",
+      "postCount": 0,
+      "title": "Informatique - Logiciel",
+      "slug": "logiciel"
+    },
+    "pk": 2
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Windows | Linux | OS X",
+      "postCount": 0,
+      "title": "Systèmes d'exploitation",
+      "slug": "os"
+    },
+    "pk": 3
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Jeux vidéo | Consoles | Trucs et astuces | Jeux en réseaux",
+      "postCount": 0,
+      "title": "Jeux vidéo",
+      "slug": "jv"
+    },
+    "pk": 4
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Section dédiée à la vente et aux achats de produits divers et variés",
+      "postCount": 0,
+      "title": "Ventes - Achats",
+      "slug": "ventes-achats"
+    },
+    "pk": 5
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Au gré de votre humeur, venez vous detendre, vous amuser, discuter, etc.",
+      "postCount": 0,
+      "title": "J'ai envie de parler pour ne rien dire",
+      "slug": "jep"
+    },
+    "pk": 6
+  },
+  {
+    "model": "forum.category",
+    "fields": {
+      "subtitle": "Posez vos questions et consultez les annonces concernant la vie du FoRuM",
+      "postCount": 0,
+      "title": "A propos du FoRuM",
+      "slug": "a-propos"
+    },
+    "pk": 7
+  }
+]

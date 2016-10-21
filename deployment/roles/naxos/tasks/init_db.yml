@@ -7,6 +7,16 @@
   args:
     chdir: "{{project_dir}}naxos/"
 
+# Load initial data
+- name: load initial data (fixtures)
+  shell: >
+    DJANGO_SETTINGS_MODULE=naxos.settings
+    {{project_dir}}env/bin/python manage.py loaddata {{item}}
+  args:
+    chdir: "{{project_dir}}naxos/"
+  with_items:
+    - categories.json
+
 # Create test user
 - name: copy create_test_user script
   copy:

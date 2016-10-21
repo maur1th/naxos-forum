@@ -1,6 +1,6 @@
 ---
 project_name: naxos
-project_dir: /app
+project_dir: /app/
 
 node_version: 6.x
 

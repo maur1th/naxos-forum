@@ -79,6 +79,20 @@
     - amazon.html
     - paypal_gift.html
 
+# Gunicorn setup
+- name: create bin/ directory
+  file:
+    path: "{{project_dir}}bin/"
+    owner: "{{app_user}}"
+    state: directory
+    mode: 0700
+- name: set up gunicorn start script
+  template:
+    src: gunicorn_start
+    dest: "{{project_dir}}bin/"
+    owner: "{{app_user}}"
+    mode: 0700
+
 # Nginx conf
 - name: remove default nginx site
   file:

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+NAME="naxos-server"	                            # Name of the application
+DJANGODIR={{project_dir}}naxos                  # Django project directory
+USER={{app_user}}                               # the user to run as
+GROUP=$USER                                     # the group to run as
+NUM_WORKERS=8                                   # how many worker processes should Gunicorn spawn
+DJANGO_SETTINGS_MODULE=naxos.settings           # which settings file should Django use
+DJANGO_WSGI_MODULE=naxos.wsgi                   # WSGI module name
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+cd $DJANGODIR
+source {{project_dir}}env/bin/activate
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+
+# Start your Django Unicorn
+# Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
+exec gunicorn ${DJANGO_WSGI_MODULE}:application \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --user=$USER --group=$GROUP \
+  --bind=127.0.0.1:8000
+# --log-level=debug \
+  --log-file=-

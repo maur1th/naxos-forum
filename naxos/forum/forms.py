@@ -16,22 +16,15 @@ toolbar = "{% include \"toolbar.html\" %}"  # Text format
 
 class GenericThreadForm(forms.ModelForm):
 
-    CHOICES = (('1', 'icon1.gif',), ('2', 'icon2.gif',),
-               ('3', 'icon3.gif',), ('4', 'icon4.gif',),
-               ('5', 'icon5.gif',), ('6', 'icon6.gif',),
-               ('7', 'icon7.gif',), ('8', 'icon8.gif',),
-               ('9', 'icon9.gif',), ('10', 'icon10.gif',),
-               ('11', 'icon11.gif',), ('12', 'icon12.gif',),
-               ('13', 'icon13.gif',), ('14', 'icon14.gif',),
-               ('15', 'icon15.gif',), ('16', 'icon16.gif',))
+    CHOICES = ((str(i + 1), 'icon{:d}.gif'.format(i + 1)) for i in range(16))
     title = forms.CharField(max_length=140, label='Titre')
     icon = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=CHOICES, label="Icône"
     )
-    personal = forms.BooleanField(label=("Sujet personnel : permet la suppres"
-                                         "sion du sujet."),
-                                  required=False)
+    personal = forms.BooleanField(
+        label=("Sujet personnel : permet la suppression du sujet."),
+        required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

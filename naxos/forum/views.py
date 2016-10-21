@@ -160,9 +160,9 @@ class CategoryView(LoginRequiredMixin, ListView):
             timestamp, created = timestamps.get_or_create(
                 category=c, user=self.request.user)
             # compute and add read/unread status to category object
-            status = ('unread' if c.threads.latest().modified >
-                      timestamp.timestamp else 'read')
-            c.status = 'img/{}.png'.format(status)
+            c.status = 'img/{}.png'.format(
+                "unread" if c.threads.count() != 0 and
+                c.threads.latest().modified > timestamp.timestamp else "read")
         return context
 
 

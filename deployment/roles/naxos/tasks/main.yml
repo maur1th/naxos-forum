@@ -53,6 +53,7 @@
     - nginx
     - postgresql
     - postgresql-server-dev-9.4
+    - python-psycopg2
     - memcached
     - libmemcached-dev
 - name: install pip dependencies
@@ -81,6 +82,22 @@
   with_items:
     - amazon.html
     - paypal_gift.html
+
+# DB setup
+- name: create app_user user in postgres
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: "{{app_user}}"
+    password: "{{db_password}}"
+    encrypted: true
+- name: create postgres db
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: "{{project_name}}"
+    owner: "{{app_user}}"
+    encoding: UTF-8
 
 # Gunicorn setup
 - name: create bin/ directory

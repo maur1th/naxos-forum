@@ -89,19 +89,23 @@
 
 # DB setup
 - name: create app_user user in postgres
-  become: true
   become_user: postgres
   postgresql_user:
     name: "{{app_user}}"
     password: "{{db_password}}"
     encrypted: true
 - name: create postgres db
-  become: true
   become_user: postgres
   postgresql_db:
     name: "{{project_name}}"
     owner: "{{app_user}}"
     encoding: UTF-8
+  register: create_db
+- name: initial migration of db
+  shell: "DJANGO_SETTINGS_MODULE=naxos.settings {{project_dir}}env/bin/python manage.py migrate"
+  args:
+    chdir: "{{project_dir}}naxos/"
+  when: create_db.changed
 
 # Gunicorn setup
 - name: create bin/ directory

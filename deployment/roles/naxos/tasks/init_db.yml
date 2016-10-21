@@ -1,0 +1,26 @@
+---
+# Apply db migrations
+- name: initial migration of db
+  shell: >
+    DJANGO_SETTINGS_MODULE=naxos.settings
+    {{project_dir}}env/bin/python manage.py migrate
+  args:
+    chdir: "{{project_dir}}naxos/"
+
+# Create test user
+- name: copy create_test_user script
+  copy:
+    src: create_test_user.py
+    dest: "{{project_dir}}naxos/"
+    owner: "{{app_user}}"
+    mode: 0700
+  when: env_type == "dev"
+- name: create test user
+  shell: >
+    DJANGO_SETTINGS_MODULE=naxos.settings
+    {{project_dir}}env/bin/python create_test_user.py
+  args:
+    chdir: "{{project_dir}}naxos/"
+  when: env_type == "dev"
+- name: delete create_test_user script
+  file: path={{project_dir}}naxos/create_test_user.py state=absent

@@ -101,10 +101,7 @@
     owner: "{{app_user}}"
     encoding: UTF-8
   register: create_db
-- name: initial migration of db
-  shell: "DJANGO_SETTINGS_MODULE=naxos.settings {{project_dir}}env/bin/python manage.py migrate"
-  args:
-    chdir: "{{project_dir}}naxos/"
+- include: init_db.yml
   when: create_db.changed
 
 # Gunicorn setup

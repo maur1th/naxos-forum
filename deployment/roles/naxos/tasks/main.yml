@@ -108,3 +108,13 @@
     dest: /etc/nginx/sites-enabled/{{project_name}}.conf"
     mode: 0644
   notify: restart_nginx
+
+# Supervisord setup
+- name: install supervisord conf
+  template:
+    src: templates/supervisor.conf
+    dest: /etc/supervisor/conf.d/app.conf
+- name: update engine
+  supervisorctl: name="app:" state=present
+- name: start engine
+  supervisorctl: name="app:" state=started

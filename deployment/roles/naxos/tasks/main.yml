@@ -62,10 +62,19 @@
     virtualenv: "{{project_dir}}/env"
     virtualenv_python: python3
 
-- name: copy django settings module
+- name: set up django settings module
   template:
     src: django-settings.py
     dest: "{{project_dir}}/naxos/naxos/settings.py"
+- name: copy ads
+  copy:
+    src: "{{item}}"
+    dest: "{{project_dir}}/naxos/templates/ads/"
+    owner: "{{app_user}}"
+    mode: 0600
+  with_items:
+    - amazon.html
+    - paypal_gift.html
 
 - name: remove default nginx site
   file:

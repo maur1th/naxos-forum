@@ -62,9 +62,13 @@
     requirements: "{{project_dir}}requirements/{{env_type}}.txt"
     virtualenv: "{{project_dir}}env"
     virtualenv_python: python3
+- name: check if yarn.lock exists
+  stat: path={{project_dir}}naxos/nodejs/yarn.lock
+  register: yarn_lock
 - name: install node dependencies
   become_user: "{{app_user}}"
   command: /usr/bin/yarn chdir={{project_dir}}naxos/nodejs/
+  when: yarn_lock.stat.exists == False
 
 # Django setup
 - name: set up django settings module

@@ -2,18 +2,22 @@
 # Install common dependencies
 - name: update package repo
   apt: update_cache=yes upgrade=safe
-- name: install apt packages
+- name: install apt common packages
   apt: name={{item}} state=installed
   with_items:
     - acl  # required by Ansible 2.1 to become_user
     - apt-transport-https
     - build-essential
+    - python3
+    - python3-pip
     - curl
     - git
     - ntp
     - supervisor
     - emacs24-nox
     - vim
+- name: install virtualenv
+  pip: name=virtualenv extra_args="--upgrade" executable=pip3
 
 # Common configuration
 - name: set timezone variables

@@ -1,6 +1,7 @@
 ---
 # Apply db migrations
 - name: initial migration of db
+  become_user: "{{app_user}}"
   shell: >
     DJANGO_SETTINGS_MODULE=naxos.settings
     {{project_dir}}env/bin/python manage.py migrate
@@ -9,6 +10,7 @@
 
 # Load initial data
 - name: load initial data (fixtures)
+  become_user: "{{app_user}}"
   shell: >
     DJANGO_SETTINGS_MODULE=naxos.settings
     {{project_dir}}env/bin/python manage.py loaddata {{item}}
@@ -26,6 +28,7 @@
     mode: 0700
   when: env_type == "dev"
 - name: create test user
+  become_user: "{{app_user}}"
   shell: >
     DJANGO_SETTINGS_MODULE=naxos.settings
     {{project_dir}}env/bin/python create_test_user.py

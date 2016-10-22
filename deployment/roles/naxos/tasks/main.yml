@@ -33,7 +33,7 @@
     update: yes
     recursive: no
   when: env_type != "dev"
-  notify: restart web services
+  # notify: restart web services  # Ansible 2.2
 
 # Dependencies
 - name: install apt packages
@@ -76,7 +76,7 @@
     dest: "{{project_dir}}naxos/naxos/settings.py"
     owner: "{{app_user}}"
     mode: 0600
-  notify: restart web services
+  # notify: restart web services  # Ansible 2.2
 - name: copy ad html snippets
   copy:
     src: "{{item}}"
@@ -86,7 +86,7 @@
   with_items:
     - amazon.html
     - paypal_gift.html
-  notify: restart web services
+  # notify: restart web services  # Ansible 2.2
 
 # DB setup
 - name: create app_user user in postgres
@@ -138,7 +138,7 @@
   template:
     src: templates/supervisor.conf
     dest: /etc/supervisor/conf.d/app.conf
-  notify: restart web services
+  # notify: restart web services  # Ansible 2.2
 - name: update engine
   supervisorctl: name="app:" state=present
 - name: start engine

@@ -7,7 +7,7 @@ Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Fron
 1. Install both `vagrant` and `ansible`
 2. `vagrant up`
 
-Can be done on OSX in just a few steps:
+This can be done on OSX in just a few steps:
 ```bash
 $ # Install Homebrew
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -19,6 +19,7 @@ $ # run
 $ vagrant up
 ```
 
-In case `vagrant up` fails during provisioning, provision again using `vagrant provision`.
-
-By default, a test user is created with username `test` and password `123456`.
+### Notes
+- In case `vagrant up` fails during provisioning, provision again using `vagrant provision`.
+- Dev server will then be accessible at: `http://dev.geekattitude.org`.
+- By default, a test user is created with username `test` and password `123456`.

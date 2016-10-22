@@ -18,8 +18,7 @@ naxos/templates/ads/
 *.retry
 
 ## nodejs
-**node_modules
-naxos/nodejs/settings.js
+**node_modules/
 
 ## GitHub .gitignore for Python
 # Byte-compiled / optimized / DLL files
@@ -65,6 +64,3 @@ coverage.xml
 *.log
 *.pot
 media/
-
-# Misc
-list.gz

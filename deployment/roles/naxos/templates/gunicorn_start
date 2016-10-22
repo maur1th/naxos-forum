@@ -4,7 +4,7 @@ NAME="naxos-server"	                            # Name of the application
 DJANGODIR={{project_dir}}naxos                  # Django project directory
 USER={{app_user}}                               # the user to run as
 GROUP=$USER                                     # the group to run as
-NUM_WORKERS=8                                   # how many worker processes should Gunicorn spawn
+NUM_WORKERS=6                                   # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=naxos.settings           # which settings file should Django use
 DJANGO_WSGI_MODULE=naxos.wsgi                   # WSGI module name
 

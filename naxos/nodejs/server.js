@@ -3,13 +3,13 @@ const http = require('http');
 const cookie_reader = require('cookie');
 const request = require('request');
 
-const NODE_PORT = process.env.NODE_PORT;
-const HOST = process.env.NODE_HOST;
+const NODE_PORT = 3000;
 const DEBUG = false;
 
 const app = http.createServer().listen(NODE_PORT);
 const io = require('socket.io')(app);
 const connected_users = {};
+const url = 'http://localhost:8000/user/node_api';
 
 io.use(function (socket, next) {
   const handshakeData = socket.request;
@@ -26,10 +26,7 @@ function handleConnection(socket, user) {
     connected_users[user] = 1;
     if (DEBUG) console.log(user + ' connected');
     // Tell django the user has come online
-    request({
-      url: HOST + '/user/node_api',
-      qs: {sessionid: user, status: 'connected'}
-    });
+    request({url, qs: {sessionid: user, status: 'connected'}});
   }
 }
 
@@ -40,10 +37,7 @@ function handleDisconnection(socket, user) {
         delete connected_users[user];
         if (DEBUG) console.log(user + ' disconnected');
         // Tell django the user is now offline
-        request({
-          url: HOST + '/user/node_api',
-          qs: {sessionid: user, status: 'disconnected'}
-        });
+        request({url, qs: {sessionid: user, status: 'disconnected'}});
       } else {
         connected_users[user] -= 1;
       }

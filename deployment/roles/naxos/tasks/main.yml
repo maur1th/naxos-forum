@@ -92,7 +92,7 @@
     name: "{{app_user}}"
     password: "{{db_password}}"
     encrypted: true
-- name: create postgres db
+- name: create project db
   become_user: postgres
   postgresql_db:
     name: "{{project_name}}"

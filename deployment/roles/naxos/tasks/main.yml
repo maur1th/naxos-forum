@@ -33,6 +33,7 @@
     update: yes
     recursive: no
   when: env_type != "dev"
+  notify: restart web services
 
 # Dependencies
 - name: install apt packages
@@ -75,6 +76,7 @@
     dest: "{{project_dir}}naxos/naxos/settings.py"
     owner: "{{app_user}}"
     mode: 0600
+  notify: restart web services
 - name: copy ad html snippets
   copy:
     src: "{{item}}"
@@ -84,6 +86,7 @@
   with_items:
     - amazon.html
     - paypal_gift.html
+  notify: restart web services
 
 # DB setup
 - name: create app_user user in postgres
@@ -122,19 +125,20 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: restart_nginx
+  notify: restart nginx
 - name: add site in nginx
   template:
     src: nginx.conf
     dest: /etc/nginx/sites-enabled/{{project_name}}.conf
     mode: 0644
-  notify: restart_nginx
+  notify: restart nginx
 
 # Supervisord setup
 - name: install supervisord conf
   template:
     src: templates/supervisor.conf
     dest: /etc/supervisor/conf.d/app.conf
+  notify: restart web services
 - name: update engine
   supervisorctl: name="app:" state=present
 - name: start engine

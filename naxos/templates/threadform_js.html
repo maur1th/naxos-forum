@@ -5,10 +5,10 @@
     $('.radio-inline').css("margin-right", "10px");
     $('.radio-inline').children('input').attr('tabindex', '-1');
     $('.radio-inline').html(function(i, v) {
-        // Replace text by icons
-        var m =v.match(/icon\d+.gif/g)[0];
-        var icon = "<img src=\"{% static 'img/thread/" + m + "' %}\" style=\"vertical-align:bottom;padding-bottom:3px\">";
-        return v.replace(/icon\d+.gif/g, icon);    
+        // Replace text with icons
+        var m = v.match(/icon\d+.gif/g)[0];
+        var icon = "<img src=\"/static/img/thread/" + m + "\" style=\"vertical-align:bottom;padding-bottom:3px\">";
+        return v.replace(/icon\d+.gif/g, icon);
     });
     // Preview button
     $('#submit-id-preview').removeClass("btn-primary").addClass("btn-default");

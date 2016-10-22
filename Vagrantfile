@@ -79,8 +79,8 @@ Vagrant.configure(2) do |config|
     ansible.extra_vars = {
       env_type: "dev",
       debug_mode: "True",
+      ansible_user: "vagrant",
       app_user: "vagrant",
-      ssh_user: "vagrant",
     }
   end
   config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"

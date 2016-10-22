@@ -19,7 +19,7 @@ MEDIA_ROOT = root("media")
 STATICFILES_DIRS = (root("static"),)
 
 # Security
-ALLOWED_HOSTS = ("{{allowed_hosts}}",)
+ALLOWED_HOSTS = ("{{allowed_hosts}}", "localhost")
 SITE_URL = "http://www.{{allowed_hosts}}"
 SECRET_KEY = SECRET_KEY
 CSRF_COOKIE_HTTPONLY = True

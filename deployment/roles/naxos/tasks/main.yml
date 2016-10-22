@@ -31,7 +31,6 @@
     dest: "{{project_dir}}"
     version: "{{branch}}"
     update: yes
-    force: yes
     recursive: no
   when: env_type != "dev"
 
@@ -55,6 +54,7 @@
     - memcached
     - libmemcached-dev
 - name: install pip dependencies
+  become_user: "{{app_user}}"
   pip:
     extra_args: "--upgrade"
     requirements: "{{project_dir}}requirements/{{env_type}}.txt"
@@ -107,6 +107,7 @@
   file:
     path: "{{project_dir}}bin/"
     owner: "{{app_user}}"
+    group: "{{app_user}}"
     state: directory
     mode: 0700
 - name: set up gunicorn start script

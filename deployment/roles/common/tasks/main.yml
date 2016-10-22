@@ -1,4 +1,14 @@
 ---
+# Install aptitude
+- name: check if aptitude is installed
+  command: which aptitude
+  ignore_errors: True
+  changed_when: False
+  register: aptitude_installed
+- name: install aptitude
+  command: apt-get install aptitude -y
+  when: aptitude_installed.rc == 1
+
 # Install common dependencies
 - name: update package repo
   apt: update_cache=yes upgrade=safe

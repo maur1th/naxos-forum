@@ -1,0 +1,8 @@
+[app]
+geekattitude.org ansible_host=163.172.160.95
+
+[app:vars]
+env_type = prod
+debug_mode = False
+ansible_user = root
+app_user = webadmin

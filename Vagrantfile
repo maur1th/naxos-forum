@@ -77,6 +77,7 @@ Vagrant.configure(2) do |config|
     ansible.vault_password_file = "~/.vault_pass"
     ansible.playbook = "deployment/site.yml"
     ansible.extra_vars = {
+      inventory_hostname: "dev.geekattitude.org",
       env_type: "dev",
       debug_mode: "True",
       ansible_user: "vagrant",

@@ -1,7 +1,7 @@
-[app]
-geekattitude.org ansible_host=212.47.231.49
+[prod]
+geekattitude.org
 
-[app:vars]
+[prod:vars]
 env_type = prod
 debug_mode = False
 ansible_user = root

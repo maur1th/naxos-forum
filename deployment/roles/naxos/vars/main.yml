@@ -1,22 +1,14 @@
-allowed_hosts: "{{vault_allowed_hosts}}"
-django_settings_module: "{{vault_django_settings_module}}"
-
-cache_location: "{{vault_cache_location}}"
-
+---
 db_port: "{{vault_db_port}}"
 db_host: "{{vault_db_host}}"
-db_name: "{{vault_db_name}}"
-db_user: "{{vault_db_user}}"
 db_password: "{{vault_db_password}}"
+
+cache_location: "{{vault_cache_location}}"
 
 email_host: "{{vault_email_host}}"
 email_port: "{{vault_email_port}}"
 server_email: "{{vault_server_email}}"
 email_host_password: "{{vault_email_host_password}}"
-
-node_host: "{{vault_node_host}}"
-node_host_port: "{{vault_node_host_port}}"
-node_port: "{{vault_node_port}}"
 
 robot_name: "{{vault_robot_name}}"
 admin_name: "{{vault_admin_name}}"

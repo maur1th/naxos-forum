@@ -2,3 +2,4 @@
 dependencies:
   - {role: common, tags: "full-run"}
   - {role: node, tags: "full-run"}
+  - {role: nginx}

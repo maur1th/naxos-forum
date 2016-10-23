@@ -1,4 +1,26 @@
 ---
+# Install certbot: https://certbot.eff.org/#debianjessie-nginx
+- name: add jessie-backports repository
+  apt_repository:
+    repo: >
+      deb http://ftp.debian.org/debian jessie-backports main
+    update_cache: yes
+- name: install certbot
+  apt: name=certbot state=installed default_release=jessie-backports
+- name: create certbot directory for webroot plugin
+  file: path=/usr/share/nginx/html/certbot state=directory mode=0755
+- name: copy certbot configuration & certificates
+  copy: src=letsencrypt.tgz dest=/
+- name: unarchive certbot configuration & certificates
+  unarchive:
+    # remote_src: yes  # Ansible 2.2 instead of copy
+    copy: no
+    src: /letsencrypt.tgz
+    dest: /
+    creates: /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem
+- name: copy dhparam
+  copy: src=dhparam.pem dest=/etc/nginx/ssl/
+
 # Nginx conf
 - name: remove default nginx site
   file:

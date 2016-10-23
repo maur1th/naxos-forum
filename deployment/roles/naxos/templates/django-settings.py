@@ -23,8 +23,6 @@ ALLOWED_HOSTS = ("{{inventory_hostname}}", "localhost")
 SITE_URL = "http://{{inventory_hostname}}"
 SECRET_KEY = SECRET_KEY
 CSRF_COOKIE_HTTPONLY = True
-X_FRAME_OPTIONS = "DENY"
-SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
 # HTTPS
@@ -60,7 +58,6 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
 )
 

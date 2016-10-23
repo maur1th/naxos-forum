@@ -120,19 +120,6 @@
     owner: "{{app_user}}"
     mode: 0700
 
-# Nginx conf
-- name: remove default nginx site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: restart nginx
-- name: add site in nginx
-  template:
-    src: nginx.conf
-    dest: /etc/nginx/sites-enabled/{{project_name}}.conf
-    mode: 0644
-  notify: restart nginx
-
 # Supervisord setup
 - name: install supervisord conf
   template:

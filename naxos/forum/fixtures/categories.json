@@ -22,7 +22,7 @@
   {
     "model": "forum.category",
     "fields": {
-      "subtitle": "Windows | Linux | OS X",
+      "subtitle": "Windows | Linux | macOS",
       "postCount": 0,
       "title": "Systèmes d'exploitation",
       "slug": "os"

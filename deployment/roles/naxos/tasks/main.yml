@@ -42,7 +42,7 @@
     state: installed
   with_items:
     - python-imaging
-    - libjpeg62  # specific to ubuntu 14.04
+    - libjpeg62
     - libjpeg-dev
     - libtiff5-dev
     - libfreetype6-dev
@@ -50,7 +50,7 @@
     - libwebp-dev
     - nginx
     - postgresql
-    - postgresql-server-dev-9.3
+    - postgresql-server-dev-9.4
     - python-psycopg2
     - memcached
     - libmemcached-dev

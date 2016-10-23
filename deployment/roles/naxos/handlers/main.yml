@@ -1,6 +1,6 @@
 ---
 - name: restart nginx
-  shell: nginx -t && service nginx restart
+  shell: nginx -t && systemctl restart nginx
 
 
 ## Ansible 2.2 ##

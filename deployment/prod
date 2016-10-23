@@ -1,5 +1,5 @@
 [app]
-geekattitude.org ansible_host=163.172.160.95
+geekattitude.org
 
 [app:vars]
 env_type = prod

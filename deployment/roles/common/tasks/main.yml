@@ -1,12 +1,13 @@
 ---
-# Install aptitude
+# Scaleway doesn't install aptitude on its images
+# So check if aptitude is installed else install it
 - name: check if aptitude is installed
   command: which aptitude
   ignore_errors: True
   changed_when: False
   register: aptitude_installed
 - name: install aptitude
-  command: apt-get install aptitude -y
+  shell: apt-get update && apt-get install aptitude -y
   when: aptitude_installed.rc == 1
 
 # Install common dependencies

@@ -27,9 +27,15 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: restart nginx
-- name: add site in nginx
+- name: add nginx conf
   template:
     src: nginx.conf
-    dest: /etc/nginx/sites-enabled/{{project_name}}.conf
+    dest: /etc/nginx/
+    mode: 0644
+  notify: restart nginx
+- name: add site in nginx
+  template:
+    src: site.conf
+    dest: /etc/nginx/sites-enabled/
     mode: 0644
   notify: restart nginx

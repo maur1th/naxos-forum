@@ -1,7 +1,8 @@
+/* Header */
 .post-header {
   background: linear-gradient(#425e8e, #5171ae);
   background-clip: content-box;
-  padding: 1px;
+  padding: 0px;
 }
 
 .post-header > .post-header-content {
@@ -15,11 +16,18 @@
   overflow: hidden;
 }
 
+/* Post */
+.row.post {
+  overflow: hidden;
+}
+
+.row.post [class*='col-'] {
+  margin-bottom: -99999px;
+  padding-bottom: 99999px;
+}
+
 .post-author {
   background-color: #f2f2f2;
-  background-clip: content-box;
-  padding-right: 1px;
-  padding-left: 1px;
 }
 
 .post-author > .post-author-content {

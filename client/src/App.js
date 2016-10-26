@@ -58,7 +58,7 @@ class App extends Component {
 class ThreadContainer extends Component {
   render() {
     return (
-      <div>
+      <div className="thread-container">
         <Title title={thread.title} type={poll ? 'Sondage' : 'Sujet'}/>
         <PostList posts={posts} />
       </div>
@@ -69,14 +69,15 @@ class ThreadContainer extends Component {
 const Title = ({title, type}) => {
   return (
     <div>
-      <div className="row no-pad">
-        <div className="col-md-2 hidden-xs text-left post-header">
+      <div className="row">
+        <div className="col-sm-2 hidden-xs text-left post-header">
           <div className="post-header-content">Auteur</div>
         </div>
-        <div className="col-md-10 post-header">
+        <div className="col-sm-10 post-header">
           <div className="post-header-content">{type} : {title}</div>
         </div>
       </div>
+      <hr style={{margin: '2px', borderTop: '0'}} />
     </div>
   )
 }
@@ -85,7 +86,7 @@ const PostList = ({posts}) => {
 
   const renderPost = ({id, author, content, created, modified}) => (
     <div>
-      <div className="row" key={id}>
+      <div className="row post" key={id}>
         <PostAuthor {...author} />
         <PostMessage {...{content, created, modified}} />
       </div>
@@ -102,7 +103,7 @@ const PostList = ({posts}) => {
 
 const PostAuthor = ({username, quote, logo, date_joined}) => {
   return (
-    <div className="col-md-2 text-center hidden-xs post-author">
+    <div className="col-sm-2 text-center hidden-xs post-author">
       <div className="post-author-content">
         <p className="username">{username}</p>
         {quote ? <p className="quote">{quote}</p> : null}
@@ -115,7 +116,7 @@ const PostAuthor = ({username, quote, logo, date_joined}) => {
 
 const PostMessage = ({content, created, modified}) => {
   return (
-    <div className="col-md-10 post-message">
+    <div className="col-sm-10 post-message">
       {content}
     </div>
   )

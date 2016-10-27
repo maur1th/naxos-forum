@@ -86,11 +86,12 @@ const Title = (props) => {
 
 const PostList = (props) => {
 
-  const renderPost = ({id, author, content, created, modified}) => (
+  // TODO: Replace canEdit placeholder
+  const renderPost = (post) => (
     <div>
-      <div className="row" key={id}>
-        <PostAuthor {...author} />
-        <PostMessage {...{author, content, created, modified}} />
+      <div className="row" key={post.id}>
+        <PostAuthor {...post.author} />
+        <PostMessage {...post} canEdit={false} />
       </div>
       <hr />
     </div>

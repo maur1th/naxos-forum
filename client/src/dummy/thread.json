@@ -1,0 +1,9 @@
+{
+  "slug": "this-is-a-test",
+  "title": "This is a test",
+  "category": {
+    "title": "J'ai envie de parler pour ne rien dire"
+  },
+  "isSticky": true,
+  "personal": true
+}

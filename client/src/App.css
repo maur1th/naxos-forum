@@ -1,3 +1,8 @@
+/* Gutter */
+.left-side {
+  border-right: 1px solid #f9f9f9;
+}
+
 /* Header */
 .thread-title [class*='col-'] {
   background: linear-gradient(#425e8e, #5171ae);
@@ -17,7 +22,7 @@
 }
 
 .thread-title > hr {
-  margin: 2px;
+  margin: 1px;
   border-top: 0;
 }
 
@@ -40,48 +45,57 @@
   background-color: #f2f2f2;
 }
 
-.post-list .author > .content {
+.post-list .author > .frame {
   padding: 10px 0px;
   word-wrap: break-word;
 }
 
-.post-list .author > .content > .username {
+.post-list .author .username {
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.post-list .author > .content > .quote {
-  font-size: 0.8em;
+.post-list .author .quote {
+  font-size: 0.85em;
   line-height: 100%;
 }
 
-.post-list .author > .content > .footer {
-  font-size: 10px;
+.post-list .author .footer {
+  font-size: 0.75em;
 }
 
-.post-message {
+.post-list .message {
   background-color: #ececec;
 }
 
-.post-message > hr {
+.post-list .message > .frame {
+  padding: 10px 0px;
+}
+
+.post-list .message hr {
   margin: 5px 0 8px 0;
   border-top: 1px solid #ccc;
 }
 
-.post-message > .header {
-  font-size: 0.8em;
+.post-list .message .header {
+  font-size: 0.85em;
 }
 
-.post-message > .content {
+.post-list .message .header .username {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.post-list .message .content {
   word-wrap: break-word;
 }
 
-.post-message .content img {
+.post-list .message .content img {
   vertical-align: bottom;
   padding-bottom: 4px;
 }
 
-.post-message > .footer {
-  font-size: 9px;
+.post-list .message .footer {
+  font-size: 0.7em;
   color: #777777;
 }

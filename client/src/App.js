@@ -45,7 +45,7 @@ class App extends Component {
     return (
       <div className="container-fluid">
         <div className="row">
-          <div className="col-md-10 col-md-offset-1">
+          <div className="col-lg-10 col-lg-offset-1">
             <div style={{paddingTop: "8px"}} />
             <ThreadContainer />
           </div>
@@ -70,7 +70,7 @@ const Title = (props) => {
   return (
     <div className="thread-title">
       <div className="row">
-        <div className="col-sm-2 hidden-xs">
+        <div className="col-sm-2 hidden-xs left-side">
           <div className="content">Auteur</div>
         </div>
         <div className="col-sm-10">
@@ -90,7 +90,7 @@ const PostList = (props) => {
     <div>
       <div className="row" key={id}>
         <PostAuthor {...author} />
-        <PostMessage {...{content, created, modified}} />
+        <PostMessage {...{author, content, created, modified}} />
       </div>
       <hr />
     </div>
@@ -105,8 +105,8 @@ const PostList = (props) => {
 
 const PostAuthor = (props) => {
   return (
-    <div className="col-sm-2 text-center author">
-      <div className="content">
+    <div className="col-sm-2 hidden-xs text-center author left-side">
+      <div className="frame">
         <p className="username">{props.username}</p>
         {props.quote ? <p className="quote">{props.quote}</p> : null}
         {props.logo ? (
@@ -119,29 +119,39 @@ const PostAuthor = (props) => {
 }
 
 const PostMessage = (props) => {
+
+  const Header = () => (
+    <div className="header">
+      <span className="hidden-xs">Posté le {props.created}</span>
+      <span className="hidden-sm hidden-lg hidden-md">
+        <span className="username">
+          {props.author.username}
+        </span> | Le {props.created}
+      </span>
+      <span> | </span>
+      <a href="">Citer</a>
+      <span> | </span>
+      {props.canEdit ? (
+        <span>
+          <a href="">Modifier</a>
+          <span> | </span>
+        </span>
+      ) : null}
+      <a href=""><span className="glyphicon glyphicon-link"></span></a>
+    </div>
+  )
+
   return (
-    <div className="col-sm-10 post-message">
-      <div className="header">
-        <span className="hidden-xs">Posté le {props.created}</span>
-        <span className="hidden-sm hidden-lg hidden-md">Le {props.created}</span>
-        <span> | </span>
-        <a href="">Citer</a>
-        <span> | </span>
-        {props.canEdit ? (
-          <span>
-            <a href="">Modifier</a>
-            <span> | </span>
-          </span>
-        ) : null}
-        <a href=""><span className="glyphicon glyphicon-link"></span></a>
+    <div className="col-sm-10 message">
+      <div className="frame">
+        <Header />
+        <hr />
+        <div className="content">{props.content}</div>
+        <br />
+        <p className="footer">— Modifié le {props.modified}</p>
       </div>
-      <hr />
-      <div className="content">{props.content}</div>
-      <br />
-      <p className="footer">— Modifié le {props.modified}</p>
     </div>
   )
 }
-// <div style={{backgroundColor: 'red', width: "100%", height: "100%"}} />
 
 export default App

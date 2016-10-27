@@ -1,11 +1,11 @@
 /* Header */
-.post-header {
+.thread-title [class*='col-'] {
   background: linear-gradient(#425e8e, #5171ae);
   background-clip: content-box;
   padding: 0px;
 }
 
-.post-header > .post-header-content {
+.thread-title [class*='col-'] > .content {
   padding: 6px;
   font-size: 12px;
   font-weight: bold;
@@ -16,39 +16,72 @@
   overflow: hidden;
 }
 
+.thread-title > hr {
+  margin: 2px;
+  border-top: 0;
+}
+
 /* Post */
-.row.post {
+.post-list hr {
+  margin: 8px;
+  border-top: 0;
+}
+
+.post-list .row {
   overflow: hidden;
 }
 
-.row.post [class*='col-'] {
+.post-list .row [class*='col-'] {
   margin-bottom: -99999px;
   padding-bottom: 99999px;
 }
 
-.post-author {
+.post-list .author {
   background-color: #f2f2f2;
 }
 
-.post-author > .post-author-content {
+.post-list .author > .content {
   padding: 10px 0px;
   word-wrap: break-word;
 }
 
-.post-author-content > .username {
+.post-list .author > .content > .username {
   font-weight: bold;
   margin-bottom: 5px;
 }
 
-.post-author-content > .quote {
+.post-list .author > .content > .quote {
   font-size: 0.8em;
   line-height: 100%;
 }
 
-.post-author-content > .footer {
+.post-list .author > .content > .footer {
   font-size: 10px;
 }
 
 .post-message {
   background-color: #ececec;
+}
+
+.post-message > hr {
+  margin: 5px 0 8px 0;
+  border-top: 1px solid #ccc;
+}
+
+.post-message > .header {
+  font-size: 0.8em;
+}
+
+.post-message > .content {
+  word-wrap: break-word;
+}
+
+.post-message .content img {
+  vertical-align: bottom;
+  padding-bottom: 4px;
+}
+
+.post-message > .footer {
+  font-size: 9px;
+  color: #777777;
 }

@@ -26,8 +26,8 @@ CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 
 # HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False  # True for full HTTPS
+CSRF_COOKIE_SECURE = False     # True for full HTTPS
 
 # App conf
 ADMINS = (("{{admin_name}}", "{{admin_email}}"),)

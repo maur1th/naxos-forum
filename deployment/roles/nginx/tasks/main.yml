@@ -1,10 +1,10 @@
 ---
 # Install certbot: https://certbot.eff.org/#debianjessie-nginx
-- name: add jessie-backports repository
-  apt_repository:
-    repo: >
-      deb http://ftp.debian.org/debian jessie-backports main
-    update_cache: yes
+# - name: add jessie-backports repository
+#   apt_repository:
+#     repo: >
+#       deb http://ftp.debian.org/debian jessie-backports main
+#     update_cache: yes
 - name: install certbot
   apt: name=certbot state=installed default_release=jessie-backports
 - name: create certbot directory for webroot plugin

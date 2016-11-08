@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import moment from 'moment'
 import './App.css'
 
 import thread from './dummy/thread'
@@ -76,26 +77,30 @@ const PostAuthor = (props) => {
         {props.logo ? (
           <p><img src={`./${props.logo}`} alt={`${props.username} logo`}/></p>
         ) : null}
-        <p className="footer">depuis le {props.date_joined}</p>
+        <p className="footer">
+          depuis le {moment(props.date_joined).format('DD/MM/YYYY')}
+        </p>
       </div>
     </div>
   )
 }
 
-const PostMessage = (props) => {
+const PostMessage = ({author, content, created, modified, canEdit}) => {
+
+  const formattedDate = (d) => moment(d).format('DD/MM/YYYY à HH:mm:ss') 
 
   const Header = () => (
     <div className="header">
-      <span className="hidden-xs">Posté le {props.created}</span>
+      <span className="hidden-xs">Posté le {formattedDate(created)}</span>
       <span className="hidden-sm hidden-lg hidden-md">
         <span className="username">
-          {props.author.username}
-        </span> | Le {props.created}
+          {author.username}
+        </span> | Le {formattedDate(created)}
       </span>
       <span> | </span>
       <a href="">Citer</a>
       <span> | </span>
-      {props.canEdit ? (
+      {canEdit ? (
         <span>
           <a href="">Modifier</a>
           <span> | </span>
@@ -110,9 +115,9 @@ const PostMessage = (props) => {
       <div className="frame">
         <Header />
         <hr />
-        <div className="content">{props.content}</div>
+        <div className="content">{content}</div>
         <br />
-        <p className="footer">— Modifié le {props.modified}</p>
+        <p className="footer">— Modifié le {formattedDate(modified)}</p>
       </div>
     </div>
   )

@@ -1,0 +1,13 @@
+dist: trusty
+sudo: required
+addons:
+  sonarqube:
+    token:
+      secure: dzX6Q6EX3AGio/VLeWUr8QQgYc1aOf367JS0dltK4CwIZgb8+WbRT9n5UiwGB/TQ7HQMOU95CL0aUccy+KTY3RRCTBf/M71rs9HGp//lvG+mRLevQIBrVV38XE+D6cUHYpCl3HPCoSuuUhIoSXbazOAiHeY1hw7TtsDG0c2qe90MbsyWWZ8mphteHriI2FNWznxb6RHVultMxhkv3YAWf1P21hWkVf2XyA0floIWH06vuRATd55HYYRPjHv+GeSpWtQd8HYCrQ+dv82W6NhZ+m/NB68UA+81eK9oFOLyeOZIRfyagDbfDMNf4Do2HDzAUjIujU0z0MqYjdcYMxUpN631Q1HYUT8BhHVUMEX7pViLa99w1P++p8r4ZqXhipkR59NsxeHAIsu0sDMbeJQu37BWaRurVrKjN/wk3UZwgM75Bigtqv0cQvvgkmXFi2rU9OMujr+CNlu7O1Lj4ZNFNBpINaseXBDGtOytBhnUQpZvqqgzS0uBloe7Inwv5Nf4KATCc2PBZJt4P46noW8+P8E0JnPu5KSG4OtDDFUlp2uylldH88jNXA7K+SNbCSujPyrVXBxLFJq5bS1/WJU/vQ9S5hpHUoAm3G6v4aLH0afW6Ohx9SAXlS+I1y+JLH/m67WoKPCCJ73FieYBOlUAG8lIkwyWT4bNEXG2tiPxLX0=
+jdk:
+- oraclejdk8
+script:
+- sonar-scanner
+cache:
+  directories:
+  - "$HOME/.sonar/cache"

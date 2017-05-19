@@ -12,16 +12,6 @@ from forum.models import Category, Thread, Post, SLUG_LENGTH
 from user.models import ForumUser
 
 
-def import_from(module, name):
-    module = __import__(module, fromlist=[name])
-    return getattr(module, name)
-
-SITE_URL = import_from(
-    os.environ.get("DJANGO_SETTINGS_MODULE"), 'SITE_URL')
-ROBOT_NAME = import_from(
-    os.environ.get("DJANGO_SETTINGS_MODULE"), 'ROBOT')
-
-
 class BlogPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=80, verbose_name='Titre')
@@ -68,56 +58,3 @@ class BlogPost(models.Model):
 
     class Meta:
         ordering = ['-pk']
-
-
-# Model signal handlers
-@receiver(pre_save, sender=BlogPost)
-def new_post_pre_save(instance, **kwargs):
-    """Create related thread and link it to the blog post"""
-    if instance.pk:
-        return
-    c = Category.objects.get(slug='jep')
-    title = "empty"  # For now, need post pk first
-    author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
-              else instance.author)
-    t = Thread.objects.create(title=title,
-                              author=author,
-                              category=c)
-    instance.forum_thread = t
-
-
-@receiver(post_save, sender=BlogPost)
-def new_post_post_save(instance, created, **kwargs):
-    """Create/Update the thread's first post and its title"""
-    # Create or update thread's title
-    title = "Billet #{} : {}".format(instance.pk, instance.title)[:80]
-    instance.forum_thread.title = title
-    instance.forum_thread.save()
-    # Prepare post: url text
-    url = SITE_URL + reverse('blog:post', args=[instance.slug])
-    url_text = "**{} a posté [un nouveau billet]({}) :**\n".format(
-        instance.author, url)
-    # Prepare image text
-    if instance.image:
-        url = "{}/media/{}".format(SITE_URL, str(instance.image))
-        image = "![Image]({})\n".format(url)
-    # Aggregate
-    try:
-        content = '\n'.join([url_text, image, instance.content])
-    except NameError:
-        content = '\n'.join([url_text, instance.content])
-    # Create or update Post
-    if created:
-        author = (ForumUser.objects.get(username=ROBOT_NAME) if ROBOT_NAME
-                  else instance.author)
-        Post.objects.create(
-            author=author,
-            thread=instance.forum_thread,
-            markup='markdown',
-            content_plain=content
-        )
-    else:
-        p = Post.objects.filter(thread=instance.forum_thread).first()
-        p.content_plain = content
-        p.markup = 'markdown'
-        p.save()

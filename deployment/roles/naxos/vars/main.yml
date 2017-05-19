@@ -7,9 +7,9 @@ cache_location: "{{vault_cache_location}}"
 
 email_host: "{{vault_email_host}}"
 email_port: "{{vault_email_port}}"
-server_email: "{{vault_server_email}}"
+server_email: "{{vault_server_email}}"  # email address to use
 email_host_password: "{{vault_email_host_password}}"
+email_server_prefix: "[FoRuM] "
 
-robot_name: "{{vault_robot_name}}"
 admin_name: "{{vault_admin_name}}"
 admin_email: "{{vault_admin_email}}"

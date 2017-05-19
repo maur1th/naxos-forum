@@ -1,9 +1,8 @@
 FROM python:3.6-alpine
 
 MAINTAINER thomas@maurin.io
-ARG WORKERS
-ENV WORKERS ${WORKERS:-2}
-ENV HOME /app
+ENV HOME=/app \
+    WORKERS=2
 
 RUN set -ex \
         && apk add --no-cache \

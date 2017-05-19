@@ -130,3 +130,33 @@
   supervisorctl: name="app:" state=present
 - name: start engine
   supervisorctl: name="app:" state=started
+
+# Docker setup
+- name: launch naxos container
+  docker_container:
+    name: naxos
+    # image: someuser/appimage
+    state: started
+    restart: yes
+    # links:
+    #  - "myredis:aliasedredis"
+    # devices:
+    #  - "/dev/sda:/dev/xvda:rwm"
+    # ports:
+    #  - "8080:9000"
+    #  - "127.0.0.1:8081:9001/udp"
+    env:
+        HOSTNAME: "{{inventory_hostname}}"
+        ADMIN_NAME: "{{admin_name}}"
+        ADMIN_EMAIL: "{{admin_email}}"
+        DB_NAME: "{{project_name}}"
+        DB_USER: "{{app_user}}"
+        DB_PASSWORD: "{{db_password}}"
+        DB_HOST: "{{db_host}}"
+        DB_PORT: "{{db_port}}"
+        EMAIL_HOST: "{{email_host}}"
+        EMAIL_PORT: "{{email_port}}"
+        SERVER_EMAIL: "{{server_email}}"  # email address to use
+        EMAIL_HOST_PASSWORD: "{{email_host_password}}"
+        EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
+        CACHE_LOCATION: "{{cache_location}}"

@@ -1,4 +1,4 @@
-from django.utils.six.moves.html_parser import HTMLParser, HTMLParseError
+from django.utils.six.moves.html_parser import HTMLParser
 from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 
@@ -131,7 +131,7 @@ def urlize(html):
         parser.feed(html)
         urlized_html = parser.html
         parser.close()
-    except HTMLParseError:
+    except:
         if DEBUG:
             raise
         return html
@@ -330,7 +330,7 @@ def smilify(html):
         parser.feed(html)
         smiled_html = parser.html
         parser.close()
-    except HTMLParseError:
+    except:
         if DEBUG:
             raise
         return html

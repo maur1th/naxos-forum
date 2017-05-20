@@ -16,8 +16,7 @@ WORKDIR $HOME
 COPY . $HOME
 RUN set -ex \
         && apk add --no-cache --virtual .build-deps \
-                musl-dev \
-                gcc \
+                build-base \
                 postgresql-dev \
                 libmemcached-dev \
                 libjpeg-turbo-dev \

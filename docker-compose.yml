@@ -8,18 +8,22 @@ services:
       - "5000"
     environment:
       HOSTNAME: forum
-    # env_file: app/naxos/.env
-    # depends_on:
-    #   - db
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: crimson
+    depends_on:
+      - db
     #   - memcached
     restart: always
-#   db:
-#     image: postgres:9.6-alpine
-#     volumes:
-#       - forum-db:/var/lib/postgresql/data
-#     environment:
-#       POSTGRES_PASSWORD: crimson
-#     restart: always
+  db:
+    image: postgres:9.6-alpine
+    volumes:
+      - forum-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: crimson
+    restart: always
 #   memcached:
 #     image: memcached:1.4-alpine
 #     restart: always
@@ -33,5 +37,5 @@ services:
     depends_on:
       - forum
     restart: always
-# volumes:
-#   forum-db: {}
+volumes:
+  forum-db: {}

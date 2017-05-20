@@ -30,4 +30,4 @@ RUN set -ex \
 RUN adduser -D -s /bin/false app
 RUN chown -R app:app $HOME/*
 USER app
-CMD gunicorn naxos.wsgi:application -w $WORKERS -b :8000
+CMD gunicorn naxos.wsgi:application -w $WORKERS -b :5000

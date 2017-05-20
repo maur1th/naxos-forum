@@ -1,8 +1,7 @@
 [app]
-geekattitude.org
+212.47.237.6
 
 [app:vars]
 env_type = prod
 debug_mode = False
 ansible_user = root
-app_user = webadmin

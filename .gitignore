@@ -6,13 +6,16 @@
 *.out
 *.venv
 
+## VSCode
+/.vscode
+
+## Alpine Linux
+.ash_history
+
 ## project specific
 /naxos/naxos/settings.py
 secret.txt
 naxos/templates/ads/
-
-# vagrant
-/.vagrant/
 
 # ansible
 *.retry

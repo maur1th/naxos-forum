@@ -23,7 +23,8 @@ The development server is accessible at: `http://localhost:8080`.
 ### Fixtures
 Initial data (fixtures) is provided and must be installed manually:
 ```bash
-$ docker-compose exec forum sh  # Start sh on forum container
+$ docker-compose exec forum sh              # Start sh on forum container
+$ python3 manage.py migrate                 # Apply db migrations
 $ python3 manage.py loaddata fixtures.json  # Load fixtures
 ```
 

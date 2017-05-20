@@ -1,0 +1,4 @@
+---
+package: docker-engine
+version: 17.05.*
+...

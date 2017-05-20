@@ -119,6 +119,7 @@ CONN_MAX_AGE = None
 
 CACHES = {
     "default": {
+        # Dummy: "django.core.cache.backends.dummy.DummyCache"
         "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
         "LOCATION": os.environ.get("CACHE_LOCATION"),
     }

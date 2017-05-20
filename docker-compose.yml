@@ -13,9 +13,10 @@ services:
       DB_NAME: postgres
       DB_USER: postgres
       DB_PASSWORD: crimson
+      CACHE_LOCATION: memcached
     depends_on:
       - db
-    #   - memcached
+      - memcached
     restart: always
   db:
     image: postgres:9.6-alpine
@@ -24,9 +25,9 @@ services:
     environment:
       POSTGRES_PASSWORD: crimson
     restart: always
-#   memcached:
-#     image: memcached:1.4-alpine
-#     restart: always
+  memcached:
+    image: memcached:1.4-alpine
+    restart: always
   nginx:
     image: nginx:stable-alpine
     volumes:

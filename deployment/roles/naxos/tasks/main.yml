@@ -1,156 +1,34 @@
 ---
 - name: load vaulted variables
-  include_vars: vault/main.yml
+  include_vars: vars/vault.yml
 
-# Directories setup
-- name: create global directory
-  file:
-    path: "{{project_dir}}"
-    state: directory
-    owner: "{{app_user}}"
-    group: "{{app_user}}"
-- name: create log directory
-  file:
-    path: /var/log/{{project_name}}
-    state: directory
-    group: "{{app_user}}"
-    owner: "{{app_user}}"
-    mode: 0755
-- name: store user configuration
-  template:
-    src: "{{item.name}}"
-    dest: /home/{{app_user}}/{{item.dest}}
-    owner: "{{app_user}}"
-    mode: 0600
-  with_items:
-    - { name: "sh_env", dest: ".bash_profile" }
-- name: clone git repo
-  become_user: "{{app_user}}"
-  git:
-    repo: "{{repo}}"
-    dest: "{{project_dir}}"
-    version: "{{branch}}"
-    update: yes
-    recursive: no
-  when: env_type != "dev"
-  # notify: restart web services  # Ansible 2.2
+# # Django setup
+# - name: copy ad html snippets
+#   copy:
+#     src: "{{item}}"
+#     dest: "{{project_dir}}naxos/templates/ads/"
+#     owner: "{{app_user}}"
+#     mode: 0600
+#   with_items:
+#     - amazon.html
+#     - paypal_gift.html
 
-# Dependencies
-- name: install apt packages
-  apt:
-    name: "{{item}}"
-    state: installed
-  with_items:
-    - python-imaging
-    - libjpeg62
-    - libjpeg-dev
-    - libtiff5-dev
-    - libfreetype6-dev
-    - liblcms2-dev
-    - libwebp-dev
-    - nginx
-    - postgresql
-    - postgresql-server-dev-9.4
-    - python-psycopg2
-    - memcached
-    - libmemcached-dev
-- name: install pip dependencies
-  become_user: "{{app_user}}"
-  pip:
-    extra_args: "--upgrade"
-    requirements: "{{project_dir}}requirements/{{env_type}}.txt"
-    virtualenv: "{{project_dir}}env"
-    virtualenv_python: python3
-  # notify: restart web services  # Ansible 2.2
-- name: check if yarn.lock exists
-  stat: path={{project_dir}}naxos/nodejs/yarn.lock
-  register: yarn_lock
-- name: install node dependencies
-  become_user: "{{app_user}}"
-  command: /usr/bin/yarn chdir={{project_dir}}naxos/nodejs/
-  when: yarn_lock.stat.exists == False
-
-# Django setup
-- name: set up django settings module
-  template:
-    src: django-settings.py
-    dest: "{{project_dir}}naxos/naxos/settings.py"
-    owner: "{{app_user}}"
-    mode: 0600
-  # notify: restart web services  # Ansible 2.2
-- name: copy ad html snippets
-  copy:
-    src: "{{item}}"
-    dest: "{{project_dir}}naxos/templates/ads/"
-    owner: "{{app_user}}"
-    mode: 0600
-  with_items:
-    - amazon.html
-    - paypal_gift.html
-
-# DB setup
-- name: create app_user user in postgres
-  become_user: postgres
-  postgresql_user:
-    name: "{{app_user}}"
-    password: "{{db_password}}"
-    encrypted: true
-- name: create project db
-  become_user: postgres
-  postgresql_db:
-    name: "{{project_name}}"
-    owner: "{{app_user}}"
-    encoding: UTF-8
-  register: create_db
-- include: init_db.yml
-  when: create_db.changed
-
-# Gunicorn setup
-- name: create bin/ directory
-  file:
-    path: "{{project_dir}}bin/"
-    owner: "{{app_user}}"
-    group: "{{app_user}}"
-    state: directory
-    mode: 0700
-- name: set up gunicorn start script
-  template:
-    src: gunicorn_start
-    dest: "{{project_dir}}bin/"
-    owner: "{{app_user}}"
-    mode: 0700
-
-# Supervisord setup
-- name: install supervisord conf
-  template:
-    src: templates/supervisor.conf
-    dest: /etc/supervisor/conf.d/app.conf
-  # notify: restart web services  # Ansible 2.2
-- name: update engine
-  supervisorctl: name="app:" state=present
-- name: start engine
-  supervisorctl: name="app:" state=started
-
-# Docker setup
-- name: launch naxos container
+- name: launch forum container
   docker_container:
-    name: naxos
-    # image: someuser/appimage
+    name: forum
+    image: "{{image}}:{{version}}"
     state: started
-    restart: yes
-    # links:
-    #  - "myredis:aliasedredis"
-    # devices:
-    #  - "/dev/sda:/dev/xvda:rwm"
-    # ports:
-    #  - "8080:9000"
-    #  - "127.0.0.1:8081:9001/udp"
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - forum
     env:
         HOSTNAME: "{{inventory_hostname}}"
+        DEBUG_MODE: "{{debug_mode}}"
         ADMIN_NAME: "{{admin_name}}"
         ADMIN_EMAIL: "{{admin_email}}"
-        DB_NAME: "{{project_name}}"
-        DB_USER: "{{app_user}}"
+        DB_NAME: "{{db_name}}"
+        DB_USER: "{{db_user}}"
         DB_PASSWORD: "{{db_password}}"
         DB_HOST: "{{db_host}}"
         DB_PORT: "{{db_port}}"
@@ -159,4 +37,5 @@
         SERVER_EMAIL: "{{server_email}}"  # email address to use
         EMAIL_HOST_PASSWORD: "{{email_host_password}}"
         EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
-        CACHE_LOCATION: "{{cache_location}}"
+        CACHE_LOCATION: "{{cache_host}}"
+...

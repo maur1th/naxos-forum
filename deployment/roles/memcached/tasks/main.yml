@@ -7,5 +7,5 @@
     networks:
       - name: "{{project_name}}"
         aliases:
-          - memcached
+          - "{{cache_host}}"
 ...

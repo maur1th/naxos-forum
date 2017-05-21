@@ -15,7 +15,7 @@
     networks:
       - name: "{{project_name}}"
         aliases:
-          - postgres
+          - "{{db_host}}"
     volumes:
       - "{{volume}}:/var/lib/postgresql/data"
 ...

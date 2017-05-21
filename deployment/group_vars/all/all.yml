@@ -1,0 +1,13 @@
+---
+project_name: naxos
+docker_version: 17.05.*
+node_version: 6.x
+
+db_host: postgres
+db_port: 5432
+db_name: "{{project_name}}"
+db_user: "{{vault_db_user}}"
+db_password: "{{vault_db_password}}"
+
+cache_host: memcached
+...

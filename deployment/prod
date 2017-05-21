@@ -2,6 +2,6 @@
 geekattitude.org
 
 [app:vars]
-env = prod
-debug_mode = False
-ansible_user = root
+env=prod
+debug_mode=False
+ansible_user=root

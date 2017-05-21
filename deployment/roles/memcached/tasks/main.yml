@@ -1,0 +1,11 @@
+---
+- name: start memcached container
+  docker_container:
+    name: memcached
+    image: memcached:1.4-alpine
+    state: started
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - memcached
+...

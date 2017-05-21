@@ -7,3 +7,4 @@
     - docker_network
     - nginx
     - db
+    - memcached

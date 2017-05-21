@@ -1,0 +1,7 @@
+[app]
+beta.geekattitude.org
+
+[app:vars]
+env = beta
+debug_mode = True
+ansible_user = root

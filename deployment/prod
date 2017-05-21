@@ -1,7 +1,7 @@
 [app]
-212.47.237.6
+geekattitude.org
 
 [app:vars]
-env_type = prod
+env = prod
 debug_mode = False
 ansible_user = root

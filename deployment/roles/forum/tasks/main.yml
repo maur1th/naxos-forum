@@ -21,7 +21,7 @@
     networks:
       - name: "{{project_name}}"
         aliases:
-          - forum
+          - "{{forum_host}}"
     env:
         HOSTNAME: "{{inventory_hostname}}"
         DEBUG_MODE: "{{debug_mode}}"

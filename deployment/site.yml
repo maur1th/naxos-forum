@@ -6,3 +6,4 @@
     - docker
     - docker_network
     - nginx
+    - db

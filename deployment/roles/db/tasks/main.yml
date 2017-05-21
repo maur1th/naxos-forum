@@ -1,0 +1,21 @@
+---
+- name: check if volume ({{volume}}) exists
+  command: docker volume inspect {{volume}}
+  register: result
+  ignore_errors: True
+  changed_when: False
+- name: create volume ({{volume}})
+  command: docker volume create {{volume}}
+  when: result|failed
+- name: start postgres container
+  docker_container:
+    name: postgres
+    image: postgres:9.6-alpine
+    state: started
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - postgres
+    volumes:
+      - "{{volume}}:/var/lib/postgresql/data"
+...

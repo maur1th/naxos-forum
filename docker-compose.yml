@@ -5,8 +5,6 @@ services:
     build: app/naxos
     volumes:
       - ./app/naxos:/app
-    expose:
-      - "5000"
     environment:
       HOSTNAME: forum
       DB_HOST: db

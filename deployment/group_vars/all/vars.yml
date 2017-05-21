@@ -1,4 +1,5 @@
 ---
+hostname: geekattitude.org
 project_name: naxos
 project_dir: /app/
 

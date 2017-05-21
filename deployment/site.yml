@@ -5,3 +5,4 @@
     - common
     - docker
     - docker_network
+    - nginx

@@ -1,41 +1,48 @@
 ---
 # Install certbot: https://certbot.eff.org/#debianjessie-nginx
-# - name: add jessie-backports repository
-#   apt_repository:
-#     repo: >
-#       deb http://ftp.debian.org/debian jessie-backports main
-#     update_cache: yes
 - name: install certbot
-  apt: name=certbot state=installed default_release=jessie-backports
-- name: create certbot directory for webroot plugin
-  file: path=/usr/share/nginx/html/certbot state=directory mode=0755
+  apt:
+    name: certbot
+    state: installed
+    default_release: jessie-backports
+# - name: create certbot directory for webroot plugin
+#   file:
+#     path: /usr/share/nginx/html/certbot
+#     state: directory
+#     mode: 0755
 - name: copy certbot configuration & certificates
-  copy: src=letsencrypt.tgz dest=/
+  copy:
+    src: letsencrypt.tgz
+    dest: /tmp
 - name: unarchive certbot configuration & certificates
   unarchive:
-    # remote_src: yes  # Ansible 2.2 instead of copy
-    copy: no
-    src: /letsencrypt.tgz
+    remote_src: yes
+    src: /tmp/letsencrypt.tgz
     dest: /
     creates: /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem
 - name: copy dhparam
-  copy: src=dhparam.pem dest=/etc/nginx/ssl/
-
-# Nginx conf
-- name: remove default nginx site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: restart nginx
-- name: add nginx conf
+  copy:
+    src:  dhparam.pem
+    dest: /tmp/
+- name: install nginx conf
   template:
     src: nginx.conf
-    dest: /etc/nginx/
-    mode: 0644
-  notify: restart nginx
-- name: add site in nginx
-  template:
-    src: site.conf
-    dest: /etc/nginx/sites-enabled/
-    mode: 0644
-  notify: restart nginx
+    dest: /tmp/nginx.conf
+
+# Nginx
+- name: start nginx container
+  docker_container:
+    name: nginx
+    image: nginx:stable-alpine
+    state: started
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /tmp/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /tmp/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro

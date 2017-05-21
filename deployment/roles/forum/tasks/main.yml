@@ -2,16 +2,13 @@
 - name: load vaulted variables
   include_vars: vars/vault.yml
 
-# # Django setup
-# - name: copy ad html snippets
-#   copy:
-#     src: "{{item}}"
-#     dest: "{{project_dir}}naxos/templates/ads/"
-#     owner: "{{app_user}}"
-#     mode: 0600
-#   with_items:
-#     - amazon.html
-#     - paypal_gift.html
+- name: copy ad html snippets
+  copy:
+    src: "{{item}}"
+    dest: "/tmp/ads/"
+  with_items:
+    - amazon.html
+    - paypal_gift.html
 
 - name: launch forum container
   docker_container:
@@ -23,19 +20,21 @@
         aliases:
           - "{{forum_host}}"
     env:
-        HOSTNAME: "{{inventory_hostname}}"
-        DEBUG_MODE: "{{debug_mode}}"
-        ADMIN_NAME: "{{admin_name}}"
-        ADMIN_EMAIL: "{{admin_email}}"
-        DB_NAME: "{{db_name}}"
-        DB_USER: "{{db_user}}"
-        DB_PASSWORD: "{{db_password}}"
-        DB_HOST: "{{db_host}}"
-        DB_PORT: "{{db_port}}"
-        EMAIL_HOST: "{{email_host}}"
-        EMAIL_PORT: "{{email_port}}"
-        SERVER_EMAIL: "{{server_email}}"  # email address to use
-        EMAIL_HOST_PASSWORD: "{{email_host_password}}"
-        EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
-        CACHE_LOCATION: "{{cache_host}}"
+      HOSTNAME: "{{inventory_hostname}}"
+      DEBUG_MODE: "{{debug_mode}}"
+      ADMIN_NAME: "{{admin_name}}"
+      ADMIN_EMAIL: "{{admin_email}}"
+      DB_NAME: "{{db_name}}"
+      DB_USER: "{{db_user}}"
+      DB_PASSWORD: "{{db_password}}"
+      DB_HOST: "{{db_host}}"
+      DB_PORT: "{{db_port}}"
+      EMAIL_HOST: "{{email_host}}"
+      EMAIL_PORT: "{{email_port}}"
+      SERVER_EMAIL: "{{server_email}}"  # email address to use
+      EMAIL_HOST_PASSWORD: "{{email_host_password}}"
+      EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
+      CACHE_LOCATION: "{{cache_host}}"
+    volumes:
+      - /tmp/ads:/app/templates/ads/:ro
 ...

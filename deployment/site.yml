@@ -5,8 +5,5 @@
     - common
     - docker
     - docker_network
-    - nginx
-    - db
-    - memcached
-    - naxos
+    - forum
 ...

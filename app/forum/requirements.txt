@@ -1,7 +1,9 @@
 Django<1.11
 Pillow<5.0
+boto<3.0
 colorlog
 django-crispy-forms<1.7
+django-storages<2.0
 django-uuslug<1.2
 gunicorn<19.7
 markdown<2.7

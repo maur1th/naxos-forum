@@ -7,13 +7,9 @@ services:
     volumes:
       - ./app/forum:/app
     environment:
-      HOSTNAME: forum
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: postgres
-      DB_USER: postgres
-      DB_PASSWORD: crimson
-      CACHE_LOCATION: memcached
+      AWS_STORAGE_BUCKET_NAME: geekattitude
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - db
       - memcached

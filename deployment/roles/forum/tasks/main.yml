@@ -29,12 +29,16 @@
       DB_PASSWORD: "{{db_password}}"
       DB_HOST: "{{db_host}}"
       DB_PORT: "{{db_port}}"
+      CACHE_LOCATION: "{{cache_host}}"
       EMAIL_HOST: "{{email_host}}"
       EMAIL_PORT: "{{email_port}}"
       SERVER_EMAIL: "{{server_email}}"  # email address to use
       EMAIL_HOST_PASSWORD: "{{email_host_password}}"
       EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
-      CACHE_LOCATION: "{{cache_host}}"
+      STATIC_URL: "{{static_url}}"
+      AWS_STORAGE_BUCKET_NAME: "{{aws_storage_bucket_name}}"
+      AWS_ACCESS_KEY_ID: "{{aws_access_key_id}}"
+      AWS_SECRET_ACCESS_KEY: "{{aws_secret_access_key}}"
     volumes:
       - /tmp/ads:/app/templates/ads/:ro
 ...

@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
 
     # Third-party Apps
+    "storages",
     "crispy_forms",
 
     # Project Apps
@@ -72,7 +73,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = False
 
-STATIC_URL = "/static/"
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
+
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+STATIC_URL = "https://{:s}/".format(AWS_S3_CUSTOM_DOMAIN)
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
 MEDIA_URL = "/media/"
 
 AUTH_USER_MODEL = "user.ForumUser"
@@ -107,11 +116,11 @@ TEMPLATES = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "crimson"),
+        "HOST": os.environ.get("DB_HOST", "db"),
+        "PORT": os.environ.get("DB_PORT", 5432),
     }
 }
 
@@ -121,7 +130,7 @@ CACHES = {
     "default": {
         # Dummy: "django.core.cache.backends.dummy.DummyCache"
         "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
-        "LOCATION": os.environ.get("CACHE_LOCATION"),
+        "LOCATION": os.environ.get("CACHE_LOCATION", "memcached"),
     }
 }
 

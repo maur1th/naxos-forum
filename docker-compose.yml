@@ -2,10 +2,10 @@
 version: "3"
 services:
   forum:
-    build: app/naxos
+    build: app/forum
     command: python3 manage.py runserver 0.0.0.0:5000
     volumes:
-      - ./app/naxos:/app
+      - ./app/forum:/app
     environment:
       HOSTNAME: forum
       DB_HOST: db

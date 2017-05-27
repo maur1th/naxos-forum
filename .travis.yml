@@ -17,9 +17,9 @@ services:
   - docker
 script:
   - sonar-scanner
-  - docker build --tag maur1th/naxos app/naxos
+  - docker build --tag maur1th/naxos-forum app/forum
   - docker build --tag maur1th/naxos-websocket app/websocket
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push maur1th/naxos
+  - docker push maur1th/naxos-forum
   - docker push maur1th/naxos-websocket

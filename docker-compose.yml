@@ -3,6 +3,7 @@ version: "3"
 services:
   forum:
     build: app/naxos
+    command: python3 manage.py runserver 0.0.0.0:5000
     volumes:
       - ./app/naxos:/app
     environment:

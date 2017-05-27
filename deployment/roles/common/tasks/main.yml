@@ -40,4 +40,9 @@
     owner: root
     group: root
     mode: 0644
+
+# Hostname
+- name: set hostname
+  hostname:
+    name: "{{inventory_hostname}}"
 ...

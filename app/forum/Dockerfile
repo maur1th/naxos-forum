@@ -11,9 +11,7 @@ RUN set -ex \
                 libjpeg-turbo \
         && pip3 install --upgrade --no-cache-dir pip
 
-WORKDIR $HOME
-
-COPY . $HOME
+COPY requirements.txt /
 RUN set -ex \
         && apk add --no-cache --virtual .build-deps \
                 build-base \
@@ -26,9 +24,8 @@ RUN set -ex \
         && pip3 install --no-cache-dir -r requirements.txt \
         && apk del .build-deps
 
-RUN adduser -D -s /bin/false app
-RUN chown -R app:app $HOME/*
-USER app
+COPY . $HOME
+WORKDIR $HOME
 
 EXPOSE 5000
-CMD gunicorn naxos.wsgi:application -w $WORKERS -b :5000
+ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]

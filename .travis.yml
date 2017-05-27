@@ -17,4 +17,5 @@ services:
   - docker
 script:
   - docker build --tag maur1th/naxos:dev app/naxos
+  - docker build --tag maur1th/naxos-websocket:dev app/websocket
   - sonar-scanner

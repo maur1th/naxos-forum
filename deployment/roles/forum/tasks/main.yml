@@ -13,7 +13,7 @@
 - name: launch forum container
   docker_container:
     name: forum
-    image: "{{image}}:{{version}}"
+    image: "{{forum_image}}:{{version}}"
     state: started
     networks:
       - name: "{{project_name}}"
@@ -35,7 +35,6 @@
       SERVER_EMAIL: "{{server_email}}"  # email address to use
       EMAIL_HOST_PASSWORD: "{{email_host_password}}"
       EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
-      STATIC_URL: "{{static_url}}"
       AWS_STORAGE_BUCKET_NAME: "{{aws_storage_bucket_name}}"
       AWS_ACCESS_KEY_ID: "{{aws_access_key_id}}"
       AWS_SECRET_ACCESS_KEY: "{{aws_secret_access_key}}"

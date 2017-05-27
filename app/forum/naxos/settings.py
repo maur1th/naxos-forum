@@ -11,13 +11,32 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 import os
 from .util import root, BASE_DIR
 from .secretKeyGen import SECRET_KEY  # Secret key from generator module
+# from .custom_storages import StaticStorage, STATICFILES_LOCATION, \
+#                              MediaStorage, MEDIAFILES_LOCATION
 
 
 DEBUG = eval(os.environ.get("DEBUG_MODE", "False"))
 
-# Configuring directories
-MEDIA_ROOT = root("media")
+# Static / Media Directories
 STATICFILES_DIRS = (root("static"),)
+MEDIA_ROOT = root("media")
+
+
+# S3 settings
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
+
+STATICFILES_LOCATION = "static"
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+STATICFILES_STORAGE = "naxos.custom_storages.StaticStorage"
+STATIC_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+
+MEDIAFILES_LOCATION = "media"
+MEDIA_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+DEFAULT_FILE_STORAGE = "naxos.custom_storages.MediaStorage"
+
 
 # Security
 RAW_HOSTS = (os.environ.get("HOSTNAME"), "localhost")
@@ -26,9 +45,11 @@ SECRET_KEY = SECRET_KEY
 CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 
+
 # HTTPS
 SESSION_COOKIE_SECURE = False  # True for full HTTPS
 CSRF_COOKIE_SECURE = False     # True for full HTTPS
+
 
 # App conf
 ADMINS = ((os.environ.get("ADMIN_NAME"), os.environ.get("ADMIN_EMAIL")),)
@@ -73,17 +94,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = False
 
-AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
-
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-STATIC_URL = "https://{:s}/".format(AWS_S3_CUSTOM_DOMAIN)
-STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
-MEDIA_URL = "/media/"
-
 AUTH_USER_MODEL = "user.ForumUser"
 
 LOGIN_URL = "user:login"
@@ -113,6 +123,8 @@ TEMPLATES = [
     },
 ]
 
+
+# Database
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -123,9 +135,10 @@ DATABASES = {
         "PORT": os.environ.get("DB_PORT", 5432),
     }
 }
-
 CONN_MAX_AGE = None
 
+
+# Cache
 CACHES = {
     "default": {
         # Dummy: "django.core.cache.backends.dummy.DummyCache"
@@ -134,6 +147,8 @@ CACHES = {
     }
 }
 
+
+# Logging
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 LOGGING = {
     "version": 1,
@@ -164,6 +179,7 @@ LOGGING = {
         }
     }
 }
+
 
 # Email
 EMAIL_HOST = os.environ.get("EMAIL_HOST")

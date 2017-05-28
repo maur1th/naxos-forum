@@ -1,16 +1,13 @@
 from django.utils.six.moves.html_parser import HTMLParser
 from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
+from django.conf import settings
 
 import importlib
 import re
 import os
 import postmarkup
 import markdown
-
-settings = importlib.import_module(os.environ.get('DJANGO_SETTINGS_MODULE'))
-static = getattr(settings, 'STATICFILES_DIRS')
-DEBUG = getattr(settings, 'DEBUG')
 
 
 # Process search queries
@@ -132,7 +129,7 @@ def urlize(html):
         urlized_html = parser.html
         parser.close()
     except:
-        if DEBUG:
+        if settings.DEBUG:
             raise
         return html
     return urlized_html
@@ -279,45 +276,41 @@ def convert_text_to_html(text, markup='bbcode'):
 # Smiley stuff
 def compileSmileys():
 
-    SMILEYS_PATH = ("<img class=\"smiley\" src=\""
-                    "/static/img/smileys/{:s}.gif\">")
-
     specialSmileys = [
-        (r':-?\)', SMILEYS_PATH.format('special-smile')),
-        (r';-?\)', SMILEYS_PATH.format('special-wink')),
-        (r':-?\(', SMILEYS_PATH.format('special-sad')),
-        (r':-?\/', SMILEYS_PATH.format('bof')),
-        (r':o', SMILEYS_PATH.format('-o')),
-        (r':-?D', SMILEYS_PATH.format('green')),
-        (r':-?v', SMILEYS_PATH.format('v')),
-        (r':\?:', SMILEYS_PATH.format('special-question')),
-        (r':\?\?\?:', SMILEYS_PATH.format('special-3question')),
-        (r':jap:', SMILEYS_PATH.format('respect')),
-        (r':clap:', SMILEYS_PATH.format('bravo')),
+        (r":-?\/", "bof"),  # keep 1st or will break URIs
+        (r":-?\)", "special-smile"),
+        (r";-?\)", "special-wink"),
+        (r":-?\(", "special-sad"),
+        (r":o", "-o"),
+        (r":-?D", "green"),
+        (r":-?v", "v"),
+        (r":\?:", "special-question"),
+        (r":\?\?\?:", "special-3question"),
+        (r":jap:", "respect"),
+        (r":clap:", "bravo"),
     ]
 
     def get_smileys(path):
         "Get all smileys"
         from subprocess import getoutput
-        smileys = getoutput('ls ' + path + '/img/smileys/')
-        return [smiley[:-len('.gif')] for smiley
-                in smileys.split('\n')]
+        smileys = getoutput("ls " + path + "/img/smileys/")
+        return [smiley[:-len(".gif")] for smiley in smileys.split("\n")]
 
-    smileys = get_smileys(*static)
-    doubleColonSmileys = list()
-    for smiley in smileys:
-        if smiley.find("special-") == -1:
-            doubleColonSmileys.append(smiley)
+    smileys = get_smileys(settings.STATICFILES_DIRS[0])
+    double_colon = filter(lambda s: not s.startswith("special-"), smileys)
+    all_smileys = (
+        specialSmileys +
+        [(":" + re.escape(s) + ":", s) for s in double_colon]
+    )
 
-    allSmileys = ([(':' + re.escape(smiley) + ':', SMILEYS_PATH.format(smiley))
-                   for smiley in doubleColonSmileys] + specialSmileys)
-
-    return [(re.compile(smiley), path) for smiley, path in allSmileys]
+    return [(re.compile(smiley), name) for smiley, name in all_smileys]
 
 
 def _smiley_replacer(text):
-    for smiley, path in compileSmileys():
-        text = smiley.sub(path, text)
+    for smiley, name in compileSmileys():
+        tag = "<img class=\"smiley\" src=\"{:s}img/smileys/{:s}.gif\">"\
+                    .format(settings.STATIC_URL, name)
+        text = smiley.sub(tag, text)
     return text
 
 
@@ -331,7 +324,7 @@ def smilify(html):
         smiled_html = parser.html
         parser.close()
     except:
-        if DEBUG:
+        if settings.DEBUG:
             raise
         return html
     return smiled_html

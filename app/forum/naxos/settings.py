@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 import os
 from .util import root, BASE_DIR
 from .secretKeyGen import SECRET_KEY  # Secret key from generator module
-# from .custom_storages import StaticStorage, STATICFILES_LOCATION, \
-#                              MediaStorage, MEDIAFILES_LOCATION
 
 
 DEBUG = eval(os.environ.get("DEBUG_MODE", "False"))
@@ -29,7 +27,6 @@ AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
 
 STATICFILES_LOCATION = "static"
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_STORAGE = "naxos.custom_storages.StaticStorage"
 STATIC_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
@@ -39,7 +36,7 @@ DEFAULT_FILE_STORAGE = "naxos.custom_storages.MediaStorage"
 
 
 # Security
-RAW_HOSTS = (os.environ.get("HOSTNAME"), "localhost")
+RAW_HOSTS = (os.environ.get("HOSTNAME"), "forum", "localhost")
 ALLOWED_HOSTS = tuple(filter(lambda x: x != None, RAW_HOSTS))
 SECRET_KEY = SECRET_KEY
 CSRF_COOKIE_HTTPONLY = True

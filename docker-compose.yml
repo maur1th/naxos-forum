@@ -3,10 +3,11 @@ version: "3"
 services:
   forum:
     build: app/forum
-    command: python3 manage.py runserver 0.0.0.0:5000
+    entrypoint: python3 manage.py runserver 0.0.0.0:5000
     volumes:
       - ./app/forum:/app
     environment:
+      DEBUG: "True"
       AWS_STORAGE_BUCKET_NAME: geekattitude
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}

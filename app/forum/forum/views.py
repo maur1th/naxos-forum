@@ -10,6 +10,7 @@ from django.core.cache.utils import make_template_fragment_key
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
+from django.conf import settings
 
 import re
 from datetime import datetime
@@ -248,6 +249,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         """Pass Category from url to context"""
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
+        context['static_url'] = settings.STATIC_URL
         return context
 
     def get_form_kwargs(self):
@@ -363,6 +365,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         context['category'] = self.c
         context['thread'] = self.t
         context['post'] = self.p
+        context['static_url'] = settings.STATIC_URL
         return context
 
     def get_form_kwargs(self):

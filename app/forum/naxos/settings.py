@@ -15,24 +15,26 @@ from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 
 DEBUG = eval(os.environ.get("DEBUG_MODE", "False"))
 
-# Static / Media Directories
+# static & media files settings
 STATICFILES_DIRS = (root("static"),)
 MEDIA_ROOT = root("media")
 
+if os.environ.get("LOCAL_ENV"):
+    STATIC_URL = "/static/"
+    MEDIA_URL = "/media/"
+else:
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
 
-# S3 settings
-AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
+    STATICFILES_LOCATION = "static"
+    STATICFILES_STORAGE = "naxos.custom_storages.StaticStorage"
+    STATIC_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
-STATICFILES_LOCATION = "static"
-STATICFILES_STORAGE = "naxos.custom_storages.StaticStorage"
-STATIC_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
-
-MEDIAFILES_LOCATION = "media"
-MEDIA_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-DEFAULT_FILE_STORAGE = "naxos.custom_storages.MediaStorage"
+    MEDIAFILES_LOCATION = "media"
+    MEDIA_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+    DEFAULT_FILE_STORAGE = "naxos.custom_storages.MediaStorage"
 
 
 # Security

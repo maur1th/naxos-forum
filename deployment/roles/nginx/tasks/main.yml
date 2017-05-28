@@ -34,7 +34,6 @@
   docker_container:
     name: nginx
     image: nginx:stable-alpine
-    state: started
     networks:
       - name: "{{project_name}}"
         aliases:

@@ -1,5 +1,6 @@
 ---
 forum_image: maur1th/naxos-forum
+websocket_image: maur1th/naxos-websocket
 
 email_host: 64.233.167.108
 email_port: 587

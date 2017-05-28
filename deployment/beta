@@ -3,6 +3,6 @@ beta.geekattitude.org
 
 [app:vars]
 env=beta
-version=beta
+version=latest
 debug_mode=True
 ansible_user=root

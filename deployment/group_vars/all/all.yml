@@ -1,23 +1,17 @@
 ---
 project_name: naxos
 
-# AWS S3 access
-aws_storage_bucket_name: geekattitude
-aws_access_key_id: "{{vault_aws_access_key_id}}"
-aws_secret_access_key: "{{vault_aws_secret_access_key}}"
-
 # versions
 docker_version: 17.05.*
 node_version: 6.x
 
-# hosts
-forum_host: forum
-db_host: postgres
-cache_host: memcached
-
 # db parameters
-db_port: 5432
 db_name: "{{project_name}}"
 db_user: "{{vault_db_user}}"
 db_password: "{{vault_db_password}}"
+
+# AWS S3 access
+aws_storage_bucket_name: geekattitude
+aws_access_key_id: "{{vault_aws_access_key_id}}"
+aws_secret_access_key: "{{vault_aws_secret_access_key}}"
 ...

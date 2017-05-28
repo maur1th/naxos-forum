@@ -1,25 +1,33 @@
-# Naxos
+Naxos
+=====
+Purpose
+-------
 Bulletin board project created to replace a [CoolForum](https://github.com/dsoriano/coolforum) solution. (Including DB migration script.) Comes with a light community blog.
 
-Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Frontend in BootStrap + JQuery. Node.js + Socket.io for realtime capabilities. Deploys with Ansible.
+Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Frontend in BootStrap + JQuery. Node.js + Socket.io for some realtime capabilities. Deploys with Docker & Ansible.
 
-## Getting started
-1. Install both `vagrant` and `ansible`
-2. `vagrant up`
+Getting started
+---------------
+### Prerequisite
+Install [Docker](https://www.docker.com/community-edition)
 
-This can be done on OSX in just a few steps:
+### Starting a development environment
+The development environment uses `docker-compose`, more information on the CLI usage [here](https://docs.docker.com/compose/reference/).
 ```bash
-$ # Install Homebrew
-$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-$ # Install deps
-$ brew cask install virtualbox
-$ brew cask install vagrant && vagrant plugin install vagrant-hostsupdater
-$ brew install ansible
-$ # run
-$ vagrant up
+$ docker-compose up -d    # Start environment
+$ docker-compose logs -f  # Read component logs
+$ docker-compose stop     # Stop environment
+```
+The development server is accessible at: `http://localhost:8080`.
+
+### Fixtures
+Initial data (fixtures) is provided and must be installed manually:
+```bash
+$ docker-compose exec forum sh              # Start sh on forum container
+$ python3 manage.py migrate                 # Apply db migrations
+$ python3 manage.py loaddata fixtures.json  # Load fixtures
 ```
 
-### Notes
-- In case `vagrant up` fails during provisioning, provision again using `vagrant provision`.
-- Dev server will then be accessible at: `http://dev.geekattitude.org`.
-- By default, a test user is created with username `test` and password `123456`.
+You will be able to log in using those credentials:
+- Username: "User1"
+- Password: "crimson"

@@ -1,46 +1,38 @@
 ---
 # Scaleway doesn't install aptitude on its images
 # So check if aptitude is installed else install it
-- name: check if aptitude is installed
-  command: which aptitude
-  ignore_errors: True
-  changed_when: False
-  register: aptitude_installed
-- name: install aptitude
-  shell: apt-get update && apt-get install aptitude -y
-  when: aptitude_installed.rc == 1
-
-# Install common dependencies
-- name: update package repo
-  apt: update_cache=yes upgrade=safe
-- name: install apt common packages
-  apt: name={{item}} state=installed
+- name: update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  changed_when: no
+- name: install apt common dependencies
+  apt:
+    name: "{{item}}"
   with_items:
     - acl  # required by Ansible 2.1 to become_user
-    - apt-transport-https
-    - build-essential
-    - python3
-    - python3-pip
-    - curl
-    - git
+    - apt-transport-https  # apt over https
+    - aptitude  # safe-upgrade dependency
+    - ca-certificates
     - ntp
-    - supervisor
-    - emacs24-nox
+    - python-pip
+    - python-virtualenv
+    - sudo
     - vim
-- name: install virtualenv
-  pip: name=virtualenv extra_args="--upgrade" executable=pip3
+- name: perform safe upgrade
+  apt:
+    upgrade: safe
 
-# Common configuration
-- name: set timezone variables
-  copy:
-    content: "Europe/Paris\n"
-    dest: "/etc/timezone"
-    owner: root
-    group: root
-    mode: 0644
-  notify: update_timezone
+# Timezone
+- name: set timezone to Europe/Paris
+  timezone:
+    name: Europe/Paris
+
+# Locale
 - name: generate locale
-  locale_gen: name=en_US.UTF-8 state=present
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
 - name: set locale
   copy:
     content: "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8"
@@ -48,29 +40,9 @@
     owner: root
     group: root
     mode: 0644
-- name: set default editor to emacs
-  alternatives:
-    name: editor
-    path: "/usr/bin/emacs"
 
-# User configuration
-- name: create user
-  user: name="{{app_user}}" shell="/bin/bash"
-- name: copy github credential token
-  template:
-    src: dotnetrc
-    dest: /home/{{app_user}}/.netrc
-    owner: "{{app_user}}"
-    mode: 0600
-- name: install emacs conf & color scheme
-  unarchive:
-    src: emacs.tgz
-    dest: /home/{{ app_user }}
-    creates: /home/{{ app_user }}/.emacs.d/themes/tangotango-theme.el
-    owner: "{{ app_user }}"
-- name: install vim conf & color scheme
-  unarchive:
-    src: vim.tgz
-    dest: /home/{{ app_user }}
-    creates: /home/{{ app_user }}/.vim/colors/jellybeans.vim
-    owner: "{{ app_user }}"
+# Hostname
+- name: set hostname
+  hostname:
+    name: "{{inventory_hostname.replace('.', '-')}}"
+...

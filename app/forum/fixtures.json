@@ -1,0 +1,54 @@
+[
+{
+  "model": "forum.category",
+  "pk": 1,
+  "fields": {
+    "slug": "cat-1",
+    "title": "Category 1",
+    "subtitle": "Subtitle 1",
+    "postCount": 0
+  }
+},
+{
+  "model": "forum.category",
+  "pk": 2,
+  "fields": {
+    "slug": "cat-2",
+    "title": "Category 2",
+    "subtitle": "Subtitle 2",
+    "postCount": 0
+  }
+},
+{
+  "model": "user.forumuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$30000$RSO3egUxBNPD$R+6Iq2nKCQS5KQtOeiyDwlBHOJ4HFKWEJgY0q8tvOI8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "User1",
+    "first_name": "",
+    "last_name": "",
+    "email": "user1@domain.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2017-05-20T15:36:20.248",
+    "emailVisible": false,
+    "subscribeToEmails": true,
+    "mpEmailNotif": false,
+    "showSmileys": false,
+    "fullscreen": false,
+    "showLogosOnSmartphone": true,
+    "logo": "",
+    "quote": "",
+    "website": "",
+    "pmUnreadCount": 0,
+    "resetDateTime": "2013-01-01T00:00:00",
+    "is_online": false,
+    "last_seen": null,
+    "groups": [],
+    "user_permissions": [],
+    "pmReadCaret": []
+  }
+}
+]

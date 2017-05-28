@@ -1,8 +1,0 @@
-[app]
-geekattitude.org
-
-[app:vars]
-env_type = prod
-debug_mode = False
-ansible_user = root
-app_user = webadmin

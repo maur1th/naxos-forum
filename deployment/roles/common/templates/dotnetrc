@@ -1,3 +1,0 @@
-machine {{git_host}}
-login {{git_login}}
-password {{git_token}}

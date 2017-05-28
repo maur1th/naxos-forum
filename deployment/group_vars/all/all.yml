@@ -1,0 +1,17 @@
+---
+project_name: naxos
+
+# versions
+docker_version: 17.05.*
+node_version: 6.x
+
+# db parameters
+db_name: "{{project_name}}"
+db_user: "{{vault_db_user}}"
+db_password: "{{vault_db_password}}"
+
+# AWS S3 access
+aws_storage_bucket_name: geekattitude
+aws_access_key_id: "{{vault_aws_access_key_id}}"
+aws_secret_access_key: "{{vault_aws_secret_access_key}}"
+...

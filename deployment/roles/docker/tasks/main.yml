@@ -1,0 +1,35 @@
+---
+- name: install docker pip dependency
+  pip:
+    name: docker-py
+
+- name: add docker GPG key
+  apt_key:
+    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+
+- name: add docker apt repository
+  apt_repository:
+    repo: >
+      deb https://apt.dockerproject.org/repo
+      {{ansible_distribution|lower}}-{{ansible_distribution_release}} main
+  register: docker_apt
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+  when: docker_apt.changed
+
+- name: pin {{package}} version (apt)
+  template:
+    src: pin.j2
+    dest: /etc/apt/preferences.d/{{package}}.pref
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: install docker package
+  apt:
+    name: docker-engine
+  notify: docker_restart
+...

@@ -1,8 +1,8 @@
 [app]
-beta.geekattitude.org
+staging.geekattitude.org
 
 [app:vars]
-env=beta
+env=staging
 version=latest
 debug_mode=True
 ansible_user=root

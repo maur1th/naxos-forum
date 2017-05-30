@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect, \
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib import messages
-from datetime import datetime
+from django.utils import timezone
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.contrib.sessions.models import Session
@@ -127,6 +127,6 @@ def node_api(request):
         user.is_online = True
     elif status == 'disconnected':
         user.is_online = False
-    user.last_seen = datetime.now()
+    user.last_seen = timezone.now()
     user.save()
     return HttpResponse()  # So we don't log a 500 error

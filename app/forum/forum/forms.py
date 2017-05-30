@@ -1,6 +1,7 @@
 from django import forms
 from django.core.urlresolvers import reverse
 from django.forms.models import BaseInlineFormSet, inlineformset_factory
+from django.utils import timezone
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit, Button
@@ -116,7 +117,7 @@ class PostForm(forms.ModelForm):
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     def clean(self):
-        if ((datetime.datetime.now() - self.user.posts.latest().created) <
+        if ((timezone.now() - self.user.posts.latest().created) <
                 datetime.timedelta(seconds=5)):
             raise forms.ValidationError("Merci d'attendre au moins 5 secondes"
                                         " entre deux messages.")

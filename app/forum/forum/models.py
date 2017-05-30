@@ -3,8 +3,8 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
-from datetime import datetime
 from uuslug import uuslug
 
 from .util import convert_text_to_html, smilify, keygen
@@ -66,7 +66,7 @@ class Thread(CachedAuthorModel):
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
     postCount = models.IntegerField(default=0)
-    modified = models.DateTimeField(default=datetime.now)
+    modified = models.DateTimeField(default=timezone.now)
     personal = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     cessionToken = models.CharField(max_length=50, unique=True)
@@ -129,7 +129,7 @@ class Thread(CachedAuthorModel):
 
 class Post(CachedAuthorModel):
     """A post."""
-    created = models.DateTimeField(default=datetime.now,
+    created = models.DateTimeField(default=timezone.now,
                                    editable=False)
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField(verbose_name='Message',

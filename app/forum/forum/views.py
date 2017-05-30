@@ -10,10 +10,10 @@ from django.core.cache.utils import make_template_fragment_key
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
+from django.utils import timezone
 from django.conf import settings
 
 import re
-from datetime import datetime
 
 from .models import Category, Thread, Post, Preview, PollQuestion
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
@@ -382,7 +382,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
             self.t.title = form.cleaned_data['title']
             self.t.icon = form.cleaned_data['icon']
             self.t.save()
-        form.instance.modified = datetime.now()
+        form.instance.modified = timezone.now()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -403,9 +403,9 @@ class ResetBookmarks(LoginRequiredMixin, View):
         else:
             # update all bookmark timestamps to now
             Bookmark.objects.filter(user=request.user)\
-                .update(timestamp=datetime.now())
+                .update(timestamp=timezone.now())
             # record resetDateTime on user
-            request.user.resetDateTime = datetime.now()
+            request.user.resetDateTime = timezone.now()
             request.user.save()
             # delete cached bookmarks & force re-cache
             cache.delete('bookmark/{}'.format(request.user.pk))

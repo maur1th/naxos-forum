@@ -1,8 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.cache import cache
-
-import datetime
+from django.utils import timezone
 
 from user.models import ForumUser
 from forum.util import convert_text_to_html, smilify
@@ -13,7 +12,7 @@ class Conversation(models.Model):
     """Contains PMs between two participants"""
 
     participants = models.ManyToManyField(ForumUser, blank=False)
-    modified = models.DateTimeField(default=datetime.datetime.now)
+    modified = models.DateTimeField(default=timezone.now)
     isRemoved = models.BooleanField(default=False)
 
     @property
@@ -35,7 +34,7 @@ class Conversation(models.Model):
 class Message(models.Model):
 
     """A message."""
-    created = models.DateTimeField(default=datetime.datetime.now,
+    created = models.DateTimeField(default=timezone.now,
                                    editable=False)
     content_plain = models.TextField(verbose_name='Message')
     markup = models.TextField(default='bbcode')

@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 import os
 from uuslug import uuslug
@@ -13,7 +14,7 @@ from user.models import ForumUser
 
 
 class BlogPost(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     title = models.CharField(max_length=80, verbose_name='Titre')
     author = models.ForeignKey(
         ForumUser,

@@ -4,12 +4,13 @@ from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.utils import timezone
 
 from forum.util import keygen
 
 import datetime
 
-FORUM_INIT = datetime.datetime(2013, 1, 1)
+FORUM_INIT = timezone.make_aware(datetime.datetime(2013, 1, 1))
 
 
 # Model classes
@@ -83,7 +84,11 @@ class Bookmark(models.Model):
         'forum.Thread',
         related_name='bookmarks',
         on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self.timestamp = timezone.now()
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ('user', 'thread')
@@ -101,7 +106,11 @@ class CategoryTimeStamp(models.Model):
         related_name='categoryTimeStamps',
         on_delete=models.CASCADE)
     category = models.ForeignKey('forum.Category', on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self.timestamp = timezone.now()
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ('user', 'category')

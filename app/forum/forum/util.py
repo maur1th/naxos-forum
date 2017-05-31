@@ -3,6 +3,8 @@ from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 from django.conf import settings
 
+from urllib.parse import quote
+
 import importlib
 import re
 import os
@@ -309,7 +311,7 @@ def compileSmileys():
 def _smiley_replacer(text):
     for smiley, name in compileSmileys():
         tag = "<img class=\"smiley\" src=\"{:s}img/smileys/{:s}.gif\">"\
-                    .format(settings.STATIC_URL, name)
+                    .format(settings.STATIC_URL, quote(name))
         text = smiley.sub(tag, text)
     return text
 

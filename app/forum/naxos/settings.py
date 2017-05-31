@@ -138,14 +138,19 @@ CONN_MAX_AGE = None
 
 
 # Cache
-CACHES = {
-    "default": {
-        # Dummy: "django.core.cache.backends.dummy.DummyCache"
-        "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
-        "LOCATION": os.environ.get("CACHE_LOCATION", "memcached"),
+if os.environ.get("LOCAL_ENV"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
-}
-
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
+            "LOCATION": os.environ.get("CACHE_LOCATION", "memcached"),
+        }
+    }
 
 # Logging
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")

@@ -28,6 +28,7 @@
   template:
     src: nginx.conf
     dest: /tmp/nginx.conf
+  notify: new nginx conf
 
 # Nginx
 - name: start nginx container

@@ -14,7 +14,7 @@ RUN set -ex \
 COPY . $HOME
 WORKDIR $HOME
 
-RUN yarn install
+RUN yarn --ignore-optional --pure-lockfile --production=true
 
 EXPOSE $PORT
 CMD node server.js $PORT

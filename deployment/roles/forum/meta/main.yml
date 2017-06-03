@@ -1,6 +1,5 @@
 ---
 dependencies:
-  - nginx
   - db
   - memcached
 ...

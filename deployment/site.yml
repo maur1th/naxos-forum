@@ -6,4 +6,5 @@
     - docker
     - docker_network
     - forum
+    - nginx
 ...

@@ -45,9 +45,10 @@ CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 
 
-# HTTPS
+# Sessions
 SESSION_COOKIE_SECURE = False  # True for full HTTPS
 CSRF_COOKIE_SECURE = False     # True for full HTTPS
+SESSION_COOKIE_AGE = 15552000  # 6 months
 
 
 # App conf

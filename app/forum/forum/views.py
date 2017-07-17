@@ -487,6 +487,7 @@ def NewPoll(request, category_slug):
         'formset_helper': formset_helper,
         'category_slug': category_slug,
         'category': category,
+        'static_url': settings.STATIC_URL,
     })
 
 

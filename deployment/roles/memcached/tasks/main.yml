@@ -1,8 +1,19 @@
 ---
+- name: stop memcached container
+  docker_container:
+    name: memcached
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
 - name: start memcached container
   docker_container:
     name: memcached
     image: memcached:1.4-alpine
+    pull: yes
+    state: started
     networks:
       - name: "{{project_name}}"
         aliases:

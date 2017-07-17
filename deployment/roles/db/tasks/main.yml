@@ -7,10 +7,21 @@
 - name: create volume ({{volume}})
   command: docker volume create {{volume}}
   when: result|failed
-- name: start postgres container
+- name: stop db container
+  docker_container:
+    name: db
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start db container
   docker_container:
     name: db
     image: postgres:9.6-alpine
+    pull: yes
+    state: started
     networks:
       - name: "{{project_name}}"
         aliases:

@@ -31,10 +31,21 @@
   notify: new nginx conf
 
 # Nginx
+- name: stop nginx container
+  docker_container:
+    name: nginx
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
 - name: start nginx container
   docker_container:
     name: nginx
     image: nginx:1.12-alpine
+    pull: yes
+    state: started
     networks:
       - name: "{{project_name}}"
         aliases:

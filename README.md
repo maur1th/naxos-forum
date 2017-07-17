@@ -31,3 +31,10 @@ $ python3 manage.py loaddata fixtures.json  # Load fixtures
 You will be able to log in using those credentials:
 - Username: "User1"
 - Password: "crimson"
+
+Deployment
+---------------
+
+```bash
+$ ansible-playbook -i hosts-prod --vault-password-file=~/.vault_pass site.yml -e "version=<version>"
+```

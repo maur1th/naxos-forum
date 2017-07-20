@@ -16,7 +16,7 @@ RUN if [ $LOCAL_ENV -eq 1 ]; \
         pip3 install -r requirements-prd.txt --target /packages; \
     fi
 
-FROM python:3.6-alpine AS app
+FROM python:3.6-alpine
 MAINTAINER thomas@maurin.io
 ENV HOME=/app \
     PYTHONPATH=/packages \
@@ -26,6 +26,7 @@ RUN apk add --no-cache \
         libmemcached \
         libjpeg-turbo
 COPY --from=builder /packages /packages
+COPY bin/gunicorn /usr/local/bin/gunicorn
 COPY . $HOME
 WORKDIR $HOME
 

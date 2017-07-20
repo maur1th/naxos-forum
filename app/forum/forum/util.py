@@ -301,8 +301,8 @@ def compileSmileys():
     smileys = get_smileys(settings.STATICFILES_DIRS[0])
     double_colon = filter(lambda s: not s.startswith("special-"), smileys)
     all_smileys = (
-        [(":" + re.escape(s) + ":", s) for s in double_colon] +
-        specialSmileys
+        specialSmileys +
+        [(":" + re.escape(s) + ":", s) for s in double_colon]
     )
 
     return [(re.compile(smiley), name) for smiley, name in all_smileys]

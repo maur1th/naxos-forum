@@ -1,4 +1,3 @@
 -r requirements.txt  # includes the base requirements file
 
-django-debug-toolbar
-# hacking
+boto3<1.5

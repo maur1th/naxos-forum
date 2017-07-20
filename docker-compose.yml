@@ -2,7 +2,10 @@
 version: "3"
 services:
   forum:
-    build: app/forum
+    build:
+      context: app/forum
+      args:
+        LOCAL_ENV: 1
     entrypoint: python3 manage.py runserver 0.0.0.0:5000
     volumes:
       - ./app/forum:/app
@@ -10,9 +13,6 @@ services:
     environment:
       DEBUG: "True"
       LOCAL_ENV: "True"
-      # AWS_STORAGE_BUCKET_NAME: geekattitude
-      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - db
       - memcached

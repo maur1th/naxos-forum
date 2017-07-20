@@ -1,29 +1,31 @@
-FROM python:3.6-alpine
+FROM python:3.6-alpine AS builder
+COPY requirements* /
+RUN apk add --no-cache \
+        build-base \
+        postgresql-dev \
+        libmemcached-dev \
+        libjpeg-turbo-dev \
+        libwebp-dev \
+        zlib-dev \
+        cyrus-sasl-dev
+ARG LOCAL_ENV=0
+RUN if [ $LOCAL_ENV -eq 1 ]; \
+    then \
+        pip3 install -r requirements-dev.txt --target /packages; \
+    else \
+        pip3 install -r requirements-prd.txt --target /packages; \
+    fi
 
+FROM python:3.6-alpine AS app
 MAINTAINER thomas@maurin.io
 ENV HOME=/app \
+    PYTHONPATH=/packages \
     WORKERS=2
-
-RUN set -ex \
-        && apk add --no-cache \
-                libpq \
-                libmemcached \
-                libjpeg-turbo \
-        && pip3 install --upgrade --no-cache-dir pip
-
-COPY requirements.txt /
-RUN set -ex \
-        && apk add --no-cache --virtual .build-deps \
-                build-base \
-                postgresql-dev \
-                libmemcached-dev \
-                libjpeg-turbo-dev \
-                libwebp-dev \
-                zlib-dev \
-                cyrus-sasl-dev \
-        && pip3 install --no-cache-dir -r requirements.txt \
-        && apk del .build-deps
-
+RUN apk add --no-cache \
+        libpq \
+        libmemcached \
+        libjpeg-turbo
+COPY --from=builder /packages /packages
 COPY . $HOME
 WORKDIR $HOME
 

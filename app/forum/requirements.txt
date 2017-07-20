@@ -1,6 +1,5 @@
 Django<1.12
 Pillow<5.0
-boto3<1.5
 colorlog
 django-crispy-forms<1.7
 django-storages<2.0

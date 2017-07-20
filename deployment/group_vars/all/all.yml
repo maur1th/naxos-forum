@@ -2,7 +2,7 @@
 project_name: naxos
 
 # versions
-docker_version: 17.03.*
+docker_version: 17.06.*
 node_version: 6.x
 
 # db parameters

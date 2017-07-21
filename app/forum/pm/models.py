@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.utils import timezone
 
 from user.models import ForumUser
-from forum.renderer import render
+from utils.renderer import render
 
 
 # PM models

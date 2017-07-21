@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from uuslug import uuslug
 
-from .renderer import render
+from utils.renderer import render
 from .util import keygen
 from user.models import ForumUser, Bookmark
 

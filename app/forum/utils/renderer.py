@@ -86,7 +86,6 @@ class ExcludeTagsHTMLFilter(HTMLFilter):
 def compileSmileys():
 
     specialSmileys = [
-        (r":-?\/", "bof"),
         (r":-?\)", "special-smile"),
         (r";-?\)", "special-wink"),
         (r":-?\(", "special-sad"),
@@ -108,8 +107,9 @@ def compileSmileys():
     smileys = get_smileys(settings.STATICFILES_DIRS[0])
     double_colon = filter(lambda s: not s.startswith("special-"), smileys)
     all_smileys = (
-        specialSmileys +
-        [(":" + re.escape(s) + ":", s) for s in double_colon]
+        [(r":-?\/", "bof")] +  # 1st to avoid replacing other simleys' http://
+        [(":" + re.escape(s) + ":", s) for s in double_colon] +
+        specialSmileys
     )
 
     return [(re.compile(smiley), name) for smiley, name in all_smileys]

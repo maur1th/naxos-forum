@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.utils import timezone
 
 from user.models import ForumUser
-from forum.renderer import convert_text_to_html, smilify
+from forum.renderer import render
 
 
 # PM models
@@ -58,9 +58,7 @@ class Message(models.Model):
     def html(self):
         html = cache.get('message/{}/html'.format(self.pk))
         if not html:
-            html = convert_text_to_html(self.content_plain, self.markup)
-            if self.markup == 'bbcode':
-                html = smilify(html)
+            html = render(self.content_plain, self.markup)
             cache.set('message/{}/html'.format(self.pk), html, None)
         return html
 

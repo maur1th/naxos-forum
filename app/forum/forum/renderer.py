@@ -1,5 +1,4 @@
 from django.utils.six.moves.html_parser import HTMLParser
-from django.template.defaultfilters import urlize as django_urlize
 from django.conf import settings
 
 from urllib.parse import quote
@@ -79,23 +78,6 @@ class ExcludeTagsHTMLFilter(HTMLFilter):
     def handle_endtag(self, tag):
         self.is_ignored = False
         super(ExcludeTagsHTMLFilter, self).handle_endtag(tag)
-
-
-def urlize(html):
-    """
-    Urlize plain text links in the HTML contents.
-    Do not urlize content of A and CODE tags.
-    """
-    try:
-        parser = ExcludeTagsHTMLFilter(django_urlize)
-        parser.feed(html)
-        urlized_html = parser.html
-        parser.close()
-    except:
-        if settings.DEBUG:
-            raise
-        return html
-    return urlized_html
 
 
 def rm_legacy_tags(text):
@@ -221,21 +203,6 @@ class VideoTag(postmarkup.TagBase):
             return ""
 
 
-render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False)
-render_bbcode.add_tag(SpoilerTag, 'spoiler')
-render_bbcode.add_tag(VideoTag, 'video')
-
-
-def convert_text_to_html(text, markup='bbcode'):
-    if markup == 'bbcode':
-        text = rm_legacy_tags(text)
-        text = render_bbcode(text, cosmetic_replace=False)
-    elif markup == 'markdown':
-        text = markdown.markdown(text, safe_mode='escape')
-    text = urlize(text)
-    return text
-
-
 # Smiley stuff
 def compileSmileys():
 
@@ -291,3 +258,17 @@ def smilify(html):
             raise
         return html
     return smiled_html
+
+
+# Rendering
+render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False)
+render_bbcode.add_tag(SpoilerTag, 'spoiler')
+render_bbcode.add_tag(VideoTag, 'video')
+
+
+def render(text, markup='bbcode'):
+    if markup == 'bbcode':
+        text = rm_legacy_tags(text)  # TODO: make db migration instead
+        return smilify(render_bbcode(text, cosmetic_replace=False))
+    elif markup == 'markdown':
+        return markdown.markdown(text, safe_mode='escape')

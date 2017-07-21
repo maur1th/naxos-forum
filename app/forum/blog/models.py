@@ -8,7 +8,7 @@ import os
 from uuslug import uuslug
 from socket import gethostname
 
-from forum.renderer import convert_text_to_html
+from forum.renderer import render
 from forum.models import Category, Thread, Post, SLUG_LENGTH
 from user.models import ForumUser
 
@@ -52,7 +52,7 @@ class BlogPost(models.Model):
 
     @property
     def html(self):
-        return convert_text_to_html(self.content, 'markdown')
+        return render(self.content, 'markdown')
 
     def __str__(self):
         return self.title

@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from uuslug import uuslug
 
-from .renderer import convert_text_to_html, smilify
+from .renderer import render
 from .util import keygen
 from user.models import ForumUser, Bookmark
 
@@ -158,9 +158,7 @@ class Post(CachedAuthorModel):
     def html(self):
         html = cache.get('post/{}/html'.format(self.pk))
         if not html:
-            html = convert_text_to_html(self.content_plain, self.markup)
-            if self.markup == 'bbcode':
-                html = smilify(html)
+            html = render(self.content_plain, self.markup)
             cache.set('post/{}/html'.format(self.pk), html, None)
         return html
 
@@ -180,8 +178,7 @@ class Preview(models.Model):
 
     @property
     def html(self):
-        html = convert_text_to_html(self.content_plain, self.markup)
-        html = smilify(html)
+        html = render(self.content_plain, self.markup)
         return html
 
     def __str__(self):
@@ -219,8 +216,7 @@ class PollChoice(models.Model):
 # Model signal handlers
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):
-    html = convert_text_to_html(instance.content_plain, instance.markup)
-    html = smilify(html)
+    html = render(instance.content_plain, instance.markup)
     cache.set("post/{}/html".format(instance.pk), html, None)
     if created:
         cache.set("thread/{}/contributors".format(instance.thread.pk),

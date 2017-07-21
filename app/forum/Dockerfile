@@ -1,5 +1,5 @@
 FROM python:3.6-alpine AS builder
-COPY requirements* /
+ARG LOCAL_ENV
 RUN apk add --no-cache \
         build-base \
         postgresql-dev \
@@ -8,7 +8,7 @@ RUN apk add --no-cache \
         libwebp-dev \
         zlib-dev \
         cyrus-sasl-dev
-ARG LOCAL_ENV=0
+COPY requirements* /
 RUN if [ $LOCAL_ENV -eq 1 ]; \
     then \
         pip3 install -r requirements-dev.txt --target /packages; \
@@ -18,6 +18,8 @@ RUN if [ $LOCAL_ENV -eq 1 ]; \
 
 FROM python:3.6-alpine
 MAINTAINER thomas@maurin.io
+ARG LOCAL_ENV
+ENV LOCAL_ENV ${LOCAL_ENV:-0}
 ENV HOME=/app \
     PYTHONPATH=/packages \
     WORKERS=2

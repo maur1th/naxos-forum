@@ -19,7 +19,7 @@ DEBUG = eval(os.environ.get("DEBUG_MODE", "False"))
 STATICFILES_DIRS = (root("static"),)
 MEDIA_ROOT = root("media")
 
-if os.environ.get("LOCAL_ENV"):
+if os.environ["LOCAL_ENV"] == "1":
     STATIC_URL = "/static/"
     MEDIA_URL = "/media/"
 else:

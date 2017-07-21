@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.utils import timezone
 
 from user.models import ForumUser
-from forum.util import convert_text_to_html, smilify
+from forum.renderer import convert_text_to_html, smilify
 
 
 # PM models

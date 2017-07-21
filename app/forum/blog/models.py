@@ -8,7 +8,7 @@ import os
 from uuslug import uuslug
 from socket import gethostname
 
-from forum.util import convert_text_to_html
+from forum.renderer import convert_text_to_html
 from forum.models import Category, Thread, Post, SLUG_LENGTH
 from user.models import ForumUser
 

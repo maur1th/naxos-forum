@@ -7,7 +7,8 @@ from django.utils import timezone
 
 from uuslug import uuslug
 
-from .util import convert_text_to_html, smilify, keygen
+from .renderer import convert_text_to_html, smilify
+from .util import keygen
 from user.models import ForumUser, Bookmark
 
 SLUG_LENGTH = 50

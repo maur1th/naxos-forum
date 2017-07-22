@@ -1,5 +1,5 @@
 import re
-from postmarkup import TagBase
+from postmarkup import PostMarkup, TagBase
 
 
 class SpoilerTag(TagBase):
@@ -56,7 +56,7 @@ class VideoTag(TagBase):
             url = self.params.strip()
         else:
             url = self.get_contents_text(parser).strip()
-            url = postmarkup.PostMarkup.standard_unreplace(url)
+            url = PostMarkup.standard_unreplace(url)
 
         self.domain = u""
 
@@ -101,10 +101,10 @@ class VideoTag(TagBase):
                 '<div class="embed-responsive embed-responsive-16by9">'
                 '<iframe class="embed-responsive-item" src="{}" '
                 'frameborder="0" allowfullscreen="true"></iframe></div>'
-            ).format(postmarkup.PostMarkup.standard_replace_no_break(self.url))
+            ).format(PostMarkup.standard_replace_no_break(self.url))
         elif self.domain:
             return (
                 '<video loop="true" controls="true" src="{}"></video>'
-            ).format(postmarkup.PostMarkup.standard_replace_no_break(self.url))
+            ).format(PostMarkup.standard_replace_no_break(self.url))
         else:
             return ""

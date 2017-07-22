@@ -46,6 +46,7 @@ SECURE_BROWSER_XSS_FILTER = True
 
 
 # Sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_COOKIE_SECURE = False  # True for full HTTPS
 CSRF_COOKIE_SECURE = False     # True for full HTTPS
 SESSION_COOKIE_AGE = 15552000  # 6 months

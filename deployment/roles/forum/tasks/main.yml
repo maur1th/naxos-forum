@@ -78,6 +78,11 @@
         aliases:
           - websocket
 
+- name: install aws credentials
+  template:
+    src: aws_credentials
+    dest: /root/aws/credentials
+
 # Crons
 - name: add clearsession cron
   cron:

@@ -2,6 +2,14 @@
 - name: load vaulted variables
   include_vars: vars/vault.yml
 
+- name: create host folders
+  file:
+    state: directory
+    path: /tmp/{{item}}
+  with_items:
+    - ads
+    - secrets
+
 - name: copy ad html snippets
   copy:
     src: "{{item}}"
@@ -46,6 +54,7 @@
       ADMIN_NAME: "{{admin_name}}"
       ADMIN_EMAIL: "{{admin_email}}"
     volumes:
+      - /tmp/secrets:/app/secrets/
       - /tmp/ads:/app/templates/ads/:ro
 
 # Websocket server

@@ -69,11 +69,11 @@ INSTALLED_APPS = (
     "crispy_forms",
 
     # Project Apps
-    "forum",
-    "user",
-    "pm",
-    "blog",
-    "utils",
+    "forum.apps.ForumConfig",
+    "user.apps.UserConfig",
+    "pm.apps.PMConfig",
+    "blog.apps.BlogConfig",
+    "utils.apps.UtilsConfig",
 )
 
 MIDDLEWARE_CLASSES = (

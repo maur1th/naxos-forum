@@ -68,4 +68,12 @@
       - name: "{{project_name}}"
         aliases:
           - websocket
+
+# Crons
+- name: add clearsession cron
+  cron:
+    name: django clearsessions
+    job: docker exec forum python3 manage.py clearsessions
+    hour: 4
+    minute: 0
 ...

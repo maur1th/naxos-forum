@@ -3,7 +3,9 @@ project_name: naxos
 
 # versions
 docker_version: 17.03.*
-node_version: 6.x
+nginx_version: 1.12-alpine
+postgres_version: 9.6-alpine
+memcached_version: 1.5-alpine
 
 # db parameters
 db_name: "{{project_name}}"

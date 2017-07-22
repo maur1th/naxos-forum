@@ -11,7 +11,7 @@
 - name: start memcached container
   docker_container:
     name: memcached
-    image: memcached:1.4-alpine
+    image: memcached:{{memcached_version}}
     pull: yes
     state: started
     networks:

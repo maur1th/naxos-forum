@@ -19,7 +19,7 @@
 - name: start db container
   docker_container:
     name: db
-    image: postgres:9.6-alpine
+    image: postgres:{{postgres_version}}
     pull: yes
     state: started
     networks:

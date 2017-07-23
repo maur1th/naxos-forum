@@ -1,4 +1,5 @@
 ---
+# Docker volume setup
 - name: check if volume ({{volume}}) exists
   command: docker volume inspect {{volume}}
   register: result
@@ -7,6 +8,8 @@
 - name: create volume ({{volume}})
   command: docker volume create {{volume}}
   when: result|failed
+
+# Deployment
 - name: stop db container
   docker_container:
     name: db
@@ -28,4 +31,26 @@
           - db
     volumes:
       - "{{volume}}:/var/lib/postgresql/data"
+
+# Backup
+- name: create host db_scripts folder
+  file:
+    state: directory
+    path: "{{db_scripts}}"
+- name: install backup entrypoint script
+  template:
+    src: entrypoint.sh
+    dest: "{{db_scripts}}/"
+    mode: 0755
+- name: add db backup cron
+  cron:
+    name: db backup
+    job: >
+      docker container run --rm
+      --network=naxos
+      --volume {{db_scripts}}/entrypoint.sh:/entrypoint.sh:ro
+      --entrypoint /entrypoint.sh
+      postgres:{{postgres_version}}
+    hour: 4
+    minute: 10
 ...

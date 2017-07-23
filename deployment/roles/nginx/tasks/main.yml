@@ -10,29 +10,35 @@
 #     path: /usr/share/nginx/html/certbot
 #     state: directory
 #     mode: 0755
+
+# Nginx config and certificates
+- name: create host nginx folder
+  file:
+    state: directory
+    path: "{{nginx_folder}}"
 - name: copy certbot configuration & certificates
   copy:
     src: letsencrypt.tgz
-    dest: /tmp
+    dest: "{{nginx_folder}}"
 - name: unarchive certbot configuration & certificates
   unarchive:
     remote_src: yes
-    src: /tmp/letsencrypt.tgz
+    src: "{{nginx_folder}}/letsencrypt.tgz"
     dest: /
     creates: /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem
   register: installed_certicates
-- name: renew certificate
-  command: certbot renew
-  when: installed_certicates.changed
 - name: copy dhparam
   copy:
-    src:  dhparam.pem
-    dest: /tmp/
+    src: dhparam.pem
+    dest: "{{nginx_folder}}/"
 - name: install nginx conf
   template:
     src: nginx.conf
-    dest: /tmp/nginx.conf
+    dest: "{{nginx_folder}}/"
   notify: new nginx conf
+- name: renew certificate
+  command: certbot renew
+  when: installed_certicates.changed
 
 # Nginx
 - name: stop nginx container
@@ -58,6 +64,6 @@
       - "80:80"
       - "443:443"
     volumes:
-      - /tmp/nginx.conf:/etc/nginx/nginx.conf:ro
-      - /tmp/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - "{{nginx_folder}}/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{nginx_folder}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"

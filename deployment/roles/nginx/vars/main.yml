@@ -1,0 +1,3 @@
+---
+nginx_folder: "{{ansible_env.HOME}}/nginx"
+...

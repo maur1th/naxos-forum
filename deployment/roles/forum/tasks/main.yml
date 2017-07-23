@@ -2,18 +2,18 @@
 - name: load vaulted variables
   include_vars: vars/vault.yml
 
-- name: create host folders
+- name: create host app folders
   file:
     state: directory
-    path: /tmp/{{item}}
+    path: "{{ansible_env.HOME}}/{{item}}"
   with_items:
-    - ads
+    - html
     - secrets
 
 - name: copy ad html snippets
   copy:
     src: "{{item}}"
-    dest: "/tmp/ads/"
+    dest: "{{ansible_env.HOME}}/html/"
   with_items:
     - amazon.html
     - paypal_gift.html
@@ -54,8 +54,8 @@
       ADMIN_NAME: "{{admin_name}}"
       ADMIN_EMAIL: "{{admin_email}}"
     volumes:
-      - /tmp/secrets:/app/secrets/
-      - /tmp/ads:/app/templates/ads/:ro
+      - "{{ansible_env.HOME}}/secrets:/app/secrets/"
+      - "{{ansible_env.HOME}}/html:/app/templates/ads/:ro"
 
 # Websocket server
 - name: stop websocket container

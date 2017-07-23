@@ -8,13 +8,6 @@
     - forum
     - nginx
   tasks:
-    # Monitor and update outdated containers
-    - name: launch watchtower container
-      docker_container:
-        name: watchtower
-        image: v2tec/watchtower
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
     # Reclaim hard drive space
     - name: clean outdated docker images & stopped containers
       shell: >

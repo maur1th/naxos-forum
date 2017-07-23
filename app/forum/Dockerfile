@@ -9,8 +9,7 @@ RUN apk add --no-cache \
         zlib-dev \
         cyrus-sasl-dev
 COPY requirements* /
-RUN if [ $LOCAL_ENV -eq 1 ]; \
-    then \
+RUN if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements-dev.txt --target /packages; \
     else \
         pip3 install -r requirements-prd.txt --target /packages; \

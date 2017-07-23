@@ -14,27 +14,25 @@ Install [Docker](https://www.docker.com/community-edition)
 ### Starting a development environment
 The development environment uses `docker-compose`, more information on the CLI usage [here](https://docs.docker.com/compose/reference/).
 ```bash
-$ docker-compose up -d    # Start environment
-$ docker-compose logs -f  # Read component logs
-$ docker-compose stop     # Stop environment
+$ docker-compose up -d          # Start environment
+$ docker-compose logs -f        # Read component logs
+$ docker-compose exec forum sh  # Execute an interactive shell on the container
+$ docker-compose stop           # Stop environment
 ```
-The development server is accessible at: `http://localhost:8080`.
+The development server is accessible at: http://localhost:8080.
+
+#### Note
+First startup will likely fail because of the db init time. If http://localhost:8080 is unreachable, restart the `forum` component: `$ docker-compose restart forum`.
 
 ### Fixtures
-Initial data (fixtures) is provided and must be installed manually:
-```bash
-$ docker-compose exec forum sh              # Start sh on forum container
-$ python3 manage.py migrate                 # Apply db migrations
-$ python3 manage.py loaddata fixtures.json  # Load fixtures
-```
+Initial data (fixtures) is provided and installed automatically by `docker-entrypoint.sh`.
 
-You will be able to log in using those credentials:
+Out of the box, you will be able to log in using those credentials:
 - Username: "User1"
 - Password: "crimson"
 
 Deployment
 ---------------
-
 ```bash
 $ ansible-playbook -i hosts-prod --vault-password-file=~/.vault_pass site.yml -e "version=<version>"
 ```

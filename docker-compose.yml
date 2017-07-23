@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: "3.1"
 services:
   forum:
     build:
@@ -8,7 +8,6 @@ services:
         LOCAL_ENV: 1
     environment:
       DEBUG: "True"
-    entrypoint: python3 manage.py runserver 0.0.0.0:5000
     volumes:
       - ./app/forum:/app
       - forum-media:/app/media

@@ -78,8 +78,8 @@
         aliases:
           - websocket
 
-# Crons
-- name: add clearsession cron
+# Purge expired sessions from db
+- name: add clearsessions cron
   cron:
     name: django clearsessions
     job: docker exec forum python3 manage.py clearsessions

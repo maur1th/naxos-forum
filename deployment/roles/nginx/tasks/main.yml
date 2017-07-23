@@ -20,6 +20,10 @@
     src: /tmp/letsencrypt.tgz
     dest: /
     creates: /etc/letsencrypt/live/{{inventory_hostname}}/fullchain.pem
+  register: installed_certicates
+- name: renew certificate
+  command: certbot renew
+  when: installed_certicates.changed
 - name: copy dhparam
   copy:
     src:  dhparam.pem

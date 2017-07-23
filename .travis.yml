@@ -32,23 +32,23 @@ after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push $REPO
 
-jobs:
-  include:
-    - stage: deploy
-      deploy:
-        on:
-          branch: master
-        provider: script
-        script:
-          - pip3 install $ANSIBLE
-          - echo $PRIVATE_KEY > /private_key
-          - echo $VAULT_PASS > /vault_pass
-          - ansible-playbook site.yml \
-              --inventory-file=hosts-prod \
-              --vault-password-file=/vault_pass \
-              --private-key=/private_key \
-              --extra-vars="version=latest"
-      env: ANSIBLE="ansible<2.4"
+# jobs:
+#   include:
+#     - stage: deploy
+#       deploy:
+#         on:
+#           branch: master
+#         provider: script
+#         script:
+#           - pip3 install $ANSIBLE
+#           - echo $PRIVATE_KEY > /private_key
+#           - echo $VAULT_PASS > /vault_pass
+#           - ansible-playbook site.yml \
+#               --inventory-file=hosts-prod \
+#               --vault-password-file=/vault_pass \
+#               --private-key=/private_key \
+#               --extra-vars="version=latest"
+#       env: ANSIBLE="ansible<2.4"
 
 notifications:
   email: false

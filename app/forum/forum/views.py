@@ -97,10 +97,8 @@ class ThreadStatusMixin(object):
             )
             cached = cache.get('read_status/{}/{}'.format(user_id, t.id))
             # check whether additional calculation is needed
-            tmp = key in cache
-            if key in cache and cached == 'unread' and unread_items:
-                continue
-            elif key in cache and cached == 'read' and not unread_items:
+            if (key in cache and cached == 'unread' and unread_items) or \
+               (key in cache and cached == 'read' and not unread_items):
                 continue
             else:
                 cache.delete(key)
@@ -465,7 +463,7 @@ def NewPoll(request, category_slug):
                 # Complete the post and save it
                 thread_form.instance.thread = thread
                 thread_form.instance.author = request.user
-                p = thread_form.save()
+                thread_form.save()
                 # Complete the poll and save it
                 question_form.instance.thread = thread
                 question = question_form.save()

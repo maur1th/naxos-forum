@@ -83,9 +83,9 @@ class ExcludeTagsHTMLFilter(HTMLFilter):
 
 
 # Smiley stuff
-def compileSmileys():
+def compile_smileys():
 
-    specialSmileys = [
+    special_smileys = [
         (r":-?\)", "special-smile"),
         (r";-?\)", "special-wink"),
         (r":-?\(", "special-sad"),
@@ -109,14 +109,14 @@ def compileSmileys():
     all_smileys = (
         [(r":-?\/", "bof")] +  # 1st to avoid replacing other simleys' http://
         [(":" + re.escape(s) + ":", s) for s in double_colon] +
-        specialSmileys
+        special_smileys
     )
 
     return [(re.compile(smiley), name) for smiley, name in all_smileys]
 
 
 def _smiley_replacer(text):
-    for smiley, name in compileSmileys():
+    for smiley, name in compile_smileys():
         tag = "<img class=\"smiley\" src=\"{:s}img/smileys/{:s}.gif\">"\
                     .format(settings.STATIC_URL, quote(name))
         text = smiley.sub(tag, text)
@@ -146,11 +146,11 @@ def rm_legacy_tags(text):
     base_tags = [(r'ita', 'i'),
                  (r'bold', 'b'),
                  (r'under', 'u')]
-    allTags = ([(re.escape('[' + old + ']'), '[' + new + ']')
+    all_tags = ([(re.escape('[' + old + ']'), '[' + new + ']')
                 for old, new in base_tags] +
                [(re.escape('[/' + old + ']'), '[/' + new + ']')
                 for old, new in base_tags])
-    query = [(re.compile(old), new) for old, new in allTags]
+    query = [(re.compile(old), new) for old, new in all_tags]
     for old_match, new in query:
         text = old_match.sub(new, text)
     return text

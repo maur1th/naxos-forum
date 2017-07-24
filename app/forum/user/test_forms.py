@@ -6,7 +6,7 @@ from .forms import RegisterForm
 
 class RegistrationTest(TestCase):
 
-    def setUp(self):
+    def setup(self):
         self.user = ForumUser.objects.create_user(username='jacob',
             email='jacob@test.com', password='top_secret')
         self.valid_form_data = {

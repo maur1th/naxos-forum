@@ -78,10 +78,10 @@ $(document).ready(function (){
   });
   // Set the progress bar data
   $chart.find($bar).each(function () {
-      num = $(this).text();
+      let num = $(this).text();
       // Convert to percentage and round
-      dispPerc = Math.round((num / highestNumber) * 100);
-      realPerc = Math.round((num / sum) * 100);
+      let dispPerc = Math.round((num / highestNumber) * 100);
+      let realPerc = Math.round((num / sum) * 100);
       if(!isNaN(realPerc) && realPerc !== 0) {
           $(this).animate({width: dispPerc + '%'}, {duration:'fast'});
           $(this).text(Math.round(realPerc) + '%');
@@ -115,9 +115,9 @@ $(document).ready(function (){
     return '#spoiler-panel-' + (index+1);
   });
   $('a[href^=\'#spoiler-panel-\']').click(function () {
-    $spoiler = $(this);
+    let $spoiler = $(this);
     var spoiler_anim = setInterval(function () {
-      $container = $spoiler.parents('.spoiler-container');
+      let $container = $spoiler.parents('.spoiler-container');
       $container.children('div[id^=\'spoiler-panel-\']')
         .on('shown.bs.collapse', function () {
           clearInterval(spoiler_anim);
@@ -126,7 +126,7 @@ $(document).ready(function (){
         .on('hidden.bs.collapse', function () {
           clearInterval(spoiler_anim);
       });
-      $row = $spoiler.parents('.row');
+      let $row = $spoiler.parents('.row');
       $row.children('.equal-divs').responsiveEqualHeightGrid();
     }, 20);
   });

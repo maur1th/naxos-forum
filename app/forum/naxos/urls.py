@@ -1,7 +1,8 @@
 from django.conf.urls import include, url
 from django.views.generic import RedirectView
-import django.views.static
 from django.core.urlresolvers import reverse_lazy
+from django.contrib import admin
+import django.views.static
 
 from django.conf import settings
 
@@ -15,4 +16,5 @@ urlpatterns = [
     url(r'^blog/', include('blog.urls')),
     url(r'^media/(?P<path>.*)$', django.views.static.serve,
         {'document_root': settings.MEDIA_ROOT}),
+    url(r'^admin/', admin.site.urls),
 ]

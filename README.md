@@ -24,6 +24,9 @@ The development server is accessible at: http://localhost:8080.
 #### Note
 First startup will likely fail because of the db init time. If http://localhost:8080 is unreachable, restart the `forum` component: `$ docker-compose restart forum`.
 
+### Admin website
+Admin website is accessible from http://localhost:8080, credentials are: "admin" / "crimson".
+
 ### Fixtures
 Initial data (fixtures) is provided and installed automatically by `docker-entrypoint.sh`.
 

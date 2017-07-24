@@ -20,6 +20,7 @@ STATICFILES_DIRS = (root("static"),)
 MEDIA_ROOT = root("media")
 
 if os.environ["LOCAL_ENV"] == "1":
+    STATIC_ROOT = root("static_root")
     STATIC_URL = "/static/"
     MEDIA_URL = "/media/"
 else:

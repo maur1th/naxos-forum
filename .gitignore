@@ -11,15 +11,14 @@
 ## Alpine Linux
 .ash_history
 
-## project specific
-/naxos/naxos/settings.py
+## Project specific
+/app/forum/static_root
 secret.txt
-naxos/templates/ads/
 
-# ansible
+# Ansible
 *.retry
 
-## nodejs
+## NodeJS
 **node_modules/
 
 ## GitHub .gitignore for Python

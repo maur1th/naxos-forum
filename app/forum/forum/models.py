@@ -40,6 +40,7 @@ class Category(models.Model):
 
     class Meta:
         ordering = ["pk"]
+        verbose_name_plural = "categories"
 
     def __str__(self):
         return self.slug

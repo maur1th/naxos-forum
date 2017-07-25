@@ -30,7 +30,7 @@
         {% endif %}
         <p>{{ p.html|safe }}</p>
         {% if p.forum_thread %}
-        <a href="{% url 'forum:thread' p.forum_thread.category.slug p.forum_thread.slug %}">{{ p.forum_thread.post_count|add:"-1" }} commentaire(s)</a>
+        <a href="{% url 'forum:thread' p.forum_thread.category.slug p.forum_thread.slug %}">{{ p.forum_thread.post_count }} commentaire(s)</a>
         {% endif %}
       </div>
     </div>

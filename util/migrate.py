@@ -72,8 +72,7 @@ def import_categories(f):
             pk=c['pk'],
             title=fields['title'],
             subtitle=fields['subtitle'],
-            slug=fields['slug'],
-            postCount=0)
+            slug=fields['slug'])
 
 
 def import_users(f):
@@ -214,11 +213,6 @@ def import_posts(f):
         if not t.slug:  # Prevent slugs to be empty
             t.slug = make_slug(t, 'sans titre')
         t.save()
-    for key, value in post_counter.items():
-        print('Updating post counter...')
-        c = Category.objects.get(pk=key)
-        c.postCount = value
-        c.save()
 
 
 def import_pm(f):

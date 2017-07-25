@@ -13,6 +13,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
 from .models import ForumUser
@@ -100,8 +101,9 @@ class Top10(LoginRequiredMixin, TemplateView):
     template_name = "user/top10.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.top_views = Thread.objects.order_by("-viewCount")[:10]
-        self.top_posts = Thread.objects.order_by("-postCount")[:10]
+        threads = Thread.objects.annotate(p_count=Count("posts"))
+        self.top_views = threads.order_by("-viewCount")[:10]
+        self.top_posts = threads.order_by("-p_count")[:10]
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

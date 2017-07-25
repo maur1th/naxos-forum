@@ -36,7 +36,15 @@ class Category(models.Model):
     slug = models.SlugField(blank=False, unique=True, db_index=True)
     title = models.CharField(max_length=50, blank=False)
     subtitle = models.CharField(max_length=200)
-    postCount = models.IntegerField(default=0)
+
+    @property
+    def post_count(self):
+        key = f"category/{self.pk}/post_count"
+        count = cache.get(key)
+        if not count:
+            count = Post.objects.filter(thread__category__pk=self.pk).count()
+            cache.set(key, count, None)
+        return count
 
     class Meta:
         ordering = ["pk"]
@@ -67,11 +75,19 @@ class Thread(CachedAuthorModel):
     isLocked = models.BooleanField(default=False)
     isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
-    postCount = models.IntegerField(default=0)
     modified = models.DateTimeField(default=timezone.now)
     personal = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     cessionToken = models.CharField(max_length=50, unique=True)
+
+    @property
+    def post_count(self):
+        key = f"thread/{self.pk}/post_count"
+        count = cache.get(key)
+        if not count:
+            count = self.posts.count() - 1
+            cache.set(key, count, None)
+        return count
 
     def save(self, *args, **kwargs):
 
@@ -149,8 +165,6 @@ class Post(CachedAuthorModel):
     def save(self, *args, **kwargs):
         self.thread.contributors.add(self.author)
         if self.pk is None:  # Which means this is a new post, not an edit
-            self.thread.category.postCount += 1
-            self.thread.category.save()
             self.thread.modified = self.created
             self.thread.save()
         super().save(*args, **kwargs)
@@ -237,10 +251,16 @@ def update_thread_cache(created, instance, **kwargs):
 
 
 @receiver(post_save, sender=Post)
-def increment_thread_postCount(created, instance, **kwargs):
-    thread = instance.thread
-    thread.postCount = thread.posts.count()
-    thread.save()
+def update_post_count(created, instance, **kwargs):
+    if created:
+        category = instance.thread.category.pk
+        thread = instance.thread.pk
+        cache.set(f"category/{category}/post_count",
+                  Post.objects.filter(thread__category__pk=category).count(),
+                  None)
+        cache.set(f"thread/{thread}/post_count",
+                  instance.thread.posts.count() - 1,
+                  None)
 
 
 @receiver(post_save, sender=Thread)

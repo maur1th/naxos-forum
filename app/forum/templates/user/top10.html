@@ -42,7 +42,7 @@
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
           {% if thread.isSticky and thread.question %}
-            Annonce/Sondage : 
+            Annonce/Sondage :
           {% elif thread.isSticky %}
             Annonce :
           {% elif thread.question %}
@@ -57,7 +57,7 @@
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.postCount|add:"-1" }}</small></td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count }}</small></td>
         {# View count #}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         {# Latest post #}
@@ -101,7 +101,7 @@
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
           {% if thread.isSticky and thread.question %}
-            Annonce/Sondage : 
+            Annonce/Sondage :
           {% elif thread.isSticky %}
             Annonce :
           {% elif thread.question %}
@@ -116,7 +116,7 @@
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.postCount|add:"-1" }}</small></td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count }}</small></td>
         {# View count #}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         {# Latest post #}

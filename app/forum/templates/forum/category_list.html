@@ -29,7 +29,7 @@
                     <small class="hidden-xs">{{ category.subtitle }}</small>
                 </td>
                 <td class="text-center vert-align hidden-xs"><small>{{ category.threads.count }}</small></td>
-                <td class="text-center vert-align hidden-xs"><small>{{ category.postCount }}</small></td>
+                <td class="text-center vert-align hidden-xs"><small>{{ category.post_count }}</small></td>
                 <td class="text-center vert-align">
                     {% if category.threads.latest %}
                     {% with category.threads.latest as latest_thread %}

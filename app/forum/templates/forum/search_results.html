@@ -44,7 +44,7 @@
             <img src="{% static icon %}" style="vertical-align:bottom;padding-bottom:3px;margin-right:2px">
           {% endwith %}
           {% if thread.isSticky and thread.question %}
-            Annonce/Sondage : 
+            Annonce/Sondage :
           {% elif thread.isSticky %}
             Annonce :
           {% elif thread.question %}
@@ -60,7 +60,7 @@
           <small><strong>{{ thread.cached_author }}</strong></small>
         </td>
         {# Post count #}
-        <td class="text-center vert-align hidden-xs"><small>{{ thread.postCount|add:"-1" }}</small></td>
+        <td class="text-center vert-align hidden-xs"><small>{{ thread.post_count }}</small></td>
         {# View count #}
         <td class="text-center vert-align hidden-xs"><small>{{ thread.viewCount }}</small></td>
         {# Latest post #}
@@ -110,11 +110,11 @@
     <div class="col-sm-10 post equal-divs">
       <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ post.author }}</strong> | </span>
       <small>
-        Posté le {{ post.created|date:"j F Y à H:i:s" }} | 
+        Posté le {{ post.created|date:"j F Y à H:i:s" }} |
         {% if post.thread.question %}
-            Sondage : 
+            Sondage :
         {% else %}
-            Sujet : 
+            Sujet :
         {% endif %}
         <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
       </small>

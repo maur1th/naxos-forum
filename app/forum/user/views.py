@@ -125,10 +125,11 @@ def node_api(request):
         user = ForumUser.objects.get(pk=user_id)
     except (ObjectDoesNotExist, NameError):
         raise PermissionDenied
+    key = f"user/{user.pk}/is_online"
     if status == 'connected':
-        user.is_online = True
+        cache.set(key, True, None)
     elif status == 'disconnected':
-        user.is_online = False
+        cache.delete(key)
     user.last_seen = timezone.now()
     user.save()
     return HttpResponse()  # So we don't log a 500 error

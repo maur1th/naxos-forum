@@ -48,11 +48,15 @@ class ForumUser(AbstractUser):
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
     resetDateTime = models.DateTimeField(default=FORUM_INIT)
-    is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ["pk"]
+
+    @property
+    def is_online(self):
+        key = f"user/{self.pk}/is_online"
+        return bool(cache.get(key))
 
     @property
     def cached_bookmarks(self):

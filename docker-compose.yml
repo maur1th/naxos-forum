@@ -8,6 +8,7 @@ services:
         LOCAL_ENV: 1
     environment:
       DEBUG: 1
+      INTERNAL_IP: 172.18.0.1
     volumes:
       - ./app/forum:/app
       - forum-media:/app/media

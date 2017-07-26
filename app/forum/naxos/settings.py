@@ -192,7 +192,7 @@ EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SERVER_PREFIX", "")
 
 # Debug
 if DEBUG == True:
-    INTERNAL_IPS = ["172.18.0.1"]
+    INTERNAL_IPS = [os.environ.get("INTERNAL_IP")]
     INSTALLED_APPS += ("debug_toolbar",)
     MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
     CACHES = {

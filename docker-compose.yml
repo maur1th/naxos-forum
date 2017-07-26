@@ -7,7 +7,7 @@ services:
       args:
         LOCAL_ENV: 1
     environment:
-      DEBUG: "True"
+      DEBUG: 1
     volumes:
       - ./app/forum:/app
       - forum-media:/app/media

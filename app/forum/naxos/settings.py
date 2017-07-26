@@ -13,7 +13,7 @@ from .util import root, BASE_DIR
 from .secretKeyGen import SECRET_KEY  # Secret key from generator module
 
 
-DEBUG = eval(os.environ.get("DEBUG_MODE", "False"))
+DEBUG = True if os.environ.get("DEBUG") == "1" else False
 
 # static & media files settings
 STATICFILES_DIRS = (root("static"),)
@@ -77,15 +77,14 @@ INSTALLED_APPS = (
     "utils.apps.UtilsConfig",
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-)
+]
 
 ROOT_URLCONF = "naxos.urls"
 
@@ -142,19 +141,12 @@ CONN_MAX_AGE = None
 
 
 # Cache
-if os.environ.get("LOCAL_ENV"):
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-        }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
+        "LOCATION": os.environ.get("CACHE_LOCATION", "memcached"),
     }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.memcached.PyLibMCCache",
-            "LOCATION": os.environ.get("CACHE_LOCATION", "memcached"),
-        }
-    }
+}
 
 # Logging
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
@@ -197,3 +189,14 @@ EMAIL_HOST_USER = os.environ.get("SERVER_EMAIL")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SERVER_PREFIX", "")
+
+# Debug
+if DEBUG == True:
+    INTERNAL_IPS = ["172.18.0.1"]
+    INSTALLED_APPS += ("debug_toolbar",)
+    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
+    }

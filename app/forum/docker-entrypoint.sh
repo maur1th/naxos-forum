@@ -7,6 +7,7 @@ if [ $LOCAL_ENV -eq 1 ]; then
         python3 manage.py flush --noinput
         python3 manage.py loaddata fixtures.json
     fi
+    python3 manage.py collectstatic --no-input
     python3 manage.py runserver 0.0.0.0:5000
 else
     exec gunicorn naxos.wsgi:application \

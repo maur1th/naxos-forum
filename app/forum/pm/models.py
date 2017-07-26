@@ -37,7 +37,6 @@ class Message(models.Model):
     created = models.DateTimeField(default=timezone.now,
                                    editable=False)
     content_plain = models.TextField(verbose_name='Message')
-    markup = models.TextField(default='bbcode')
     author = models.ForeignKey(
         ForumUser,
         related_name='pvt_messages',
@@ -58,7 +57,7 @@ class Message(models.Model):
     def html(self):
         html = cache.get('message/{}/html'.format(self.pk))
         if not html:
-            html = render(self.content_plain, self.markup)
+            html = render(self.content_plain, "bbcode")
             cache.set('message/{}/html'.format(self.pk), html, None)
         return html
 

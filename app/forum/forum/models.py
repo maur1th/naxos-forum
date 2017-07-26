@@ -152,7 +152,6 @@ class Post(CachedAuthorModel):
     modified = models.DateTimeField(blank=True, null=True)
     content_plain = models.TextField(verbose_name='Message',
                                      max_length=100000)
-    markup = models.CharField(default='bbcode', max_length=10)
     author = models.ForeignKey(
         ForumUser,
         related_name='posts',
@@ -173,7 +172,7 @@ class Post(CachedAuthorModel):
     def html(self):
         html = cache.get('post/{}/html'.format(self.pk))
         if not html:
-            html = render(self.content_plain, self.markup)
+            html = render(self.content_plain, 'bbcode')
             cache.set('post/{}/html'.format(self.pk), html, None)
         return html
 
@@ -231,7 +230,7 @@ class PollChoice(models.Model):
 # Model signal handlers
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):
-    html = render(instance.content_plain, instance.markup)
+    html = render(instance.content_plain, "bbcode")
     cache.set("post/{}/html".format(instance.pk), html, None)
     if created:
         cache.set("thread/{}/contributors".format(instance.thread.pk),

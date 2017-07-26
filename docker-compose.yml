@@ -17,8 +17,6 @@ services:
     restart: always
   websocket:
     build: app/websocket
-    volumes:
-      - ./app/websocket:/app
   db:
     image: postgres:9.6-alpine
     volumes:

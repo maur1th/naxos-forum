@@ -1,4 +1,5 @@
 Django<1.12
+djangorestframework<3.7
 Pillow<5.0
 colorlog
 django-crispy-forms<1.7

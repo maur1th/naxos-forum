@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
 
     # Third-party Apps
+    "rest_framework",
     "storages",
     "crispy_forms",
 

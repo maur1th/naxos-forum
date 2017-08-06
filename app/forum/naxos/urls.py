@@ -10,6 +10,7 @@ from django.conf import settings
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url=reverse_lazy('forum:top'),
         permanent=True)),
+    url(r'^api/', include('api.urls')),
     url(r'^forum/', include('forum.urls')),
     url(r'^user/', include('user.urls')),
     url(r'^messages/', include('pm.urls')),

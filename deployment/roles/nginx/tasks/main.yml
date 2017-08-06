@@ -5,11 +5,19 @@
     name: certbot
     state: installed
     default_release: jessie-backports
-# - name: create certbot directory for webroot plugin
-#   file:
-#     path: /usr/share/nginx/html/certbot
-#     state: directory
-#     mode: 0755
+
+# ACME challenges
+- name: create acme challenge path
+  file:
+    path: "{{acme_path}}"
+    state: directory
+    mode: 0755
+- name: populate acme challenges
+  copy:
+    content: ""
+    dest: "{{acme_path}}/{{item}}"
+    mode: 0444
+  with_items: "{{acme_challenges}}"
 
 # Nginx config and certificates
 - name: create host nginx folder
@@ -66,3 +74,4 @@
       - "{{nginx_folder}}/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "{{nginx_folder}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "/usr/share/nginx/html:/usr/share/nginx/html:ro"  # ACME challenge

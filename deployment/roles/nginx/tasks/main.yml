@@ -35,7 +35,6 @@
   template:
     src: nginx.conf
     dest: "{{nginx_folder}}/"
-  notify: new nginx conf
 - name: renew certificate
   command: certbot renew
   when: installed_certicates.changed

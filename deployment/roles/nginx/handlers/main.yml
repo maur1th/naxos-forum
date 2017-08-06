@@ -1,6 +1,0 @@
----
-- name: new nginx conf
-  docker_container:
-    name: nginx
-    restart: yes
-...

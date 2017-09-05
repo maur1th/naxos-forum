@@ -42,9 +42,6 @@
   template:
     src: nginx.conf
     dest: "{{nginx_folder}}/"
-- name: renew certificate
-  command: certbot renew
-  when: installed_certicates.changed
 
 # Nginx
 - name: stop nginx container
@@ -74,3 +71,14 @@
       - "{{nginx_folder}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
       - "/usr/share/nginx/html:/usr/share/nginx/html:ro"  # ACME challenge
+
+# Renew cert
+- name: renew certificate
+  command: certbot renew
+  when: installed_certicates.changed
+  register: renewed_cert
+- name: restart nginx container
+  docker_container:
+    name: nginx
+    restart: yes
+  when: renewed_cert.changed

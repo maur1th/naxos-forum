@@ -11,14 +11,17 @@
     name: "{{item}}"
   with_items:
     - acl  # required by Ansible 2.1 to become_user
-    - apt-transport-https  # apt over https
     - aptitude  # safe-upgrade dependency
-    - ca-certificates
     - ntp
-    - python-pip
-    - python-virtualenv
     - sudo
+    - tmux
     - vim
+    # docker dependencies:
+    - python-setuptools
+    - apt-transport-https
+    - ca-certificates
+    - gnupg2
+    - software-properties-common
 - name: perform safe upgrade
   apt:
     upgrade: safe

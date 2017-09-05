@@ -5,14 +5,14 @@
 
 - name: add docker GPG key
   apt_key:
-    keyserver: hkp://p80.pool.sks-keyservers.net:80
-    id: 58118E89F3A912897C070ADBF76221572C52609D
+    url: https://download.docker.com/linux/debian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 
 - name: add docker apt repository
   apt_repository:
     repo: >
-      deb https://apt.dockerproject.org/repo
-      {{ansible_distribution|lower}}-{{ansible_distribution_release}} main
+      deb [arch=amd64] https://download.docker.com/linux/debian
+      {{ansible_distribution_release}} stable
   register: docker_apt
 
 - name: update apt cache
@@ -28,8 +28,8 @@
     group: root
     mode: "0644"
 
-- name: install docker package
+- name: install {{package}}
   apt:
-    name: docker-engine
+    name: "{{package}}"
   notify: docker_restart
 ...

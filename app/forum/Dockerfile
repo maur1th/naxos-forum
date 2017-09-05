@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
         liblcms2-dev \
         libwebp-dev \
         libmemcached-dev
-RUN apt-get install
 COPY requirements* /
 ARG LOCAL_ENV
 RUN if [ $LOCAL_ENV -eq 1 ]; then \
@@ -24,6 +23,9 @@ COPY --from=builder /packages /packages
 COPY bin/gunicorn /usr/local/bin/gunicorn
 COPY . $HOME
 WORKDIR $HOME
+RUN apt-get update && apt-get install -y \
+        libmemcached11 \
+    && rm -rf /var/lib/apt/lists/*
 EXPOSE 5000
 ARG LOCAL_ENV
 ENV LOCAL_ENV ${LOCAL_ENV:-0}

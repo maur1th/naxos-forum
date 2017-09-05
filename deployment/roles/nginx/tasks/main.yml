@@ -4,7 +4,6 @@
   apt:
     name: certbot
     state: installed
-    default_release: jessie-backports
 
 # ACME challenges
 - name: create acme challenge path

@@ -15,7 +15,6 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
     fi
 
 FROM python:3.6-slim
-MAINTAINER thomas@maurin.io
 ENV HOME=/app \
     PYTHONPATH=/packages \
     WORKERS=2

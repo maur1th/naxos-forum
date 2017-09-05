@@ -8,9 +8,6 @@
 ## VSCode
 /.vscode
 
-## Alpine Linux
-.ash_history
-
 ## Project specific
 /app/forum/static_root
 secret.txt

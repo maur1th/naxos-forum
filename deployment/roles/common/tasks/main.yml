@@ -13,6 +13,7 @@
     - acl  # required by Ansible 2.1 to become_user
     - aptitude  # safe-upgrade dependency
     - ntp
+    - python-pip
     - sudo
     - tmux
     - vim

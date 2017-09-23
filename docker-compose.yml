@@ -1,6 +1,8 @@
 ---
 version: "3.1"
+
 services:
+
   forum:
     build:
       context: app/forum
@@ -16,8 +18,10 @@ services:
       - db
       - memcached
     restart: always
+
   websocket:
     build: app/websocket
+
   db:
     image: postgres:9.6
     volumes:
@@ -25,9 +29,11 @@ services:
     environment:
       POSTGRES_PASSWORD: crimson
     restart: always
+
   memcached:
     image: memcached:1.4
     restart: always
+
   nginx:
     image: nginx:1.12
     volumes:
@@ -40,6 +46,7 @@ services:
       - forum
       - websocket
     restart: always
+
 volumes:
   forum-db: {}
   forum-media: {}

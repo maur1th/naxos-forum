@@ -42,8 +42,6 @@ else:
 RAW_HOSTS = (os.environ.get("HOSTNAME"), "forum", "localhost")
 ALLOWED_HOSTS = tuple(filter(lambda x: x != None, RAW_HOSTS))
 SECRET_KEY = SECRET_KEY
-CSRF_COOKIE_HTTPONLY = True
-SECURE_BROWSER_XSS_FILTER = True
 
 
 # Sessions

@@ -17,12 +17,6 @@
     - sudo
     - tmux
     - vim
-    # docker dependencies:
-    - python-setuptools
-    - apt-transport-https
-    - ca-certificates
-    - gnupg2
-    - software-properties-common
 - name: perform safe upgrade
   apt:
     upgrade: safe

@@ -3,6 +3,15 @@
   pip:
     name: docker-py
 
+- name: install docker apt dependencies
+  apt:
+    name: "{{item}}"
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
 - name: add docker GPG key
   apt_key:
     url: https://download.docker.com/linux/debian/gpg

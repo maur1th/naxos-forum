@@ -17,9 +17,6 @@
     - sudo
     - tmux
     - vim
-- name: perform safe upgrade
-  apt:
-    upgrade: safe
 
 # Timezone
 - name: set timezone to Europe/Paris

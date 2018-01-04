@@ -14,6 +14,7 @@
     image: memcached:{{memcached_version}}
     pull: yes
     state: started
+    restart_policy: unless-stopped
     networks:
       - name: "{{project_name}}"
         aliases:

@@ -1,31 +1,34 @@
-FROM python:3.6 AS builder
-RUN apt-get update && apt-get install -y \
-        libjpeg-dev \
-        libtiff5-dev \
-        libfreetype6-dev \
-        liblcms2-dev \
-        libwebp-dev \
-        libmemcached-dev
-COPY requirements* /
+FROM python:3.6-alpine AS builder
 ARG LOCAL_ENV
+RUN apk add --no-cache \
+        build-base \
+        postgresql-dev \
+        libmemcached-dev \
+        libjpeg-turbo-dev \
+        libwebp-dev \
+        zlib-dev \
+        cyrus-sasl-dev
+COPY requirements* /
 RUN if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements-dev.txt --target /packages; \
     else \
         pip3 install -r requirements-prd.txt --target /packages; \
     fi
 
-FROM python:3.6-slim
+FROM python:3.6-alpine
+MAINTAINER thomas@maurin.io
+ARG LOCAL_ENV
+ENV LOCAL_ENV ${LOCAL_ENV:-0}
 ENV HOME=/app \
     PYTHONPATH=/packages \
     WORKERS=2
+RUN apk add --no-cache \
+        libpq \
+        libmemcached \
+        libjpeg-turbo
 COPY --from=builder /packages /packages
 COPY bin/gunicorn /usr/local/bin/gunicorn
 COPY . $HOME
 WORKDIR $HOME
-RUN apt-get update && apt-get install -y \
-        libmemcached11 \
-    && rm -rf /var/lib/apt/lists/*
 EXPOSE 5000
-ARG LOCAL_ENV
-ENV LOCAL_ENV ${LOCAL_ENV:-0}
 ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]

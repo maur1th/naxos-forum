@@ -1,15 +1,20 @@
-FROM node:8 AS builder
-ENV HOME=/app
-COPY . $HOME
-WORKDIR $HOME
-RUN yarn --ignore-optional --pure-lockfile --production=true
+FROM alpine:3.6
 
-FROM node:8-slim
+MAINTAINER thomas@maurin.io
 ENV HOME=/app \
     PORT=5001 \
     FORUM_URI=forum:5000 \
     DEBUG=false
-COPY --from=builder $HOME $HOME
+
+RUN set -ex \
+        && apk add --no-cache \
+            nodejs \
+            yarn
+
+COPY . $HOME
 WORKDIR $HOME
+
+RUN yarn --ignore-optional --pure-lockfile --production=true
+
 EXPOSE $PORT
 CMD node server.js $PORT

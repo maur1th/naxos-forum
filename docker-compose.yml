@@ -23,7 +23,7 @@ services:
     build: app/websocket
 
   db:
-    image: postgres:9.6
+    image: postgres:9.6-alpine
     volumes:
       - forum-db:/var/lib/postgresql/data
     environment:
@@ -31,11 +31,11 @@ services:
     restart: always
 
   memcached:
-    image: memcached:1.4
+    image: memcached:1.4-alpine
     restart: always
 
   nginx:
-    image: nginx:1.12
+    image: nginx:1.12-alpine
     volumes:
       - ./conf/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./app/forum/static_root:/data/static:ro

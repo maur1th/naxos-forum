@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, UpdateView, TemplateView
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash

@@ -1,5 +1,5 @@
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from .models import BlogPost
 from .forms import PostForm

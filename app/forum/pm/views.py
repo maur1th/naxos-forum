@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import View, ListView, CreateView
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin

@@ -1,80 +1,31 @@
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 
 app_name = 'forum'
 urlpatterns = [
-    url(
-        regex=r'^$',
-        view=views.CategoryView.as_view(),
-        name='top'
-    ),
-    url(
-        regex=r'^search/$',
-        view=views.SearchView.as_view(),
-        name='search',
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/$',
-        view=views.ThreadView.as_view(),
-        name='category'
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/$',
-        view=views.PostView.as_view(),
-        name='thread'
-    ),
-    url(
-        regex=r'^post/(?P<pk>[0-9]+)$',
-        view=views.PostDetailView.as_view(),
-        name='post'
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/\+$',
-        view=views.NewThread.as_view(),
-        name='new_thread'
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/\+poll$',
-        view=views.NewPoll,
-        name='new_poll'
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/vote/$',
-        view=views.VotePoll,
-        name='vote'
-    ),
-    url(
-        regex=r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/\+$',
-        view=views.NewPost.as_view(),
-        name='new_post'
-    ),
-    url(
-        regex=(r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/'
-               r'edit=(?P<pk>\d+)$'),
-        view=views.EditPost.as_view(),
-        name='edit'
-    ),
-    url(
-        regex=(r'^(?P<category_slug>[\w|\-]+)/(?P<thread_slug>[\w|\-]+)/'
-               r'quote=(?P<pk>\d+)$'),
-        view=views.QuotePost.as_view(),
-        name='quote'
-    ),
-    url(
-        regex=r'^reset_bookmarks/(?P<pk>[0-9]+)$',
-        view=views.ResetBookmarks.as_view(),
-        name='reset_bookmarks'
-    ),
-    url(
-        regex=r'^delete_thread/(?P<pk>[0-9]+)$',
-        view=views.DeleteThread.as_view(),
-        name='delete_thread'
-    ),
-    url(
-        regex=r'^preview/(?P<pk>[0-9]+)$',
-        view=views.PreviewView.as_view(),
-        name='preview'
-    ),
+    path('', views.CategoryView.as_view(), name='top'),
+    path('search/', views.SearchView.as_view(), name='search'),
+    path('<slug:category_slug>/', views.ThreadView.as_view(),
+         name='category'),
+    path('(<slug:category_slug>/<slug:thread_slug>)/',
+         views.PostView.as_view(), name='thread'),
+    path('post/<int:pk>', views.PostDetailView.as_view(), name='post'),
+    path('<slug:category_slug>/+', views.NewThread.as_view(),
+         name='new_thread'),
+    path('<slug:category_slug>/+poll', views.NewPoll, name='new_poll'),
+    path('<slug:category_slug>/<slug:thread_slug>/vote/', views.VotePoll,
+         name='vote'),
+    path('<slug:category_slug>/<slug:thread_slug>/+', views.NewPost.as_view(),
+         name='new_post'),
+    path('<slug:category_slug>/<slug:thread_slug>/edit=<int:pk>',
+         views.EditPost.as_view(), name='edit'),
+    path('<slug:category_slug>/<slug:thread_slug>/quote=<int:pk>',
+         views.QuotePost.as_view(), name='quote'),
+    path('reset_bookmarks/<int:pk>', views.ResetBookmarks.as_view(),
+         name='reset_bookmarks'),
+    path('delete_thread/<int:pk>', views.DeleteThread.as_view(),
+         name='delete_thread'),
+    path('preview/<int:pk>', views.PreviewView.as_view(), name='preview'),
 ]

@@ -17,7 +17,7 @@ try:
     SECRET_KEY
 except NameError:
     from os.path import join
-    from .util import BASE_DIR, make_sure_path_exists
+    from .path import BASE_DIR, make_sure_path_exists
     make_sure_path_exists(join(BASE_DIR, 'secrets'))
     SECRET_FILE = join(BASE_DIR, 'secrets', 'secret.txt')
     try:

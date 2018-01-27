@@ -1,4 +1,4 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.views.generic import RedirectView
 from django.urls import reverse_lazy
 from django.contrib import admin

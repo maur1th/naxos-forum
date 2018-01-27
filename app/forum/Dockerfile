@@ -17,8 +17,6 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
 
 FROM python:3.6-alpine
 MAINTAINER thomas@maurin.io
-ARG LOCAL_ENV
-ENV LOCAL_ENV ${LOCAL_ENV:-0}
 ENV HOME=/app \
     PYTHONPATH=/packages \
     WORKERS=2
@@ -30,5 +28,10 @@ COPY --from=builder /packages /packages
 COPY bin/gunicorn /usr/local/bin/gunicorn
 COPY . $HOME
 WORKDIR $HOME
+
+ARG LOCAL_ENV
+ARG VERSION
+ENV VERSION=${VERSION:-dev} \
+    LOCAL_ENV=${LOCAL_ENV:-0}
 EXPOSE 5000
 ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]

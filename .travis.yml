@@ -22,11 +22,8 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install docker-ce
 script:
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build --tag $REPO:$TAG $SRC
-  - if [ -n "$TRAVIS_TAG" ]; then
-    docker tag $REPO:$TAG $REPO:$TRAVIS_TAG;
-    fi
+  - export TAG=`if [ -n "$TRAVIS_TAG" ]; then echo "$TRAVIS_TAG"; else echo $TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER; fi`
+  - docker build --build-arg VERSION=$TAG --tag $REPO:$TAG $SRC
   - sonar-scanner
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"

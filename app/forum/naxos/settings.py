@@ -15,6 +15,9 @@ from .utils.keygen import SECRET_KEY  # Secret key from generator module
 
 DEBUG = True if os.environ.get("DEBUG") == "1" else False
 
+# version
+VERSION = os.environ.get("VERSION")
+
 # static & media files settings
 STATICFILES_DIRS = (root("static"),)
 MEDIA_ROOT = root("media")

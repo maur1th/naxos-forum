@@ -1,4 +1,5 @@
-#!/bin/sh -ex
+#!/bin/sh
+set -ex
 
 export S3_BUCKET={{aws_storage_bucket_name}}
 export AWS_ACCESS_KEY_ID={{aws_access_key_id}}

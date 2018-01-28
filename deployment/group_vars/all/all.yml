@@ -2,9 +2,9 @@
 project_name: naxos
 
 # versions
-docker_version: 17.09
+docker_version: 17.12
 nginx_version: 1.12
-postgres_version: 9.6
+postgres_version: 10.1
 memcached_version: 1.5
 
 # db parameters

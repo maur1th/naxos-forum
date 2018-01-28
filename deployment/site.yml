@@ -3,8 +3,7 @@
   become: yes
   roles:
     - common
-    - docker
-    - docker_network
+    - db
     - forum
     - nginx
   tasks:

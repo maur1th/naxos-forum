@@ -10,7 +10,7 @@ env:
 
 # SonarQube
 addons:
-  sonarqube:
+  sonarcloud:
     organization: default
 
 # App

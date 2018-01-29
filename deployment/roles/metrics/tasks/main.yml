@@ -1,0 +1,114 @@
+---
+# Docker volume setup
+- name: check if volumes ({{', '.join(volumes)}}) exists
+  command: docker volume inspect {{item}}
+  register: result
+  ignore_errors: True
+  changed_when: False
+  with_items: "{{volumes}}"
+- name: create volumes ({{', '.join(volumes)}})
+  command: docker volume create {{item}}
+  when: result|failed
+  with_items: "{{volumes}}"
+
+# cAdvisor: deployment
+- name: stop cadvisor container
+  docker_container:
+    name: cadvisor
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start cadvisor container
+  docker_container:
+    name: cadvisor
+    image: google/cadvisor:{{cadvisor_version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+# Prometheus: configuration
+- name: create host conf folder
+  file:
+    state: directory
+    path: "{{metrics_folder}}"
+- name: get private ip address
+  shell: ip addr show eth0 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1
+  register: command_output
+  changed_when: no
+- set_fact:
+    private_ip: "{{ command_output.stdout }}"
+- name: install prometheus conf
+  template:
+    src: prometheus.yml
+    dest: "{{metrics_folder}}/"
+- name: install django.rules
+  copy:
+    src: django.rules.yml
+    dest: "{{metrics_folder}}/"
+
+# Prometheus: deployment
+- name: stop prometheus container
+  docker_container:
+    name: prometheus
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start prometheus container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:{{prometheus_version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - prometheus
+    volumes:
+      - "{{metrics_folder}}/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "{{metrics_folder}}/django.rules.yml:/etc/prometheus/django.rules.yml:ro"
+      - "prometheus-storage:/prometheus"
+
+# Grafana: deployment
+- name: stop grafana container
+  docker_container:
+    name: grafana
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start grafana container
+  docker_container:
+    name: grafana
+    image: grafana/grafana:{{grafana_version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - grafana
+    env:
+      GF_SECURITY_ADMIN_PASSWORD: "{{grafana_password}}"
+    volumes:
+      - "grafana-storage:/var/lib/grafana"
+    ports:
+      - "9091:3000"
+...

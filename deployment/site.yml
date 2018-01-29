@@ -6,6 +6,7 @@
     - db
     - forum
     - nginx
+    - metrics
   tasks:
     # Reclaim hard drive space
     - name: clean outdated docker images & stopped containers

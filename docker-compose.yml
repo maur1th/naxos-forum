@@ -52,7 +52,7 @@ services:
     volumes:
       - ./conf/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./conf/django.rules.yml:/etc/prometheus/django.rules.yml:ro
-      - prometheus:/prometheus
+      - prometheus-storage:/prometheus
     ports:
       - "9090:9090"
 
@@ -66,6 +66,6 @@ services:
 volumes:
   forum-db: {}
   forum-media: {}
-  prometheus: {}
+  prometheus-storage: {}
   grafana-storage: {}
 ...

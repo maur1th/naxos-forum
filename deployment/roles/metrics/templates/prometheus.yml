@@ -1,0 +1,19 @@
+---
+global:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+
+  external_labels:
+    monitor: django-monitor
+
+rule_files:
+  - django.rules.yml
+
+scrape_configs:
+  - job_name: django
+    static_configs:
+      - targets: ["forum:5000"]
+  - job_name: host
+    static_configs:
+      - targets: ['localhost:9090', 'cadvisor:8080', '{{private_ip}}:9100']
+...

@@ -9,7 +9,7 @@ urlpatterns = [
     path('search/', views.SearchView.as_view(), name='search'),
     path('<slug:category_slug>/', views.ThreadView.as_view(),
          name='category'),
-    path('(<slug:category_slug>/<slug:thread_slug>)/',
+    path('<slug:category_slug>/<slug:thread_slug>/',
          views.PostView.as_view(), name='thread'),
     path('post/<int:pk>', views.PostDetailView.as_view(), name='post'),
     path('<slug:category_slug>/+', views.NewThread.as_view(),

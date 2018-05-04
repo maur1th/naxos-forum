@@ -83,3 +83,11 @@
     name: nginx
     restart: yes
   when: renewed_cert.changed
+
+# Cron
+- name: add nginx reload cron
+  cron:
+    name: reload nginx
+    job: docker kill -s HUP nginx
+    hour: "*/12"
+    minute: "0"

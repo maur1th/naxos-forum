@@ -8,7 +8,6 @@ postgres_version: 10.1
 memcached_version: 1.5
 prometheus_version: latest  # until they have a better taging policy
 cadvisor_version: latest    # ...
-grafana_version: latest     # ...
 
 # db parameters
 db_name: "{{project_name}}"

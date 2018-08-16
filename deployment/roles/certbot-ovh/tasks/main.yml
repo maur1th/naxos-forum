@@ -1,0 +1,39 @@
+---
+- name: Add OVH API credentials
+  template:
+    src: ovh.conf
+    dest: "{{ansible_env.HOME}}/"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Check if {{domain}} is already configured
+  stat:
+    path: /etc/letsencrypt/live/{{domain}}
+  register: domain_path
+
+- name: Initial cert request for {{domain}}
+  docker_container:
+    name: certbot
+    image: certbot/dns-ovh
+    volumes:
+      - "{{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "/var/lib/letsencrypt:/var/lib/letsencrypt"
+    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{domain}}
+    detach: no
+    cleanup: yes
+  when: domain_path.stat.isdir is not defined
+
+- name: Add Certbot renew cron job
+  cron:
+    name: "certbot renew"
+    minute: "0"
+    hour: "4"
+    job: >
+      docker run -it --rm --name certbot-cron
+      -v {{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro
+      -v /etc/letsencrypt:/etc/letsencrypt
+      -v /var/lib/letsencrypt:/var/lib/letsencrypt
+      certbot/dns-ovh renew
+...

@@ -1,7 +1,3 @@
 ---
 nginx_folder: "{{ansible_env.HOME}}/nginx"
-acme_path: /usr/share/nginx/html/certbot/.well-known/acme-challenge
-acme_challenges:
-  - L_a4He-8san4SBDRA0osw7wG_ABDKjKgTw3Lheq5rS4
-  - gEj1lv8tssm-hhnCPCGgNnW-fyGaasAVAbx0U6pLr4Q
 ...

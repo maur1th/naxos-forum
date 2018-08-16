@@ -1,0 +1,11 @@
+---
+domain:
+
+###
+### OVH Secrets
+###
+
+dns_ovh_application_key:
+dns_ovh_application_secret:
+dns_ovh_consumer_key:
+...

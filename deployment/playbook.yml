@@ -8,7 +8,7 @@
     - name: docker
       version: "17.12"
     - name: docker_network
-    - name: db
+    - name: postgres
       version: "10.1"
     - name: memcached
       version: "1.5"

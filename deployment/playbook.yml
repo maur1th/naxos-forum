@@ -17,7 +17,7 @@
     - name: certbot-ovh
       domain: "{{inventory_hostname}}"
     - name: nginx
-      version: "1.12"
+      version: "1.14"
     - name: metrics
       prometheus_version: latest  # until they have a better taging policy
       cadvisor_version: latest    # ...

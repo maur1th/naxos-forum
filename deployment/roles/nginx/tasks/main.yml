@@ -1,17 +1,24 @@
 ---
 # Nginx config and certificates
-- name: create host nginx folder
+- name: create host nginx directories
   file:
     state: directory
-    path: "{{nginx_folder}}"
+    path: "{{item}}"
+  with_items:
+    - "{{nginx_dir}}"
+    - "{{nginx_dir}}/conf.d"
 - name: copy dhparam
   copy:
     src: dhparam.pem
-    dest: "{{nginx_folder}}/"
-- name: install nginx conf
+    dest: "{{nginx_dir}}/"
+- name: install nginx configuration files
   template:
-    src: nginx.conf
-    dest: "{{nginx_folder}}/"
+    src: "{{item}}"
+    dest: "{{nginx_dir}}/conf.d/"
+  with_items:
+    - http.conf
+    - default.conf
+    - forum.conf
 
 # Nginx
 - name: stop nginx container
@@ -38,8 +45,8 @@
       - "80:80"
       - "443:443"
     volumes:
-      - "{{nginx_folder}}/nginx.conf:/etc/nginx/nginx.conf:ro"
-      - "{{nginx_folder}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
+      - "{{nginx_dir}}/conf.d:/etc/nginx/conf.d:ro"
+      - "{{nginx_dir}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
 
 # Cron

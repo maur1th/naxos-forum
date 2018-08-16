@@ -56,12 +56,12 @@
 - name: start nginx container
   docker_container:
     name: nginx
-    image: nginx:{{nginx_version}}
+    image: nginx:{{version}}
     pull: yes
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - nginx
     ports:

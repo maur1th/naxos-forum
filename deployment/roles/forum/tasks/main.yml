@@ -36,7 +36,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - forum
     env:
@@ -76,7 +76,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - websocket
 

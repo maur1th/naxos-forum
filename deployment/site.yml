@@ -1,12 +1,24 @@
 ---
 - hosts: all
   become: yes
+  vars:
+    network: "{{project_name}}"
   roles:
-    - common
-    - db
-    - forum
-    - nginx
-    - metrics
+    - name: common
+    - name: docker
+      version: "17.12"
+    - name: docker_network
+    - name: db
+      version: "10.1"
+    - name: memcached
+      version: "1.5"
+    - name: forum
+      version: "{{app_version}}"
+    - name: nginx
+      version: "1.12"
+    - name: metrics
+      prometheus_version: latest  # until they have a better taging policy
+      cadvisor_version: latest    # ...
   tasks:
     # Reclaim hard drive space
     - name: clean outdated docker images & stopped containers

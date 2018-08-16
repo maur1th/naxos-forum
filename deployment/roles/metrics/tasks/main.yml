@@ -29,7 +29,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - cadvisor
     volumes:
@@ -76,7 +76,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - prometheus
     volumes:

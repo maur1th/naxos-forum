@@ -1,7 +1,7 @@
 ---
-- name: create docker network ({{project_name}})
+- name: create docker network ({{network}})
   docker_network:
-     name: "{{project_name}}"
+     name: "{{network}}"
      driver: bridge
      state: present
 ...

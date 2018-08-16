@@ -3,6 +3,6 @@ staging.geekattitude.org
 
 [app:vars]
 env=staging
-version=latest
+app_version=latest
 debug_mode=True
 ansible_user=root

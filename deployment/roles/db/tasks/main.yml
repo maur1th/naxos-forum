@@ -22,12 +22,12 @@
 - name: start db container
   docker_container:
     name: db
-    image: postgres:{{postgres_version}}
+    image: postgres:{{version}}
     pull: yes
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: "{{project_name}}"
+      - name: "{{network}}"
         aliases:
           - db
     volumes:
@@ -51,7 +51,7 @@
       --network=naxos
       --volume {{db_scripts}}/entrypoint.sh:/entrypoint.sh:ro
       --entrypoint /entrypoint.sh
-      postgres:{{postgres_version}}
+      postgres:{{version}}
     hour: 4
     minute: 10
 ...

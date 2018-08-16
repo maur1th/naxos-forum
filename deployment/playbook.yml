@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: app
   become: yes
   vars:
     network: "{{project_name}}"

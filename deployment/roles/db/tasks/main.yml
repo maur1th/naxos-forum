@@ -7,7 +7,7 @@
   changed_when: False
 - name: create volume ({{volume}})
   command: docker volume create {{volume}}
-  when: result|failed
+  when: result is failed
 
 # Deployment
 - name: stop db container

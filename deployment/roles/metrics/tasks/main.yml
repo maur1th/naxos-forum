@@ -8,7 +8,7 @@
   with_items: "{{volumes}}"
 - name: create volumes ({{', '.join(volumes)}})
   command: docker volume create {{item}}
-  when: result|failed
+  when: result is failed
   with_items: "{{volumes}}"
 
 # cAdvisor: deployment

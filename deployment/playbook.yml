@@ -8,6 +8,9 @@
     - name: docker
       version: "17.12"
     - name: docker_network
+      networks:
+        - "{{network}}"
+        - nginx
     - name: postgres
       version: "10.2"
     - name: memcached

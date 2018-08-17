@@ -39,6 +39,9 @@
       - name: "{{network}}"
         aliases:
           - forum
+      - name: nginx
+        aliases:
+          - forum
     env:
       HOSTNAME: "{{inventory_hostname}}"
       DB_NAME: "{{db_name}}"
@@ -77,6 +80,9 @@
     restart_policy: unless-stopped
     networks:
       - name: "{{network}}"
+        aliases:
+          - websocket
+      - name: nginx
         aliases:
           - websocket
 

@@ -1,0 +1,4 @@
+---
+- name: reload nginx
+  command: docker kill --signal=SIGHUP nginx
+...

@@ -4,13 +4,9 @@
   vars:
     network: "{{project_name}}"
   roles:
-    - name: common
-    - name: docker
-      version: "17.12"
     - name: docker_network
       networks:
         - "{{network}}"
-        - nginx
     - name: memcached
       version: "1.5"
     - name: forum

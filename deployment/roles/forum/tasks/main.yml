@@ -42,6 +42,9 @@
       - name: nginx
         aliases:
           - forum
+      - name: postgres
+        aliases:
+          - forum
     env:
       HOSTNAME: "{{inventory_hostname}}"
       DB_NAME: "{{db_name}}"

@@ -11,12 +11,11 @@
       networks:
         - "{{network}}"
         - nginx
-    - name: postgres
-      version: "10.2"
     - name: memcached
       version: "1.5"
     - name: forum
       version: "{{app_version}}"
+      network: "{{project_name}}"
     - name: certbot-ovh
       domain: "{{inventory_hostname}}"
     - name: nginx

@@ -1,4 +1,0 @@
----
-volume: forum-db
-db_scripts: "{{ansible_env.HOME}}/db_scripts"
-...

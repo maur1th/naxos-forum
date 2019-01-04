@@ -1,4 +1,4 @@
-Django<2.1
+Django>=2.0.10,<2.1
 Pillow<5.1
 colorlog
 django-crispy-forms<2.0

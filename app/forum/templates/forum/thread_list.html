@@ -13,9 +13,9 @@
 <div class="row">
   <div style="padding: 10px 0">
     <a href="{% url 'forum:new_thread' category.slug %}">
-      <button class="btn btn-default">Nouveau sujet</button></a>
+      <button class="btn btn-light">Nouveau sujet</button></a>
     <a href="{% url 'forum:new_poll' category.slug %}">
-      <button class="btn btn-default">Nouveau sondage</button></a>
+      <button class="btn btn-light">Nouveau sondage</button></a>
   </div>
 </div>
 {# Threads #}
@@ -101,7 +101,7 @@
       <div class="modal-footer">
         <form method="post" action="{% url 'forum:reset_bookmarks' user.pk %}">
         {% csrf_token %}
-            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-light" data-dismiss="modal">Annuler</button>
             <button type="submit" class="btn btn-danger">Oui, réinitialiser</button>
         </form>
       </div>

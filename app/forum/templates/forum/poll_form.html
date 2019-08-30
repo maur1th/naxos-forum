@@ -18,15 +18,15 @@
                 {% crispy choices_formset formset_helper %}
             </div>
             <div class="btn-group">
-                <button type="button" id="more" class="btn btn-default">
+                <button type="button" id="more" class="btn btn-light">
                     <span style="font-weight:bold">+</span>
                 </button>
-                <button type="button" id="less" class="btn btn-default">
+                <button type="button" id="less" class="btn btn-light">
                     <span style="font-weight:bold">-</span>
                 </button>
             </div>
             <input type="submit" name="submit" value="Publier" class="btn btn-primary" id="submit-id-submit" accesskey="s" />
-            <input type="submit" name="preview" value="Prévisualiser" class="btn btn-default" id="submit-id-preview" />
+            <input type="submit" name="preview" value="Prévisualiser" class="btn btn-light" id="submit-id-preview" />
         </form>
     </div>
     {% include "smileys.html" %}

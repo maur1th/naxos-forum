@@ -17,23 +17,9 @@
 </div>
 <hr style="margin:1px; border-top:0">
 {# Posts #}
-<script>
-    $(document).ready(function() {
-        // Ensure presentation is ok on DOM ready().
-        $('.equal-divs').responsiveEqualHeightGrid();
-    })
-    var x = setInterval(function() {
-        // Ensure presentation is ok while media still loading.
-        $('.equal-divs').responsiveEqualHeightGrid();
-    }, 500);
-    $(window).load(function() {
-        // Stops presentation refresh when everything loaded.
-        clearInterval(x);
-    });
-</script>
 <div class="row">
     {# Large display author #}
-    <div class="col-sm-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
+    <div class="col-sm-2 text-center hidden-xs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
         <p style="word-wrap: break-word">
             <strong>{{ user.username }}</strong><br>
             {% if user.quote %}
@@ -53,7 +39,7 @@
         </small>
     </div>
     {# Content #}
-    <div class="col-sm-10 post equal-divs">
+    <div class="col-sm-10 post">
         <small class="hidden-xs">
             Posté le {% now "d/m/y à H:i:s" %} | Modifier | Citer
         </small>

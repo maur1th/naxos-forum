@@ -89,7 +89,7 @@
 <div class="row">
     <a name="{{ post.pk }}"></a>
     {# Author #}
-    <div class="col-xs-2 text-center hidden-xs equal-divs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
+    <div class="col-xs-2 text-center hidden-xs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
         <p style="margin-bottom:5px">
         {% ifequal post.cached_author user %} 
             <strong>{{ post.cached_author }}</strong>
@@ -111,9 +111,9 @@
             <img src="{{ media }}{{ post.cached_author.logo }}" alt="" class="img-responsive img-rounded">
         {% endif %}
     </div>
-    <div class="col-xs-10 post equal-divs">
+    <div class="col-xs-10 post">
     {% else %}
-    <div class="col-xs-12 col-sm-10 post equal-divs">    
+    <div class="col-xs-12 col-sm-10 post">    
     {% endif %}
     {# Content #}
         <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.cached_author }}</strong> | </span>

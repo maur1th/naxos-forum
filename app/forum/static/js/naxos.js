@@ -117,8 +117,3 @@ $(document).ready(function (){
     }, 20);
   });
 });
-
-var socket = io.connect();
-window.addEventListener('unload', function () {
-  socket.close();
-});

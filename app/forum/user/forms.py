@@ -135,7 +135,7 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
                     ("Image trop grande. La taille maximale autorisée est de "
                      "{}x{} pixels.").format(MAX_LENGTH,MAX_LENGTH))
         # Check image size (in ko)
-        if logo._size > MAX_UPLOAD_SIZE:
+        if logo.size > MAX_UPLOAD_SIZE:
             raise forms.ValidationError(
                 ("Fichier trop volumineux. La taille maximale autorisée "
                  "est de {}.").format(filesizeformat(MAX_UPLOAD_SIZE)))

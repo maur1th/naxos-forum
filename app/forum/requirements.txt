@@ -1,5 +1,5 @@
 Django>=2.1,<2.3
-Pillow<6.2
+Pillow<6.3
 colorlog
 django-crispy-forms<2.0
 django-storages<2.0

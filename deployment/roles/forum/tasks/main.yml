@@ -47,6 +47,7 @@
           - forum
     env:
       HOSTNAME: "{{inventory_hostname}}"
+      HOST_IP_ADDRESS: "{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}"
       DB_NAME: "{{db_name}}"
       DB_USER: "{{db_user}}"
       DB_PASSWORD: "{{db_password}}"

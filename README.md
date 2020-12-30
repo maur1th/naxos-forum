@@ -41,5 +41,5 @@ Admin website is accessible from http://localhost:8080.
 Deployment
 ---------------
 ```bash
-$ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml -e "version=<version>"
+$ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml -e "app_version=<version>"
 ```

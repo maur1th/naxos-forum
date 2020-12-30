@@ -42,7 +42,7 @@ else:
 
 
 # Security
-RAW_HOSTS = (os.environ.get("HOSTNAME"), "forum", "localhost")
+RAW_HOSTS = (os.environ.get("HOSTNAME"), os.environ.get("HOST_IP_ADDRESS"), "forum", "localhost")
 ALLOWED_HOSTS = tuple(filter(lambda x: x != None, RAW_HOSTS))
 SECRET_KEY = SECRET_KEY
 

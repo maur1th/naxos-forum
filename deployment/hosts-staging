@@ -1,8 +1,0 @@
-[app]
-staging.geekattitude.org
-
-[app:vars]
-env=staging
-app_version=latest
-debug_mode=True
-ansible_user=root

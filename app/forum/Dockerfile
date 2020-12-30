@@ -1,4 +1,4 @@
-FROM python:3.7-alpine AS builder
+FROM python:3.9-alpine AS builder
 ARG LOCAL_ENV
 RUN apk add --no-cache \
         build-base \
@@ -15,7 +15,7 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements-prd.txt --target /packages; \
     fi
 
-FROM python:3.7-alpine
+FROM python:3.9-alpine
 MAINTAINER thomas@maurin.io
 ENV HOME=/app \
     PYTHONPATH=/packages \

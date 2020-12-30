@@ -16,9 +16,9 @@
       domain: "{{inventory_hostname}}"
     - name: nginx
       version: "1.14"
-    - name: metrics
-      prometheus_version: latest  # until they have a better taging policy
-      cadvisor_version: latest    # ...
+    # - name: metrics
+    #   prometheus_version: latest  # until they have a better taging policy
+    #   cadvisor_version: latest    # ...
   tasks:
     # Reclaim hard drive space
     - name: clean outdated docker images & stopped containers

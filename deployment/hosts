@@ -2,6 +2,6 @@
 geekattitude.org
 
 [app:vars]
-env=prod
-debug_mode=False
+ansible_python_interpreter=/usr/bin/python3
 ansible_user=root
+debug_mode=False

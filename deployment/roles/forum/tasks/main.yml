@@ -95,6 +95,6 @@
   cron:
     name: django clearsessions
     job: docker exec forum python3 manage.py clearsessions
-    hour: 4
-    minute: 0
+    hour: "4"
+    minute: "0"
 ...

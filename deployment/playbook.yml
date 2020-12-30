@@ -8,7 +8,7 @@
       networks:
         - "{{network}}"
     - name: memcached
-      version: "1.5"
+      version: "1.6"
     - name: forum
       version: "{{app_version}}"
       network: "{{project_name}}"

@@ -27,4 +27,5 @@
         docker system prune --force &&
         docker rmi $(docker images --quiet --filter dangling=true)
       failed_when: no
+      changed_when: no
 ...

@@ -5,6 +5,8 @@
     network: "{{project_name}}"
   roles:
     - name: common
+    - name: docker
+      version: "19.03"
     - name: docker_network
       networks:
         - "{{network}}"

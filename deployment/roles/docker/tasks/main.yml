@@ -1,0 +1,47 @@
+---
+- name: install docker pip dependency
+  pip:
+    name: docker-py
+    state: latest
+
+- name: install docker apt dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+
+- name: add docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+- name: add docker apt repository
+  apt_repository:
+    repo: >
+      deb [arch=amd64] https://download.docker.com/linux/debian
+      {{ansible_distribution_release}} stable
+  register: docker_apt
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+  when: docker_apt.changed
+
+- name: pin docker-ce version
+  template:
+    src: pin.j2
+    dest: /etc/apt/preferences.d/docker-ce.pref
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: install docker-ce
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+...

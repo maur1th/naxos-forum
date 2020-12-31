@@ -15,8 +15,7 @@
     src: "{{item}}"
     dest: "{{ansible_env.HOME}}/html/"
   with_items:
-    - amazon.html
-    - paypal_gift.html
+    - paypal.html
 
 # Forum server
 - name: stop forum container

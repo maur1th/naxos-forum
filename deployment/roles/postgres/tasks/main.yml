@@ -1,0 +1,66 @@
+---
+##
+## Create Postgres data docker volume
+##
+
+- name: check if volume ({{volume}}) exists
+  command: docker volume inspect {{volume}}
+  register: result
+  ignore_errors: yes
+  changed_when: no
+- name: create volume ({{volume}})
+  command: docker volume create {{volume}}
+  when: result is failed
+
+##
+## Run Postgres container
+##
+
+- name: stop postgres container
+  docker_container:
+    name: postgres
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start postgres container
+  docker_container:
+    name: postgres
+    image: postgres:{{version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{network}}"
+        aliases:
+          - db
+    volumes:
+      - "{{volume}}:/var/lib/postgresql/data"
+
+##
+## Add automated backup mechanism
+##
+
+- name: create host scripts_dir folder
+  file:
+    state: directory
+    path: "{{scripts_dir}}"
+- name: install backup entrypoint script
+  template:
+    src: entrypoint.sh
+    dest: "{{scripts_dir}}/"
+    mode: 0755
+- name: add postgres backup cron
+  cron:
+    name: postgres backup
+    job: >
+      docker container run --rm
+      --network={{network}}
+      --volume {{scripts_dir}}/entrypoint.sh:/entrypoint.sh:ro
+      --entrypoint /entrypoint.sh
+      postgres:{{version}}
+    hour: "4"
+    minute: "10"
+...

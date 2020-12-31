@@ -7,11 +7,55 @@
   with_items:
     - "{{nginx_dir}}"
     - "{{nginx_dir}}/conf.d"
+- name: copy dhparam
+  copy:
+    src: ffdhe4096
+    dest: "{{nginx_dir}}/"
 - name: install nginx configuration files
   template:
     src: "{{item}}"
     dest: "{{nginx_dir}}/conf.d/"
   with_items:
+    - default.conf
+    - http.conf
     - forum.conf
   notify: reload nginx
+
+# Nginx container
+- name: stop nginx container
+  docker_container:
+    name: nginx
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start nginx container
+  docker_container:
+    name: nginx
+    image: nginx:{{version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: nginx
+        aliases:
+          - nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "{{nginx_dir}}/conf.d:/etc/nginx/conf.d:ro"
+      - "{{nginx_dir}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "{{ansible_env.HOME}}/data:/data:ro"
+
+# Reload conf daily (ensure certs are up-to-date)
+- name: Add nginx reload cron job
+  cron:
+    name: reload nginx
+    minute: "10"
+    hour: "4"
+    job: docker kill --signal=SIGHUP nginx
 ...

@@ -4,6 +4,7 @@
   vars:
     network: "{{project_name}}"
   roles:
+    - name: common
     - name: docker_network
       networks:
         - "{{network}}"

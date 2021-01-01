@@ -10,7 +10,7 @@
       networks:
         - postgres
         - nginx
-        - "{{network}}"
+        - "{{project_name}}"
     - name: postgres
       version: "10"
     - name: memcached

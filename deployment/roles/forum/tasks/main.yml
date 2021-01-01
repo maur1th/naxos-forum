@@ -12,10 +12,8 @@
 
 - name: copy ad html snippets
   copy:
-    src: "{{item}}"
+    src: paypal.html
     dest: "{{ansible_env.HOME}}/html/"
-  with_items:
-    - paypal.html
 
 # Forum server
 - name: stop forum container

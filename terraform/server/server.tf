@@ -27,7 +27,7 @@ resource "aws_instance" "this" {
   ami                  = data.aws_ami.amazon_linux.image_id
   instance_type        = "t4g.micro"
   subnet_id            = random_shuffle.subnet_ids.result[0]
-  security_groups      = [aws_security_group.this.id]
+  security_groups      = [aws_security_group.this.name]
   key_name             = aws_key_pair.tmaurin_change.key_name
   iam_instance_profile = aws_iam_instance_profile.this.name
 

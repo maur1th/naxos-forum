@@ -2,8 +2,6 @@
 set -ex
 
 export S3_BUCKET={{aws_storage_bucket_name}}
-export AWS_ACCESS_KEY_ID={{aws_access_key_id}}
-export AWS_SECRET_ACCESS_KEY={{aws_secret_access_key}}
 
 pg_dumpall -h db -p 5432 -U postgres > db.out
 apt-get update

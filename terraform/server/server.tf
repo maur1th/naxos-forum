@@ -34,15 +34,15 @@ resource "random_shuffle" "subnet_ids" {
   result_count = 1
 }
 
-resource "aws_instance" "geekattitude" {
+resource "aws_instance" "this" {
   ami             = data.aws_ami.amazon_linux.image_id
   instance_type   = "t4g.micro"
   subnet_id       = random_shuffle.subnet_ids.result[0]
-  security_groups = [aws_security_group.geekattitude.id]
+  security_groups = [aws_security_group.this.id]
   key_name        = aws_key_pair.tmaurin_change.key_name
 
   tags = {
-    Name = "geekattitude"
+    Name = local.name
   }
 
   lifecycle {
@@ -50,7 +50,7 @@ resource "aws_instance" "geekattitude" {
   }
 }
 
-resource "aws_eip" "geekattitude" {
-  instance = aws_instance.geekattitude.id
+resource "aws_eip" "this" {
+  instance = aws_instance.this.id
   vpc      = true
 }

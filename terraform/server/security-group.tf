@@ -1,5 +1,5 @@
-resource "aws_security_group" "geekattitude" {
-  name   = "geekattitude"
+resource "aws_security_group" "this" {
+  name   = local.name
   vpc_id = data.aws_vpc.selected.id
 
   ingress {
@@ -34,6 +34,6 @@ resource "aws_security_group" "geekattitude" {
   }
 
   tags = {
-    Name = "geekattitude"
+    Name = local.name
   }
 }

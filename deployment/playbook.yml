@@ -19,7 +19,7 @@
       version: "{{app_version}}"
       network: "{{project_name}}"
     - name: certbot-ovh
-      domain: "{{inventory_hostname}}"
+      domain: geekattitude.org
     - name: nginx
       version: "1.18"
     # - name: metrics

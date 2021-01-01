@@ -49,7 +49,6 @@
       - "{{nginx_dir}}/conf.d:/etc/nginx/conf.d:ro"
       - "{{nginx_dir}}/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
-      - "{{ansible_env.HOME}}/data:/data:ro"
 
 # Reload conf daily (ensure certs are up-to-date)
 - name: Add nginx reload cron job

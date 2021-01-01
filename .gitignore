@@ -15,8 +15,11 @@
 /app/forum/static_root
 secret.txt
 
-# Ansible
+## Ansible
 *.retry
+
+## Terraform
+.terraform
 
 ## NodeJS
 **node_modules/

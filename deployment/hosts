@@ -2,6 +2,6 @@
 geekattitude.org
 
 [app:vars]
-ansible_python_interpreter=/usr/bin/python3
-ansible_user=root
+ansible_python_interpreter=/usr/bin/python2
+ansible_user=ec2-user
 debug_mode=False

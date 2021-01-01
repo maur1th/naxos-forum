@@ -10,7 +10,7 @@
 - name: copy dhparam
   copy:
     src: ffdhe4096
-    dest: "{{nginx_dir}}/"
+    dest: "{{nginx_dir}}/dhparam.pem"
 - name: install nginx configuration files
   template:
     src: "{{item}}"

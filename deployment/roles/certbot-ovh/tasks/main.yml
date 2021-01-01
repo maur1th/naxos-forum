@@ -15,12 +15,12 @@
 - name: Initial cert request for {{domain}}
   docker_container:
     name: certbot
-    image: certbot/dns-ovh
+    image: certbot/dns-ovh:arm64v8-latest
     volumes:
       - "{{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
-    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{domain}}
+    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{domain}} -m {{email_address}} --agree-tos
     detach: no
     cleanup: yes
   when: domain_path.stat.isdir is not defined

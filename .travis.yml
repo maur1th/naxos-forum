@@ -1,8 +1,7 @@
-dist: trusty
-sudo: required
 arch:
   - amd64
   - arm64
+os: linux
 
 language: python
 python:

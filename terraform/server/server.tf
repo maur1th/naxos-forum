@@ -14,17 +14,6 @@ data "aws_ami" "amazon_linux" {
   owners = ["137112412989"]
 }
 
-# data "aws_subnet" "default" {
-#   count = 3
-
-#   availability_zone_id = "usw2-az${count.index + 1}"
-
-#   filter {
-#     name   = "tag:Tier"
-#     values = ["Private"]
-#   }
-# }
-
 data "aws_subnet_ids" "selected" {
   vpc_id = data.aws_vpc.selected.id
 }

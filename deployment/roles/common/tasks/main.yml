@@ -6,6 +6,7 @@
 - name: install yum common dependencies
   yum:
     name:
+      - htop
       - python2-pip
 
 # Timezone

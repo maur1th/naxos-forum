@@ -7,12 +7,12 @@
     group: root
     mode: 0600
 
-- name: Check if {{domain}} is already configured
+- name: Check if {{domains[0]}} is already configured
   stat:
-    path: /etc/letsencrypt/live/{{domain}}
+    path: /etc/letsencrypt/live/{{domains[0]}}
   register: domain_path
 
-- name: Initial cert request for {{domain}}
+- name: Initial cert request for {{domains[0]}}
   docker_container:
     name: certbot
     image: certbot/dns-ovh:arm64v8-latest
@@ -20,7 +20,7 @@
       - "{{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
-    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{domain}} -m {{email_address}} --agree-tos
+    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{' -d '.join(domains)}} -m {{email_address}} --non-interactive --agree-tos --expand
     detach: no
     cleanup: yes
   when: domain_path.stat.isdir is not defined

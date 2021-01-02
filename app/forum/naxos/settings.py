@@ -49,8 +49,8 @@ SECRET_KEY = SECRET_KEY
 
 # Sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-SESSION_COOKIE_SECURE = False  # True for full HTTPS
-CSRF_COOKIE_SECURE = False     # True for full HTTPS
+SESSION_COOKIE_SECURE = True   # True for full HTTPS
+CSRF_COOKIE_SECURE = True      # True for full HTTPS
 SESSION_COOKIE_AGE = 15552000  # 6 months
 
 

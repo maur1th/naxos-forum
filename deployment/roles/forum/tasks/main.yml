@@ -41,7 +41,7 @@
 - name: launch forum container
   docker_container:
     name: forum
-    image: "{{forum_image}}:{{version}}"
+    image: "{{forum_image}}:{{app_version}}"
     pull: yes
     state: started
     restart_policy: unless-stopped
@@ -88,7 +88,7 @@
 - name: launch websocket container
   docker_container:
     name: websocket
-    image: "{{websocket_image}}:{{version}}"
+    image: "{{websocket_image}}:{{app_version}}"
     pull: yes
     state: started
     restart_policy: unless-stopped

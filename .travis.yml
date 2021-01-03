@@ -20,13 +20,12 @@ services:
 before_install:
   - docker pull $REPO  # Get cache
 script:
-  - export TAG=`if [ -n "$TRAVIS_TAG" ]; then echo "$TRAVIS_TAG"; else echo $TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER; fi`
-  - docker build --cache-from $REPO --build-arg VERSION=$TAG --tag $REPO $SRC
-  - docker tag $REPO{,:$TAG}
+  - docker build --cache-from $REPO --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
+  - docker tag $REPO{,:$TRAVIS_COMMIT}
   - sonar-scanner
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push $REPO:$TAG
+  - docker push $REPO:$TRAVIS_COMMIT
   - docker push $REPO
 
 # jobs:

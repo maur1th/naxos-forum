@@ -16,7 +16,6 @@
     - name: memcached
       version: "1.6"
     - name: forum
-      version: "{{app_version}}"
       network: "{{project_name}}"
     - name: certbot-ovh
       domains:

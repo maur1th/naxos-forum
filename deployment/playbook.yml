@@ -12,7 +12,7 @@
         - nginx
         - "{{project_name}}"
     - name: postgres
-      version: "10-alpine"
+      version: "13-alpine"
     - name: memcached
       version: "1.6-alpine"
     - name: forum

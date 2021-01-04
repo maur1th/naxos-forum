@@ -6,10 +6,12 @@ from django.views.static import serve
 
 from django.conf import settings
 
+from . import views
 
 urlpatterns = [
     path('', RedirectView.as_view(url=reverse_lazy('forum:top'),
          permanent=True)),
+    path('version', views.get_version),
     path('forum/', include('forum.urls')),
     path('user/', include('user.urls')),
     path('messages/', include('pm.urls')),

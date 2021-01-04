@@ -1,6 +1,6 @@
-arch:
-  - arm64
 os: linux
+arch:
+  - arm64-graviton2
 
 language: python
 python:

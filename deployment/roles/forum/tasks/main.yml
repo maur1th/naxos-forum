@@ -62,8 +62,6 @@
       DB_USER: "{{db_user}}"
       DB_PASSWORD: "{{db_password}}"
       AWS_STORAGE_BUCKET_NAME: "{{aws_storage_bucket_name}}"
-      AWS_ACCESS_KEY_ID: "{{aws_access_key_id}}"
-      AWS_SECRET_ACCESS_KEY: "{{aws_secret_access_key}}"
       EMAIL_HOST: "{{email_host}}"
       EMAIL_PORT: "{{email_port}}"
       SERVER_EMAIL: "{{server_email}}"  # email address to use

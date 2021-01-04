@@ -41,5 +41,8 @@ Admin website is accessible from http://localhost:8080.
 Deployment
 ---------------
 ```bash
+# Deploy latest Docker images
+$ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml
+# Deploy specific commit
 $ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml -e "app_version=<version>"
 ```

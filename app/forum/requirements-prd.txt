@@ -1,4 +1,4 @@
 -r requirements.txt  # includes the base requirements file
 
-boto3<1.5
-gunicorn<19.8
+boto3<2
+gunicorn<21

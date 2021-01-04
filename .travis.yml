@@ -9,11 +9,6 @@ env:
   - REPO=maur1th/naxos-forum SRC=app/forum
   - REPO=maur1th/naxos-websocket SRC=app/websocket
 
-# SonarQube
-addons:
-  sonarcloud:
-    organization: default
-
 # App
 services:
   - docker
@@ -22,7 +17,6 @@ before_install:
 script:
   - docker build --cache-from $REPO --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
   - docker tag $REPO{,:$TRAVIS_COMMIT}
-  - sonar-scanner
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push $REPO:$TRAVIS_COMMIT

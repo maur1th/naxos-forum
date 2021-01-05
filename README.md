@@ -1,13 +1,13 @@
-Naxos
-=====
-Purpose
--------
+# Naxos
+
+## Purpose
+
 Bulletin board project created to replace a [CoolForum](https://github.com/dsoriano/coolforum) solution. (Including DB migration script.) Comes with a light community blog.
 
 Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Frontend in BootStrap + JQuery. Node.js + Socket.io for some realtime capabilities. Deploys with Docker & Ansible.
 
-Getting started
----------------
+## Getting started
+
 ### Prerequisite
 Install [Docker](https://www.docker.com/community-edition)
 
@@ -35,11 +35,8 @@ Out of the box, you will be able to log in using those credentials:
 - Username: "admin"
 - Password: "crimson"
 
-#### Note
-Admin website is accessible from http://localhost:8080.
+## Deployment
 
-Deployment
----------------
 ```bash
 # Deploy latest Docker images
 $ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml

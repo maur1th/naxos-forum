@@ -50,6 +50,4 @@ services:
 volumes:
   forum-db: {}
   forum-media: {}
-  prometheus-storage: {}
-  grafana-storage: {}
 ...

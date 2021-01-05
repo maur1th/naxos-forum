@@ -35,6 +35,14 @@ Out of the box, you will be able to log in using those credentials:
 - Username: "admin"
 - Password: "crimson"
 
+#### Create new fixtures
+
+```sh
+python3 manage.py dumpdata --natural-foreign \
+   --exclude auth.permission --exclude contenttypes \
+   --indent 4 > data.json
+```
+
 ## Deployment
 
 ```bash

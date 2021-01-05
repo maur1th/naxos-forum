@@ -73,6 +73,18 @@ table.table tbody>tr>td.vert-align{
 textarea {
     resize: vertical;
 }
+/* Ensure author div and content div stay the same size */
+.row.equal-divs {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
 /* Thread specific view */
 .thread-icon {
     float: left;
@@ -100,7 +112,6 @@ div.post-author {
 }
 div.post {
     background-color: #ececec;
-    height: 100%;
     padding-top: 5px;
     padding-bottom: 10px;
 }

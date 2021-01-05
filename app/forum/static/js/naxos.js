@@ -26,19 +26,6 @@ function scrollToPosition($textarea, caret) {
 
 // Document ready jquery
 $(document).ready(function (){
-
-  // Ensure author div and content div stay the same size
-  // supporting code in grid.js
-  $('.equal-divs').responsiveEqualHeightGrid();
-  // Ensure presentation is ok while media still loading
-  var x = setInterval(function () {
-    $('.equal-divs').responsiveEqualHeightGrid();
-  }, 500);
-  $(window).load(function () {
-    // Stops presentation refresh when everything loaded
-    clearInterval(x);
-  });
-
   // Post customization
   $('.post-content img').load(function () {
       if ($(this).width() > 100) {
@@ -127,7 +114,6 @@ $(document).ready(function (){
           clearInterval(spoiler_anim);
       });
       let $row = $spoiler.parents('.row');
-      $row.children('.equal-divs').responsiveEqualHeightGrid();
     }, 20);
   });
 });

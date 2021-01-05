@@ -27,11 +27,6 @@ function scrollToPosition($textarea, caret) {
 // Document ready jquery
 $(document).ready(function (){
   // Post customization
-  $('.post-content img').load(function () {
-      if ($(this).width() > 100) {
-        $(this).addClass('img-responsive');
-      }
-  });
   $('.panel-body .panel').remove();  // Remove inner spoiler tags
   $('blockquote blockquote').remove();
   $('.post-content a').attr('target', '_blank');

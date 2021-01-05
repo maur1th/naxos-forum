@@ -1,5 +1,43 @@
 import re
-from postmarkup import PostMarkup, TagBase
+from urllib.parse import urlparse
+from postmarkup import PostMarkup, TagBase, strip_bbcode
+
+
+class CustomImgTag(TagBase):
+
+    def __init__(self, name, **kwargs):
+        super(CustomImgTag, self).__init__(name, inline=True)
+
+    def open(self, parser, params, *args):
+        if params.strip():
+            self.auto_close = True
+        super(CustomImgTag, self).open(parser, params, *args)
+
+    def render_open(self, parser, node_index):
+
+        contents = self.get_contents(parser)
+        self.skip_contents(parser)
+
+        # Validate url to avoid any XSS attacks
+        if self.params:
+            url = self.params.strip()
+        else:
+            url = strip_bbcode(contents)
+
+        url = url.replace(u'"', u"%22").strip()
+        if not url:
+            return u''
+        try:
+            scheme, netloc, path, params, query, fragment = urlparse(url)
+            if not scheme:
+                url = u'http://' + url
+                scheme, netloc, path, params, query, fragment = urlparse(url)
+        except ValueError:
+            return u''
+        if scheme.lower() not in (u'http', u'https', u'ftp'):
+            return u''
+
+        return u'<img class="img-responsive" src="%s"></img>' % PostMarkup.standard_replace_no_break(url)
 
 
 class SpoilerTag(TagBase):

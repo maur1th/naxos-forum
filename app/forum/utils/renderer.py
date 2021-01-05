@@ -8,7 +8,7 @@ import os
 import postmarkup
 import markdown
 
-from .extra_tags import SpoilerTag, VideoTag
+from .extra_tags import CustomImgTag, SpoilerTag, VideoTag
 
 
 # Process search queries
@@ -157,7 +157,8 @@ def rm_legacy_tags(text):
 
 
 # Rendering
-render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False)
+render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, exclude=["img"])
+render_bbcode.add_tag(CustomImgTag, 'img')
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
 render_bbcode.add_tag(VideoTag, 'video')
 

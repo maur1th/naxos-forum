@@ -4,7 +4,7 @@ arch:
 
 language: python
 python:
-  - "3.6"
+  - "3.9"
 env:
   - REPO=maur1th/naxos-forum SRC=app/forum
   - REPO=maur1th/naxos-websocket SRC=app/websocket

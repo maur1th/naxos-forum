@@ -12,7 +12,7 @@ COPY requirements* /
 RUN if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements-dev.txt --target /packages; \
     else \
-        pip3 install -r requirements-prd.txt --target /packages; \
+        pip3 install -r requirements.txt --target /packages; \
     fi
 
 FROM python:3.9-alpine

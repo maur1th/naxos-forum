@@ -4,7 +4,7 @@ arch:
 
 language: python
 python:
-  - "3.6"
+  - "3.9"
 env:
   - REPO=maur1th/naxos-forum SRC=app/forum
   - REPO=maur1th/naxos-websocket SRC=app/websocket
@@ -12,33 +12,13 @@ env:
 # App
 services:
   - docker
-before_install:
-  - docker pull $REPO  # Get cache
 script:
-  - docker build --cache-from $REPO --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
+  - docker build --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
   - docker tag $REPO{,:$TRAVIS_COMMIT}
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker push $REPO:$TRAVIS_COMMIT
   - docker push $REPO
-
-# jobs:
-#   include:
-#     - stage: deploy
-#       deploy:
-#         on:
-#           branch: master
-#         provider: script
-#         script:
-#           - pip3 install $ANSIBLE
-#           - echo $PRIVATE_KEY > /private_key
-#           - echo $VAULT_PASS > /vault_pass
-#           - ansible-playbook site.yml \
-#               --inventory-file=hosts-prod \
-#               --vault-password-file=/vault_pass \
-#               --private-key=/private_key \
-#               --extra-vars="version=latest"
-#       env: ANSIBLE="ansible<2.4"
 
 notifications:
   email: false

@@ -12,10 +12,8 @@ env:
 # App
 services:
   - docker
-before_install:
-  - docker pull $REPO  # Get cache
 script:
-  - docker build --cache-from $REPO --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
+  - docker build --build-arg VERSION=$TRAVIS_COMMIT --tag $REPO $SRC
   - docker tag $REPO{,:$TRAVIS_COMMIT}
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"

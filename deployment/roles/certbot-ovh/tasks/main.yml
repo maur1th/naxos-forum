@@ -35,5 +35,5 @@
       -v {{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro
       -v /etc/letsencrypt:/etc/letsencrypt
       -v /var/lib/letsencrypt:/var/lib/letsencrypt
-      certbot/dns-ovh renew
+      certbot/dns-ovh:arm64v8-latest renew
 ...

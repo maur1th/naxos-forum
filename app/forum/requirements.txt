@@ -4,15 +4,15 @@
 #
 #    pip-compile
 #
-boto3==1.16.63
+boto3==1.17.54
     # via -r requirements.in
-botocore==1.19.63
+botocore==1.20.54
     # via
     #   boto3
     #   s3transfer
-colorlog==4.7.2
+colorlog==5.0.1
     # via -r requirements.in
-django-crispy-forms==1.11.0
+django-crispy-forms==1.11.2
     # via -r requirements.in
 django-prometheus==2.1.0
     # via -r requirements.in
@@ -20,11 +20,11 @@ django-storages==1.11.1
     # via -r requirements.in
 django-uuslug==1.1.9
     # via -r requirements.in
-django==2.2.18
+django==2.2.20
     # via
     #   -r requirements.in
     #   django-storages
-gunicorn==20.0.4
+gunicorn==20.1.0
     # via -r requirements.in
 jmespath==0.10.0
     # via
@@ -32,11 +32,11 @@ jmespath==0.10.0
     #   botocore
 markdown==3.1.1
     # via -r requirements.in
-pillow==8.1.0
+pillow==8.2.0
     # via -r requirements.in
 postmarkup==1.2.2
     # via -r requirements.in
-prometheus-client==0.9.0
+prometheus-client==0.10.1
     # via django-prometheus
 psycopg2==2.8.6
     # via -r requirements.in
@@ -48,7 +48,7 @@ python-slugify==4.0.1
     # via django-uuslug
 pytz==2021.1
     # via django
-s3transfer==0.3.4
+s3transfer==0.4.0
     # via boto3
 setproctitle==1.2.2
     # via -r requirements.in
@@ -60,7 +60,7 @@ sqlparse==0.4.1
     # via django
 text-unidecode==1.3
     # via python-slugify
-urllib3==1.26.3
+urllib3==1.26.4
     # via botocore
 
 # The following packages are considered to be unsafe in a requirements file:

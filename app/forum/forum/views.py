@@ -563,5 +563,5 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         context['model'] = model
         context['query'] = self.query
         context['results_count'] = self.results_count
-        context['query_url'] = 'q=' + self.query + '&amp;'
+        context['query_url'] = 'q=' + self.query + '&'
         return context

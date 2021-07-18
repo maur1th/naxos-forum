@@ -17,7 +17,6 @@ urlpatterns = [
     path('messages/', include('pm.urls')),
     path('blog/', include('blog.urls')),
     path('admin/', admin.site.urls),
-    path('', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:

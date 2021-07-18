@@ -5,7 +5,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from django_prometheus.models import ExportModelOperationsMixin
 from uuslug import uuslug
 
 from utils.renderer import render
@@ -55,7 +54,7 @@ class Category(models.Model):
         return self.slug
 
 
-class Thread(ExportModelOperationsMixin('thread'), CachedAuthorModel):
+class Thread(CachedAuthorModel):
     """Contains posts."""
     slug = models.SlugField(max_length=SLUG_LENGTH)
     title = models.CharField(max_length=140, verbose_name='Titre')
@@ -146,7 +145,7 @@ class Thread(ExportModelOperationsMixin('thread'), CachedAuthorModel):
         return "{}/{}".format(self.category.slug, self.slug)
 
 
-class Post(ExportModelOperationsMixin('post'), CachedAuthorModel):
+class Post(CachedAuthorModel):
     """A post."""
     created = models.DateTimeField(default=timezone.now,
                                    editable=False)

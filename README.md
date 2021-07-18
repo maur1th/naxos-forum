@@ -45,9 +45,17 @@ python3 manage.py dumpdata --natural-foreign \
 
 ## Deployment
 
+### Application
+
 ```bash
 # Deploy latest Docker images
 $ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml
 # Deploy specific commit
 $ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml -e "app_version=<version>"
+```
+
+### Static files
+
+```bash
+docker-compose run -e LOCAL_ENV=0 -e AWS_STORAGE_BUCKET_NAME=geekattitude -e AWS_ACCESS_KEY_ID=foo -e AWS_SECRET_ACCESS_KEY=bar --entrypoint "python3 manage.py collectstatic --no-input" forum
 ```

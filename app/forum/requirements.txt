@@ -30,7 +30,7 @@ jmespath==0.10.0
     #   botocore
 markdown==3.1.1
     # via -r requirements.in
-pillow==8.3.2
+pillow==9.0.0
     # via -r requirements.in
 postmarkup==1.2.2
     # via -r requirements.in

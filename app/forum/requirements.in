@@ -6,7 +6,7 @@ django-uuslug<1.2
 Django>=2.1,<2.3
 gunicorn<21
 markdown<3.2
-Pillow<9
+Pillow<10
 postmarkup<1.3
 psycopg2<2.9
 pylibmc<1.7

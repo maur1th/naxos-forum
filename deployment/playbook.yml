@@ -12,9 +12,9 @@
         - nginx
         - "{{project_name}}"
     - name: postgres
-      version: "13-alpine"
+      version: "13.5"
     - name: memcached
-      version: "1.6-alpine"
+      version: "1.6"
     - name: forum
       network: "{{project_name}}"
     - name: certbot-ovh
@@ -22,7 +22,7 @@
         - geekattitude.org
         - www.geekattitude.org
     - name: nginx
-      version: "1.18-alpine"
+      version: "1.20"
     # - name: metrics
     #   prometheus_version: latest  # until they have a better taging policy
     #   cadvisor_version: latest    # ...

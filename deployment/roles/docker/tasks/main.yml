@@ -9,6 +9,15 @@
     name:
       - docker
 
+- name: install daemon.json
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0744
+  notify: restart docker service
+
 - name: enable and start service docker
   service:
     name: docker

@@ -1,0 +1,9 @@
+{
+  "log-driver": "awslogs",
+  "log-opts": {
+    "awslogs-region": "eu-west-1",
+    "awslogs-group": "geekattitude",
+    "awslogs-create-group": "false",
+    "tag": "{{.Name}}"
+  }
+}

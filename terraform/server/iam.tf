@@ -40,6 +40,13 @@ data "aws_iam_policy_document" "permissions" {
     ]
     resources = ["${data.aws_s3_bucket.this.arn}*"]
   }
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "permissions" {

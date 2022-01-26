@@ -31,9 +31,7 @@ resource "aws_instance" "this" {
   key_name             = aws_key_pair.tmaurin_change.key_name
   iam_instance_profile = aws_iam_instance_profile.this.name
 
-  tags = {
-    Name = local.name
-  }
+  tags = local.tags
 
   lifecycle {
     ignore_changes = [ami]
@@ -44,7 +42,5 @@ resource "aws_eip" "this" {
   instance = aws_instance.this.id
   vpc      = true
 
-  tags = {
-    Name = local.name
-  }
+  tags = local.tags
 }

@@ -9,7 +9,8 @@ RUN apk add --no-cache \
         zlib-dev \
         cyrus-sasl-dev
 COPY requirements* /
-RUN if [ $LOCAL_ENV -eq 1 ]; then \
+RUN pip install setuptools==57.5.0 && \
+    if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements-dev.txt --target /packages; \
     else \
         pip3 install -r requirements.txt --target /packages; \

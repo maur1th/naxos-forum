@@ -17,4 +17,4 @@ WORKDIR $HOME
 RUN yarn --ignore-optional --pure-lockfile --production=true
 
 EXPOSE $PORT
-CMD node server.js $PORT
+CMD node server.js

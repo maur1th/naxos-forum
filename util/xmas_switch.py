@@ -39,7 +39,7 @@ if xmas_enabled:
         Bucket=bucket,
         Key=xmas_marker)
 else:
-    print("Enabling XMAS smileys")
+    print("Enable XMAS smileys")
     for smiley in filter(lambda s: s in xmas_smileys, regular_smileys):
         print(f"Copying {smiley} to {backup_dir}")
         client.copy_object(

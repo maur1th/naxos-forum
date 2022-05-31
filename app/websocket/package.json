@@ -4,7 +4,6 @@
   "dependencies": {
     "cookie": "^0.3",
     "request": "^2.88",
-    "socket.io": "^3.0",
-    "winston": "^2.3"
+    "socket.io": "^3.0"
   }
 }

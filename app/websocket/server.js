@@ -2,9 +2,7 @@
 const http = require('http');
 const cookie_reader = require('cookie');
 const request = require('request');
-const winston = require('winston');
 
-winston.level = 'info';
 const {PORT, DEBUG, FORUM_URI} = process.env;
 
 const app = http.createServer().listen(PORT);
@@ -25,7 +23,7 @@ const handleConnection = (socket, user) => {
     connected_users[user] += 1;
   } else {
     connected_users[user] = 1;
-    winston.info(user + ' connected');
+    console.log(user + ' connected');
     // Tell django the user has come online
     request({url, qs: {sessionid: user, status: 'connected'}});
   }
@@ -36,7 +34,7 @@ const handleDisconnection = (socket, user) => {
     setTimeout(() => {
       if (connected_users[user] === 1) {
         delete connected_users[user];
-        winston.info(user + ' disconnected');
+        console.log(user + ' disconnected');
         // Tell django the user is now offline
         request({url, qs: {sessionid: user, status: 'disconnected'}});
       } else {

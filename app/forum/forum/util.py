@@ -1,4 +1,3 @@
-from django.utils.six.moves.html_parser import HTMLParser
 from django.template.defaultfilters import urlize as django_urlize
 from django.db.models import Q
 from django.conf import settings

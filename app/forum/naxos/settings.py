@@ -44,17 +44,19 @@ else:
 RAW_HOSTS = (os.environ.get("HOSTNAME"), os.environ.get("HOST_IP_ADDRESS"), "forum", "localhost")
 ALLOWED_HOSTS = tuple(filter(lambda x: x != None, RAW_HOSTS))
 SECRET_KEY = SECRET_KEY
+if os.environ["LOCAL_ENV"] != "1":
+    SESSION_COOKIE_SECURE = True   # True for full HTTPS
+    CSRF_COOKIE_SECURE = True      # True for full HTTPS
 
 
 # Sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-SESSION_COOKIE_SECURE = True   # True for full HTTPS
-CSRF_COOKIE_SECURE = True      # True for full HTTPS
 SESSION_COOKIE_AGE = 15552000  # 6 months
 
 
 # App conf
 ADMINS = ((os.environ.get("ADMIN_NAME"), os.environ.get("ADMIN_EMAIL")),)
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 INSTALLED_APPS = (
     # Django Apps
     "django.contrib.admin",
@@ -116,6 +118,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
+                "django.template.context_processors.request",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",

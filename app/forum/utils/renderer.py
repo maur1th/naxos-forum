@@ -1,4 +1,4 @@
-from django.utils.six.moves.html_parser import HTMLParser
+from html.parser import HTMLParser
 from django.conf import settings
 
 from urllib.parse import quote

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.template.defaultfilters import filesizeformat
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext, gettext_lazy as _
 
 from PIL import Image
 from crispy_forms.helper import FormHelper

@@ -1,4 +1,4 @@
-FROM python:3.9-alpine AS builder
+FROM python:3.10-alpine AS builder
 ARG LOCAL_ENV
 RUN apk add --no-cache \
         build-base \
@@ -16,7 +16,7 @@ RUN pip install setuptools==57.5.0 && \
         pip3 install -r requirements.txt --target /packages; \
     fi
 
-FROM python:3.9-alpine
+FROM python:3.10-alpine
 MAINTAINER thomas@maurin.io
 ENV HOME=/app \
     PYTHONPATH=/packages \

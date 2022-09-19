@@ -13,7 +13,7 @@
 {% if object_list %}
 {% include "pagination.html" %}
 <hr style="margin:8px; border-top:0">
-  {% ifequal model 'thread' %}
+  {% if model == 'thread' %}
   <table class="table table-condensed table-bordered" id="view">
     <thead>
     <tr>
@@ -78,8 +78,8 @@
 </div>
 {% include "pagination.html" %}
 {% include "forum/caption.html" %}
-{% endifequal %}
-{% ifequal model 'post' %}
+{% endif %}
+{% if model == 'post' %}
     <strong>
         <div class="col-sm-2 hidden-xs text-left post-header" style="border-right:1px solid #f9f9f9">
           Auteur
@@ -132,6 +132,6 @@
 {% endfor %}
 <hr style="margin:8px; border-top:0">
 {% include "pagination.html" %}
-{% endifequal %}
+{% endif %}
 {% endif %}
 {% endblock %}

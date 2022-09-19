@@ -91,11 +91,11 @@
     {# Author #}
     <div class="col-xs-2 text-center hidden-xs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2; word-wrap:break-word;"> {# large display #}
         <p style="margin-bottom:5px">
-        {% ifequal post.cached_author user %} 
+        {% if post.cached_author == user %}
             <strong>{{ post.cached_author }}</strong>
         {% else %}
             <strong><a class="author" role="button" tabindex="0" role="button" data-toggle="popover" data-id="{{ post.cached_author.pk }}" data-content="<a class='send-pm btn btn-sm btn-default' role='button' data-toggle='modal' data-target='#pm-modal'>Envoyer un message privé</a>">{{ post.cached_author }}</a></strong>
-        {% endifequal %}
+        {% endif %}
         </p>
         {% if post.cached_author.quote %}
             <p style="line-height:100%"><small>{{ post.cached_author.quote }}</small></p>
@@ -119,9 +119,9 @@
         <span class="hidden-sm hidden-lg hidden-md" style="display:inline"><strong>{{ post.cached_author }}</strong> | </span>
         <small>
             <span class="hidden-xs">Posté le {{ post.created|date:"d/m/y à H:i:s" }}</span><span class="hidden-sm hidden-lg hidden-md">Le {{ post.created|date:"d/m/y à H:i" }}</span>
-            {% ifequal post.cached_author user %}
+            {% if post.cached_author == user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
-            {% endifequal %}
+            {% endif %}
             | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
             | <a href="{% url 'forum:post' post.pk %}"><small><span class="glyphicon glyphicon-link"></span></small></a>
         </small>

@@ -123,7 +123,7 @@
     {% endif %}
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{% ifequal message.tags 'error'  %}danger{% else %}{{ message.tags }}{% endifequal %} messages"><span class="glyphicon glyphicon-exclamation-sign"></span> </span>{{ message }}</div>
+            <div class="alert alert-{% if message.tags == 'error'  %}danger{% else %}{{ message.tags }}{% endif %} messages"><span class="glyphicon glyphicon-exclamation-sign"></span> </span>{{ message }}</div>
         {% endfor %}
     {% endif %}
     {% block content %}

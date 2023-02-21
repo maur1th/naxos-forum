@@ -9,29 +9,36 @@ Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Fron
 ## Getting started
 
 ### Prerequisite
+
 Install [Docker](https://www.docker.com/community-edition)
 
 ### Starting a development environment
+
 The development environment uses `docker-compose`, more information on the CLI usage [here](https://docs.docker.com/compose/reference/).
+
 ```bash
-$ docker-compose up -d          # Start environment
-$ docker-compose logs -f        # Read all components logs
-$ docker-compose logs -f forum  # Read forum component logs
-$ docker-compose exec forum sh  # Execute an interactive shell on the forum container
+docker-compose up -d          # Start environment
+docker-compose logs -f        # Read all components logs
+docker-compose logs -f forum  # Read forum component logs
+docker-compose exec forum sh  # Execute an interactive shell on the forum container
 ```
-The development server is accessible at: http://localhost:8080.
+
+The development server is accessible at: <http://localhost:8080>.
 
 ### Stopping a development environment
+
 ```bash
-$ docker-compose down              # Stop environment (add -v to delete the volumes)
-$ docker volume ls                 # List volumes
-$ docker volume rm naxos_forum-db  # Delete the db
+docker-compose down              # Stop environment (add -v to delete the volumes)
+docker volume ls                 # List volumes
+docker volume rm naxos_forum-db  # Delete the db
 ```
 
 ### Fixtures
+
 Initial data (fixtures) is provided and installed automatically by `docker-entrypoint.sh`.
 
 Out of the box, you will be able to log in using those credentials:
+
 - Username: "admin"
 - Password: "crimson"
 
@@ -41,6 +48,15 @@ Out of the box, you will be able to log in using those credentials:
 python3 manage.py dumpdata --natural-foreign \
    --exclude auth.permission --exclude contenttypes \
    --indent 4 > data.json
+```
+
+## Building
+
+```bash
+docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-forum app/forum
+docker tag maur1th/naxos-forum maur1th/naxos-forum:"$(git rev-list --tags --max-count=1)"
+docker push maur1th/naxos-forum
+docker push maur1th/naxos-forum:"$(git rev-list --tags --max-count=1)"
 ```
 
 ## Deployment

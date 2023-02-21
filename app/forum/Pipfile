@@ -4,9 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pip-tools = "*"
+boto3 = "<2"
+colorlog = "*"
+django-crispy-forms = "<2"
+django-storages = "<2"
+django-uuslug = "<3"
+Django = "<4"
+gunicorn = "<21"
+markdown = "<3.2"
+Pillow = "<10"
+psycopg2-binary = "<3.0"
+pylibmc = "<1.7"
+setproctitle = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

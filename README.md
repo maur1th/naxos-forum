@@ -64,10 +64,14 @@ pipenv requirements > requirements.txt
 ### Docker image
 
 ```bash
-docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-forum app/forum
-docker tag maur1th/naxos-forum maur1th/naxos-forum:"$(git rev-list --tags --max-count=1)"
-docker push maur1th/naxos-forum
-docker push maur1th/naxos-forum:"$(git rev-list --tags --max-count=1)"
+docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-forum app/forum && \
+docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-websocket app/websocket && \
+docker tag maur1th/naxos-forum maur1th/naxos-forum:"$(git rev-parse HEAD)" && \
+docker tag maur1th/naxos-websocket maur1th/naxos-websocket:"$(git rev-parse HEAD)" && \
+docker push maur1th/naxos-forum && \
+docker push maur1th/naxos-forum:"$(git rev-parse HEAD)" && \
+docker push maur1th/naxos-websocket && \
+docker push maur1th/naxos-websocket:"$(git rev-parse HEAD)"
 ```
 
 ## Deployment

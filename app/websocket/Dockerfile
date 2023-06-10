@@ -1,4 +1,4 @@
-FROM alpine:3.12
+FROM alpine:latest
 
 MAINTAINER thomas@maurin.io
 ENV HOME=/app \

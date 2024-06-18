@@ -137,7 +137,7 @@ class Thread(CachedAuthorModel):
 
     class Meta:
         ordering = ["-isSticky", "-modified", "pk"]
-        index_together = ['category', 'slug']
+        indexes = [models.Index(fields=["category", "slug"])]
         # Permit category.threads.latest in template
         get_latest_by = "modified"
 

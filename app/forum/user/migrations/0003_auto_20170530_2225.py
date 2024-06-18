@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
 
 
 class Migration(migrations.Migration):
@@ -27,6 +26,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='forumuser',
             name='resetDateTime',
-            field=models.DateTimeField(default=datetime.datetime(2012, 12, 31, 23, 0, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2012, 12, 31, 23, 0, tzinfo=datetime.timezone.utc)),
         ),
     ]

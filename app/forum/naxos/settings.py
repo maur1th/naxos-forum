@@ -44,6 +44,9 @@ else:
 RAW_HOSTS = (os.environ.get("HOSTNAME"), os.environ.get("HOST_IP_ADDRESS"), "forum", "localhost")
 ALLOWED_HOSTS = tuple(filter(lambda x: x != None, RAW_HOSTS))
 SECRET_KEY = SECRET_KEY
+# https://stackoverflow.com/a/71482883/4122595
+# https://docs.djangoproject.com/en/5.0/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 if os.environ["LOCAL_ENV"] != "1":
     SESSION_COOKIE_SECURE = True   # True for full HTTPS
     CSRF_COOKIE_SECURE = True      # True for full HTTPS

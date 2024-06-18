@@ -53,9 +53,9 @@
           <td class="vert-align importantData">
             <a href="{% url 'pm:msg' conv.pk %}">
             {% for p in conv.participants.all %}
-                {% ifnotequal p user  %}
+                {% if p != user  %}
                     {{ p }}
-                {% endifnotequal %}
+                {% endif %}
             {% endfor %}
             </a>
           </td>

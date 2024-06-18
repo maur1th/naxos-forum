@@ -95,8 +95,8 @@ class Bookmark(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = ('user', 'thread')
-        index_together = ('user', 'thread')
+        unique_together = ("user", "thread")
+        indexes = [models.Index(fields=["user", "thread"])]
         get_latest_by = 'timestamp'
 
     def __str__(self):
@@ -117,8 +117,8 @@ class CategoryTimeStamp(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = ('user', 'category')
-        index_together = ('user', 'category')
+        unique_together = ("user", "category")
+        indexes = [models.Index(fields=["user", "category"])]
 
     def __str__(self):
         return "{} {} {}".format(self.user, self.category, self.timestamp)

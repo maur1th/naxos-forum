@@ -9,7 +9,7 @@ if [ $LOCAL_ENV -eq 1 ]; then
         python3 manage.py loaddata fixtures.json
     fi
     python3 manage.py collectstatic --no-input
-    python3 -Wall manage.py runserver 0.0.0.0:5000
+    python3 -Wall manage.py runserver 0.0.0.0:8080
 else
     exec gunicorn naxos.wsgi:application \
         --workers $WORKERS \

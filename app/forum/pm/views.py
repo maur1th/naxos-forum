@@ -69,8 +69,6 @@ class MessageView(LoginRequiredMixin, ListView):
 class SwitchConversationStatus(LoginRequiredMixin, View):
     """Mark message as unread."""
 
-    # class ResetBookmarks(LoginRequiredMixin, View):
-
     def get(self, request, *args, **kwargs):
         self.c = get_object_or_404(Conversation, pk=kwargs['pk'])
 

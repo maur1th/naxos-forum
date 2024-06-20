@@ -38,5 +38,36 @@
         "user_permissions": [],
         "pmReadCaret": []
     }
+},
+{
+    "model": "user.forumuser",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$IpIzImWrW9wt$BLrWsjq5cWLWVBJSf2PlSEG/Fn17f/DVW5Pc5FcxVic=",
+        "last_login": "2021-01-05T00:05:38.658Z",
+        "is_superuser": true,
+        "username": "test",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2017-07-26T09:42:09.905Z",
+        "emailVisible": false,
+        "subscribeToEmails": true,
+        "mpEmailNotif": false,
+        "showSmileys": false,
+        "fullscreen": false,
+        "showLogosOnSmartphone": true,
+        "logo": "",
+        "quote": "",
+        "website": "",
+        "pmUnreadCount": 0,
+        "resetDateTime": "2012-12-31T23:00:00Z",
+        "last_seen": "2021-01-05T00:05:38.845Z",
+        "groups": [],
+        "user_permissions": [],
+        "pmReadCaret": []
+    }
 }
 ]

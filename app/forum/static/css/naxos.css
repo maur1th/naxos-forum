@@ -150,6 +150,9 @@ a.category:hover {
     vertical-align:bottom;
     padding-bottom:4px;
 }
+.post-content .img-responsive {
+    display:inline-block;
+}
 /* Force some links appearance */
 a.lastMessage:link {
     color: #333333;

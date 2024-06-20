@@ -135,14 +135,36 @@ class VideoTag(TagBase):
             return ""
 
         if self.domain in self.iframe_domains:
-            return (
+            return (''
                 '<div class="embed-responsive embed-responsive-16by9">'
                 '<iframe class="embed-responsive-item" src="{}" '
-                'frameborder="0" allowfullscreen="true"></iframe></div>'
+                'frameborder="0" allowfullscreen="true">'
             ).format(PostMarkup.standard_replace_no_break(self.url))
         elif self.domain:
             return (
-                '<video loop="true" controls="true" src="{}"></video>'
+                '<video loop="true" controls="true" src="{}">'
             ).format(PostMarkup.standard_replace_no_break(self.url))
         else:
             return ""
+
+    def render_close(self, parser, node_index):
+
+        tag_data = parser.tag_data
+        tag_data[u'link_nest_level'] -= 1
+
+        if tag_data[u'link_nest_level'] > 0:
+            return u''
+
+        if self.domain in self.iframe_domains:
+            return u'</iframe></div>'+self.annotate_link(self.domain)
+        elif self.domain:
+            return u'</video>'+self.annotate_link(self.domain)
+        else:
+            return u''
+
+    def annotate_link(self, domain=None):
+
+        if domain and self.annotate_links:
+            return annotate_link(domain)
+        else:
+            return u""

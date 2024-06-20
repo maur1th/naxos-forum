@@ -11,6 +11,8 @@ urlpatterns = [
     path('+/<int:recipient>/', views.NewConversation.as_view(),
          name='new_conv'),
     path('<int:pk>/+', views.NewMessage, name='new_msg'),
+    path('<int:pk>/switch_status', views.SwitchConversationStatus.as_view(),
+         name='switch_status'),
     path('delete_msg/<int:pk>', views.DeleteMessage.as_view(),
          name='delete_msg'),
     re_path(r'^\$$', views.GetConversation, name='search'),

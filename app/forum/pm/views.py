@@ -66,6 +66,26 @@ class MessageView(LoginRequiredMixin, ListView):
         return context
 
 
+class SwitchConversationStatus(LoginRequiredMixin, View):
+    """Mark message as unread."""
+
+    # class ResetBookmarks(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        self.c = get_object_or_404(Conversation, pk=kwargs['pk'])
+
+        try:
+            caret = request.user.pmReadCaret.get(conversation=self.c)
+        except:
+            caret = False
+        if caret:
+            request.user.pmReadCaret.remove(caret)
+        else:
+            m = self.c.messages.latest()
+            request.user.pmReadCaret.add(m)
+        return HttpResponseRedirect(reverse('pm:top'))
+
+
 class NewConversation(LoginRequiredMixin, CreateView):
     model = Conversation
     form_class = ConversationForm

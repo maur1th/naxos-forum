@@ -117,7 +117,8 @@ div.post {
 }
 .post blockquote {
     background-color: #f9f9f9;
-    margin: 10px 0 20px;
+    margin: 10px 0 0px;
+    font-size: 14px;
 }
 /* Search specific view */
 a.category {

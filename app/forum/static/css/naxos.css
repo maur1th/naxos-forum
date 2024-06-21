@@ -150,6 +150,10 @@ a.category:hover {
     vertical-align:bottom;
     padding-bottom:4px;
 }
+.post-content u.user-tag {
+  border-bottom: 1px dashed #999;
+  text-decoration: none;
+}
 .post-content .img-responsive {
     display:inline-block;
 }

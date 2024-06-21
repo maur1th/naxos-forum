@@ -7,6 +7,7 @@ app_name = 'forum'
 urlpatterns = [
     path('', views.CategoryView.as_view(), name='top'),
     path('search/', views.SearchView.as_view(), name='search'),
+    path('mentions/', views.UserMentionsView.as_view(), name='mentions'),
     path('<slug:category_slug>/', views.ThreadView.as_view(),
          name='category'),
     path('<slug:category_slug>/<slug:thread_slug>/',

@@ -8,6 +8,7 @@ import os
 import postmarkup
 import markdown
 
+from user.models import ForumUser
 from .extra_tags import CustomImgTag, SpoilerTag, VideoTag
 
 
@@ -107,7 +108,7 @@ def compile_smileys():
     smileys = get_smileys(settings.STATICFILES_DIRS[0])
     double_colon = filter(lambda s: not s.startswith("special-"), smileys)
     all_smileys = (
-        [(r":-?\/", "bof")] +  # 1st to avoid replacing other simleys' http://
+        [(r":-?\/", "bof")] +  # 1st to avoid replacing other smileys' http://
         [(":" + re.escape(s) + ":", s) for s in double_colon] +
         special_smileys
     )
@@ -156,16 +157,48 @@ def rm_legacy_tags(text):
     return text
 
 
+class UserReferences:
+
+    matching_pattern = r"(?i)(^| |\n|\])@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)"
+
+    def __init__(self, text):
+        self.text = text
+
+    def __render_tag(self, matchobj):
+        user = ForumUser.objects.filter(username=matchobj.group(2)).first()
+        if user:
+            return matchobj.group(1) + "[user]@" + matchobj.group(2) + "[/user]"
+        else:
+            return matchobj.group(1) + "@" + matchobj.group(2)
+
+    def render(self):
+        return re.sub(self.matching_pattern, self.__render_tag, self.text)
+
+    def get_users(self):
+        processed_names = []
+        match_iter = re.finditer(self.matching_pattern, self.text)
+        for matchobj in match_iter:
+            name = matchobj.group(2)
+            if name in processed_names:
+                continue
+            processed_names.append(name)
+            user = ForumUser.objects.filter(username=matchobj.group(2)).first()
+            if user:
+                yield user
+
+
 # Rendering
 render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, exclude=["img"])
 render_bbcode.add_tag(CustomImgTag, 'img')
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
+render_bbcode.add_tag(postmarkup.SimpleTag, 'user', "u class='user-tag'")
 render_bbcode.add_tag(VideoTag, 'video')
 
 
 def render(text, markup='bbcode'):
     if markup == 'bbcode':
         text = rm_legacy_tags(text)  # TODO: make db migration instead
+        text = UserReferences(text).render()
         return smilify(render_bbcode(text, cosmetic_replace=False))
     elif markup == 'markdown':
         return markdown.markdown(text, safe_mode='escape')

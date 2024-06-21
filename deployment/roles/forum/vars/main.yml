@@ -2,7 +2,7 @@
 forum_image: maur1th/naxos-forum
 websocket_image: maur1th/naxos-websocket
 
-email_host: "64.233.167.108"
+email_host: "smtp.gmail.com"
 email_port: "587"
 server_email: "{{vault_server_email}}"  # email address to use
 email_host_password: "{{vault_email_host_password}}"

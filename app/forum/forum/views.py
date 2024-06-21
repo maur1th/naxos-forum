@@ -32,13 +32,13 @@ POSTVIEW_PAGINATE_BY = 30
 
 
 # Helpers #
-def get_post_page(thread, post):
+def get_post_page(post):
     """
     Return page number the post is on.
     Let's build a paginator object and check if our post is on the expected
     page. If not (because of PostView.paginate_orphans), return next page.
     """
-    queryset = Post.objects.filter(thread=thread)
+    queryset = Post.objects.filter(thread=post.thread)
     page_size = PostView.paginate_by
     paginator = Paginator(
         queryset, page_size, orphans=PostView.paginate_orphans,
@@ -80,7 +80,7 @@ class ThreadStatusMixin(object):
                        .filter(thread=thread, created__gt=bookmark)\
                        .only('id', 'pk').first()
             if post:
-                page = get_post_page(thread, post)
+                page = get_post_page(post)
                 return post, page
             else:
                 return post, None

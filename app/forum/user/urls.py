@@ -22,7 +22,7 @@ urlpatterns = [
          name='password_reset'),
     path('password_reset/password_reset_done', auth_views.PasswordResetDoneView.as_view()),
     re_path((r'reset/(?P<uidb64>[0-9A-Za-z_\-]+)/'
-             r'(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$'),
+             r'(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,32})/$'),
             auth_views.PasswordResetConfirmView.as_view(
                 form_class=CrispySetPasswordForm,
                 success_url='user:password_reset_complete'),

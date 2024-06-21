@@ -159,7 +159,7 @@ def rm_legacy_tags(text):
 
 class UserReferences:
 
-    matching_pattern = r"(?i)(^| )@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)"
+    matching_pattern = r"(?i)(^| |\n|\])@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)"
 
     def __init__(self, text):
         self.text = text

@@ -191,7 +191,7 @@ class UserReferences:
 render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, exclude=["img"])
 render_bbcode.add_tag(CustomImgTag, 'img')
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
-render_bbcode.add_tag(postmarkup.SimpleTag, 'user', "a class='user-tag'")
+render_bbcode.add_tag(postmarkup.SimpleTag, 'user', "u class='user-tag'")
 render_bbcode.add_tag(VideoTag, 'video')
 
 

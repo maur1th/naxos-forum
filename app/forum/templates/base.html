@@ -83,6 +83,14 @@
               <a href="{% url 'pm:top' %}" data-toggle="tooltip" data-placement="bottom" title="Messages privés" class="hidden-xs"><span class="glyphicon glyphicon-envelope"></span></a>
               <a href="{% url 'pm:top' %}" class="visible-xs"><span class="glyphicon glyphicon-envelope"></span> Messages privés</a>
             </li>
+            {% if user.newMention %}
+            <li class="alert-danger">
+            {% else %}
+            <li>
+            {% endif %}
+              <a href="{% url 'forum:mentions' %}" data-toggle="tooltip" data-placement="bottom" title="Mentions" class="hidden-xs"><span class="glyphicon glyphicon-bell"></span></a>
+              <a href="{% url 'forum:mentions' %}" class="visible-xs"><span class="glyphicon glyphicon-bell"></span> Mentions</a>
+            </li>
             <li>
               <a href="{% url 'blog:top' %}" data-toggle="tooltip" data-placement="bottom" title="Blog" class="hidden-xs"><span class="glyphicon glyphicon-pencil"></span></a>
               <a href="{% url 'blog:top' %}" class="visible-xs"><span class="glyphicon glyphicon-pencil"></span> Blog</a>

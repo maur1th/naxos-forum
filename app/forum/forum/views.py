@@ -586,3 +586,10 @@ class UserMentionsView(LoginRequiredMixin, ListView):
         self.request.user.save()
         # logger.warning(results)
         return results
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for post in context['object_list']:
+            post.page = get_post_page(post)
+            # logger.warning(post.page)
+        return context

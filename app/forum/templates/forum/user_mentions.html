@@ -48,7 +48,7 @@
         {% else %}
             Sujet :
         {% endif %}
-        <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
+        <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}?page={{ post.page }}#{{ post.pk }}">{{ post.thread.title }}</a></strong>
       </small>
       <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
       <div class="post-content" style="word-wrap: break-word">

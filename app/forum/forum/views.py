@@ -393,7 +393,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         self.kwargs['thread_slug'] = self.t.slug
         return '{}?page={}#{}'.format(
             reverse_lazy('forum:thread', kwargs=self.kwargs),
-            get_post_page(self.t, self.p),
+            get_post_page(self.p),
             self.object.pk
         )
 

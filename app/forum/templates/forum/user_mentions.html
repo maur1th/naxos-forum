@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Mentions{% endblock title %}
+{% load static %}
+{% load cache %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+  <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+  <li class="active">Mentions</li>
+</ol><br>
+{# Threads #}
+<div class="row">
+{% include "pagination.html" %}
+<hr style="margin:8px; border-top:0">
+    <strong>
+        <div class="col-sm-2 hidden-xs text-left post-header" style="border-right:1px solid #f9f9f9">
+          Auteur
+        </div>
+        <div class="col-sm-10 post-header">
+          Messages
+        </div>
+    </strong>
+</div>
+<hr style="margin:1px; border-top:0">
+{% for post in object_list %}
+<div class="row equal-divs">
+    <a name="{{ post.pk }}"></a>
+    {# Author panel #}
+    <div class="col-sm-2 text-center hidden-xs" style="padding: 10px 0px; border-right:1px solid #f9f9f9; background-color: #f2f2f2;">
+      <p style="word-wrap: break-word">
+          <strong>{{ post.author }}</strong><br>
+          {% if post.author.quote %}
+              <small>{{ post.author.quote }}</small>
+          {% endif %}
+      </p>
+      {% if post.author.logo %}
+          <p><img src="{{ media }}{{ post.author.logo }}" alt=""></p>
+      {% endif %}
+      <p style="font-size:10px">depuis le {{ post.author.date_joined|date:'d/m/Y' }}</p>
+    </div>
+    {# Content #}
+    <div class="col-sm-10 post">
+      <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ post.author }}</strong> | </span>
+      <small>
+        Posté le {{ post.created|date:"j F Y à H:i:s" }} |
+        {% if post.thread.question %}
+            Sondage :
+        {% else %}
+            Sujet :
+        {% endif %}
+        <strong><a href="{% url 'forum:category' post.thread.category.slug %}">{{ post.thread.category.slug|title }}</a> / <a href="{% url 'forum:thread' post.thread.category.slug post.thread.slug %}">{{ post.thread.title }}</a></strong>
+      </small>
+      <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
+      <div class="post-content" style="word-wrap: break-word">
+          {{ post.html|safe }}
+      </div>
+      {% if post.modified %}
+          <br><br>
+          <p style="font-size:9px">— Modifié le {{ post.modified|date:"j F Y à H:i:s" }}</p>
+      {% endif %}
+    </div>
+</div>
+<hr style="margin:8px; border-top:0">
+{% endfor %}
+<hr style="margin:8px; border-top:0">
+{% include "pagination.html" %}
+{% endblock %}

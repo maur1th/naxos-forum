@@ -15,7 +15,12 @@ from django.conf import settings
 
 import re
 
-from .models import Category, Thread, Post, Preview, PollQuestion
+# import logging
+
+# logger = logging.getLogger(__name__)
+
+
+from .models import Category, Thread, Post, Preview, PollQuestion, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -565,3 +570,19 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         context['results_count'] = self.results_count
         context['query_url'] = 'q=' + self.query + '&'
         return context
+
+# UserMentionsView #
+class UserMentionsView(LoginRequiredMixin, ListView):
+    paginate_by = 30
+    paginate_orphans = 2
+    template_name = 'forum/user_mentions.html'
+
+    def get_queryset(self):
+        """Handle search parameters & process search computation."""
+        results = Post.objects.filter(
+            mentions__user=self.request.user,
+            thread__visible=True).order_by("-mentions__pk")
+        self.request.user.newMention = False
+        self.request.user.save()
+        # logger.warning(results)
+        return results

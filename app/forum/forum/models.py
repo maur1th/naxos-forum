@@ -5,9 +5,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-import logging
+# import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 from uuslug import uuslug
 
@@ -218,6 +218,7 @@ class UserMentions(models.Model):
         return "{:s}: {:d}".format(self.user.username, self.post.pk)
 
     class Meta:
+        ordering = ["-pk"]
         unique_together = ("user", "post")
         indexes = [models.Index(fields=["user", "post"])]
 

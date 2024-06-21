@@ -579,9 +579,9 @@ class UserMentionsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """Handle search parameters & process search computation."""
-        results = Post.objects.filter(
-            mentions__user=self.request.user,
-            thread__visible=True).order_by("-mentions__pk")
+        results = Post.objects\
+            .filter(mentions__user=self.request.user, thread__visible=True)\
+            .order_by("-mentions__pk")
         self.request.user.newMention = False
         self.request.user.save()
         # logger.warning(results)

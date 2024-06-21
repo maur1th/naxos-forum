@@ -335,7 +335,7 @@ class QuotePost(NewPost):
         initial_text = re.sub(r'\[quote\][\S|\s]+\[/quote\]\r{0,1}\n{0,1}',
                               '',
                               self.p.content_plain)
-        text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
+        text = "[quote][b]@{:s} a dit :[/b]\n{:s}[/quote]".format(
             self.p.author.username, initial_text)
         initial['content_plain'] = text
         return initial

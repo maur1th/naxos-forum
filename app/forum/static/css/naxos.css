@@ -154,6 +154,9 @@ a.category:hover {
   border-bottom: 1px dashed #999;
   text-decoration: none;
 }
+.post-content .img-responsive {
+    display:inline-block;
+}
 /* Force some links appearance */
 a.lastMessage:link {
     color: #333333;

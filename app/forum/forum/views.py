@@ -15,7 +15,12 @@ from django.conf import settings
 
 import re
 
-from .models import Category, Thread, Post, Preview, PollQuestion
+# import logging
+
+# logger = logging.getLogger(__name__)
+
+
+from .models import Category, Thread, Post, Preview, PollQuestion, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -27,13 +32,13 @@ POSTVIEW_PAGINATE_BY = 30
 
 
 # Helpers #
-def get_post_page(thread, post):
+def get_post_page(post):
     """
     Return page number the post is on.
     Let's build a paginator object and check if our post is on the expected
     page. If not (because of PostView.paginate_orphans), return next page.
     """
-    queryset = Post.objects.filter(thread=thread)
+    queryset = Post.objects.filter(thread=post.thread)
     page_size = PostView.paginate_by
     paginator = Paginator(
         queryset, page_size, orphans=PostView.paginate_orphans,
@@ -75,7 +80,7 @@ class ThreadStatusMixin(object):
                        .filter(thread=thread, created__gt=bookmark)\
                        .only('id', 'pk').first()
             if post:
-                page = get_post_page(thread, post)
+                page = get_post_page(post)
                 return post, page
             else:
                 return post, None
@@ -330,7 +335,7 @@ class QuotePost(NewPost):
         initial_text = re.sub(r'\[quote\][\S|\s]+\[/quote\]\r{0,1}\n{0,1}',
                               '',
                               self.p.content_plain)
-        text = "[quote][b]{:s} a dit :[/b]\n{:s}[/quote]".format(
+        text = "[quote][b]@{:s} a dit :[/b]\n{:s}[/quote]".format(
             self.p.author.username, initial_text)
         initial['content_plain'] = text
         return initial
@@ -388,7 +393,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         self.kwargs['thread_slug'] = self.t.slug
         return '{}?page={}#{}'.format(
             reverse_lazy('forum:thread', kwargs=self.kwargs),
-            get_post_page(self.t, self.p),
+            get_post_page(self.p),
             self.object.pk
         )
 
@@ -564,4 +569,27 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         context['query'] = self.query
         context['results_count'] = self.results_count
         context['query_url'] = 'q=' + self.query + '&'
+        return context
+
+# UserMentionsView #
+class UserMentionsView(LoginRequiredMixin, ListView):
+    paginate_by = 30
+    paginate_orphans = 2
+    template_name = 'forum/user_mentions.html'
+
+    def get_queryset(self):
+        """Handle search parameters & process search computation."""
+        results = Post.objects\
+            .filter(mentions__user=self.request.user, thread__visible=True)\
+            .order_by("-mentions__pk")
+        self.request.user.newMention = False
+        self.request.user.save()
+        # logger.warning(results)
+        return results
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for post in context['object_list']:
+            post.page = get_post_page(post)
+            # logger.warning(post.page)
         return context

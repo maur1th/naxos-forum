@@ -47,6 +47,7 @@ class ForumUser(AbstractUser):
         verbose_name='Site web')
     pmReadCaret = models.ManyToManyField('pm.Message', blank=True)
     pmUnreadCount = models.IntegerField(default=0)
+    newMention = models.BooleanField(default=False)
     resetDateTime = models.DateTimeField(default=FORUM_INIT)
     last_seen = models.DateTimeField(blank=True, null=True)
 

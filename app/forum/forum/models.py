@@ -5,9 +5,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from uuslug import uuslug
 
-from utils.renderer import render
+from utils.renderer import UserReferences, render
 from .util import keygen
 from user.models import ForumUser, Bookmark
 
@@ -199,6 +203,25 @@ class Preview(models.Model):
         return "{:d}".format(self.pk)
 
 
+class UserMentions(models.Model):
+    """Track user mentions in posts"""
+    user = models.ForeignKey(
+        ForumUser,
+        related_name='mentions',
+        on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post,
+        related_name='mentions',
+        on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{:s}: {:d}".format(self.user.username, self.post.pk)
+
+    class Meta:
+        unique_together = ("user", "post")
+        indexes = [models.Index(fields=["user", "post"])]
+
+
 # Poll models
 class PollQuestion(models.Model):
     question_text = models.CharField(max_length=80)
@@ -260,6 +283,13 @@ def update_post_count(created, instance, **kwargs):
         cache.set(f"thread/{thread}/post_count",
                   instance.thread.posts.count() - 1,
                   None)
+
+
+@receiver(post_save, sender=Post)
+def add_user_mentions(created, instance, **kwargs):
+    for user in UserReferences(instance.content_plain).get_users():
+        p = UserMentions.objects.get_or_create(user=user, post=instance)
+        # logger.warning(p)
 
 
 @receiver(post_save, sender=Thread)

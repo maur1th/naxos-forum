@@ -8,6 +8,7 @@ import os
 import postmarkup
 import markdown
 
+from user.models import ForumUser
 from .extra_tags import CustomImgTag, SpoilerTag, VideoTag
 
 
@@ -107,7 +108,7 @@ def compile_smileys():
     smileys = get_smileys(settings.STATICFILES_DIRS[0])
     double_colon = filter(lambda s: not s.startswith("special-"), smileys)
     all_smileys = (
-        [(r":-?\/", "bof")] +  # 1st to avoid replacing other simleys' http://
+        [(r":-?\/", "bof")] +  # 1st to avoid replacing other smileys' http://
         [(":" + re.escape(s) + ":", s) for s in double_colon] +
         special_smileys
     )
@@ -156,16 +157,31 @@ def rm_legacy_tags(text):
     return text
 
 
+def add_user_tags(text):
+
+    def process_tag(matchobj):
+        user = ForumUser.objects.filter(username=matchobj.group(2)).first()
+        if user:
+            return matchobj.group(1) + "[user]@" + matchobj.group(2) + "[/user]"
+        else:
+            return matchobj.group(1) + "@" + matchobj.group(2)
+
+    # https://stackoverflow.com/a/24676780/4122595
+    return re.sub(r"(?i)(^| )@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)", process_tag, text)
+
+
 # Rendering
 render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, exclude=["img"])
 render_bbcode.add_tag(CustomImgTag, 'img')
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
+render_bbcode.add_tag(postmarkup.SimpleTag, 'user', "a class='user-tag'")
 render_bbcode.add_tag(VideoTag, 'video')
 
 
 def render(text, markup='bbcode'):
     if markup == 'bbcode':
         text = rm_legacy_tags(text)  # TODO: make db migration instead
+        text = add_user_tags(text)
         return smilify(render_bbcode(text, cosmetic_replace=False))
     elif markup == 'markdown':
         return markdown.markdown(text, safe_mode='escape')

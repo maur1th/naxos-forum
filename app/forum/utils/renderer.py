@@ -159,13 +159,14 @@ def rm_legacy_tags(text):
 class UserReferences:
 
     matching_pattern = r"(?i)(^| |\n|\])@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)"
+    match_all = r"(^| |\n|\])@(all)"
 
     def __init__(self, text):
         self.text = text
 
     def __render_tag(self, matchobj):
         user = ForumUser.objects.filter(username=matchobj.group(2)).first()
-        if user:
+        if user or matchobj.group(2) == "all":
             return matchobj.group(1) + "[user]@" + matchobj.group(2) + "[/user]"
         else:
             return matchobj.group(1) + "@" + matchobj.group(2)
@@ -174,6 +175,10 @@ class UserReferences:
         return re.sub(self.matching_pattern, self.__render_tag, self.text)
 
     def get_users(self):
+        if re.search(self.match_all, self.text):
+            for user in ForumUser.objects.all():
+                yield user
+            return
         processed_names = []
         match_iter = re.finditer(self.matching_pattern, self.text)
         for matchobj in match_iter:
@@ -182,7 +187,7 @@ class UserReferences:
                 continue
             processed_names.append(name)
             user = ForumUser.objects.filter(username=matchobj.group(2)).first()
-            if user:
+            if user or matchobj.group(2) == self.everybody:
                 yield user
 
 

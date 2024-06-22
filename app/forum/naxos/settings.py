@@ -73,6 +73,7 @@ INSTALLED_APPS = (
     # Third-party Apps
     "storages",
     "crispy_forms",
+    "crispy_bootstrap3",
 
     # Project Apps
     "forum.apps.ForumConfig",
@@ -81,6 +82,10 @@ INSTALLED_APPS = (
     "blog.apps.BlogConfig",
     "utils.apps.UtilsConfig",
 )
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
+
+CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

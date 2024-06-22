@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView, TemplateView
+from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -15,9 +15,9 @@ from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 
-from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm
+from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm, BudgetRecordForm
 from .models import ForumUser
-from forum.models import Thread
+from forum.models import BudgetRecord, Thread
 
 
 class Register(CreateView):
@@ -106,6 +106,35 @@ class Top10(LoginRequiredMixin, TemplateView):
         context['top_views'] = self.top_views
         context['top_posts'] = self.top_posts
         return context
+
+
+# Budget #
+class BudgetView(LoginRequiredMixin, ListView):
+    model = BudgetRecord
+    paginate_by = 1000
+    template_name = 'user/budgetrecord_list.html'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.username not in ["admin", "équi"]:
+            raise PermissionDenied
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = BudgetRecordForm()
+        return context
+
+
+class NewBudgetRecord(LoginRequiredMixin, CreateView):
+    form_class = BudgetRecordForm
+
+    def post(self, request, *args, **kwargs):
+        if self.request.user.username not in ["admin", "équi"]:
+            raise PermissionDenied
+        return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('user:budget')
 
 
 # Set disconnection timestamp

@@ -187,7 +187,7 @@ class UserReferences:
                 continue
             processed_names.append(name)
             user = ForumUser.objects.filter(username=matchobj.group(2)).first()
-            if user or matchobj.group(2) == self.everybody:
+            if user:
                 yield user
 
 

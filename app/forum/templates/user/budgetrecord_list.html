@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ category.title }}{% endblock title %}
+{% load static %}
+{% load cache %}
+{% load crispy_forms_tags %}
+{% block content %}
+{# Path #}
+<ol class="breadcrumb">
+    <li><a href="{% url 'forum:top' %}">Accueil</a></li>
+    <li class="active">Profil</li>
+</ol>
+{% include "pagination.html" %}
+{# Tabs #}
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="{% url 'user:profile' %}">Paramètres</a></li>
+    <li role="presentation"><a href="{% url 'user:password' %}">Sécurité</a></li>
+    <li role="presentation"><a href="{% url 'user:members' %}">Liste des membres</a></li>
+    <li role="presentation"><a href="{% url 'user:top10' %}">Top 10</a></li>
+    <li role="presentation" class="active"><a href="{% url 'user:budget' %}">Budget</a></li>
+</ul>
+{# Content #}
+<div class="row">
+    <div class="col-xs-12" id="main">
+        {% crispy form %}
+    </div>
+</div>
+<div class="row">
+  <table class="table table-condensed table-bordered" id="view">
+    <thead>
+    <tr>
+      <th class="text-center col-xs-2 hidden-xs">Date</th>
+      <th class="text-center col-xs-2 hidden-xs">Amount</th>
+      <th class="text-center col-xs-4 hidden-xs">Label</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for record in object_list %}
+      <tr>
+        <td class="text-center vert-align" style="padding:0">
+          <small><strong>{{ record.date }}</strong></small>
+        </td>
+        <td class="vert-align">
+          <small><strong>{{ record.amount }}</strong></small>
+        </td>
+        <td class="text-center vert-align importantData hidden-xs">
+          <small><strong>{{ record.label }}</strong></small>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "pagination.html" %}
+</div>
+{% endblock %}

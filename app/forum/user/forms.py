@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.template.defaultfilters import filesizeformat
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.urls import reverse
 
 # Fix ugettext error: https://stackoverflow.com/a/75347232
 import django
@@ -14,7 +15,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
 from .models import ForumUser, TokenPool
-from forum.models import Thread
+from forum.models import BudgetRecord, Thread
 
 MAX_USERNAME_LENGTH = 20
 MAX_UPLOAD_SIZE = 102400
@@ -193,3 +194,16 @@ class RestrictedImageField(forms.ImageField):
         except AttributeError:
             pass
         return data
+
+
+class BudgetRecordForm(forms.ModelForm):
+    class Meta:
+        model = BudgetRecord
+        fields = ('label', 'amount')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = reverse('user:new_budget_record')
+        self.helper.add_input(Submit('submit', 'Submit'))

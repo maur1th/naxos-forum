@@ -565,6 +565,8 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
             context = super().get_context_data(**kwargs)
         else:
             context = ListView.get_context_data(self, **kwargs)
+            for post in context['object_list']:
+                post.page = get_post_page(post)
         context['model'] = model
         context['query'] = self.query
         context['results_count'] = self.results_count

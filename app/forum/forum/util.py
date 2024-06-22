@@ -7,8 +7,6 @@ from urllib.parse import quote
 import importlib
 import re
 import os
-import postmarkup
-import markdown
 
 
 # Process search queries

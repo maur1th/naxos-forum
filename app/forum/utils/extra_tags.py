@@ -1,6 +1,6 @@
 import re
 from urllib.parse import urlparse
-from postmarkup import PostMarkup, TagBase, strip_bbcode
+from .postmarkup.postmarkup import PostMarkup, TagBase, strip_bbcode
 
 
 class CustomImgTag(TagBase):

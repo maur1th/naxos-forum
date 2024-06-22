@@ -5,12 +5,11 @@ from urllib.parse import quote
 
 import re
 import os
-import postmarkup
 import markdown
 
-from user.models import ForumUser
+from .postmarkup.postmarkup import create, SimpleTag
 from .extra_tags import CustomImgTag, SpoilerTag, VideoTag
-
+from user.models import ForumUser
 
 # Process search queries
 # Urlize + BBCode filters
@@ -188,10 +187,10 @@ class UserReferences:
 
 
 # Rendering
-render_bbcode = postmarkup.create(use_pygments=False, annotate_links=False, exclude=["img"])
+render_bbcode = create(use_pygments=False, annotate_links=False, exclude=["img"])
 render_bbcode.add_tag(CustomImgTag, 'img')
 render_bbcode.add_tag(SpoilerTag, 'spoiler')
-render_bbcode.add_tag(postmarkup.SimpleTag, 'user', "u class='user-tag'")
+render_bbcode.add_tag(SimpleTag, 'user', "u class='user-tag'")
 render_bbcode.add_tag(VideoTag, 'video')
 
 

@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
@@ -19,8 +20,7 @@ import re
 
 # logger = logging.getLogger(__name__)
 
-
-from .models import Category, Thread, Post, Preview, PollQuestion, UserMentions
+from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -158,6 +158,9 @@ class CategoryView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['budget_total'] = BudgetRecord.objects.aggregate(Sum('amount'))['amount__sum']
+        # logger.warning(context['budget_total'])
+        context['budget_status'] = 'danger' if context['budget_total'] < 0 else 'success'
         timestamps = CategoryTimeStamp.objects.filter(user=self.request.user)
         for c in context['categories']:
             # to avoid non existent timestamps

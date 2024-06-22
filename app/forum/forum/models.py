@@ -251,6 +251,16 @@ class PollChoice(models.Model):
         return self.choice_text
 
 
+# Budget
+class BudgetRecord(models.Model):
+    date = models.DateTimeField(default=timezone.now)
+    amount = models.FloatField()
+    label = models.CharField(max_length=200)
+
+    class Meta:
+        ordering = ["pk"]
+
+
 # Model signal handlers
 @receiver(post_save, sender=Post)
 def update_post_cache(created, instance, **kwargs):

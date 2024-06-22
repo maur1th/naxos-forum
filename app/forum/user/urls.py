@@ -12,6 +12,8 @@ urlpatterns = [
     path('password/', views.UpdatePassword, name='password'),
     path('members/', views.MemberList.as_view(), name='members'),
     path('top10/', view=views.Top10.as_view(), name='top10'),
+    path('budget/', views.BudgetView.as_view(), name='budget'),
+    path('budget/+', views.NewBudgetRecord.as_view(), name='new_budget_record'),
     path('register/', views.Register.as_view(), name='register'),
     path('login/', auth_views.LoginView.as_view(
          authentication_form=CrispyLoginForm), name='login'),

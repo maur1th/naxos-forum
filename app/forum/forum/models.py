@@ -299,10 +299,11 @@ def update_post_count(created, instance, **kwargs):
 @receiver(post_save, sender=Post)
 def add_user_mentions(created, instance, **kwargs):
     for user in UserReferences(instance.content_plain).get_users():
-        p = UserMentions.objects.get_or_create(user=user, post=instance)
-        user.newMention = True
-        user.save()
-        # logger.warning(p)
+        obj, created = UserMentions.objects.get_or_create(user=user, post=instance)
+        if created:
+            user.newMention = True
+            user.save()
+        # logger.warning(obj)
 
 
 @receiver(post_save, sender=Thread)

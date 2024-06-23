@@ -24,6 +24,7 @@ from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion,
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
+from utils.renderer import UserReferences
 from user.models import CategoryTimeStamp, Bookmark
 
 
@@ -339,7 +340,7 @@ class QuotePost(NewPost):
                               '',
                               self.p.content_plain)
         text = "[quote][b]@{:s} a dit :[/b]\n{:s}[/quote]".format(
-            self.p.author.username, initial_text)
+            self.p.author.username, UserReferences(initial_text).remove_tags())
         initial['content_plain'] = text
         return initial
 

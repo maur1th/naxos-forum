@@ -190,6 +190,12 @@ class UserReferences:
             if user:
                 yield user
 
+    def __remove_tag(self, matchobj):
+        return matchobj.group(1) + matchobj.group(2)
+
+    def remove_tags(self):
+        return re.sub(self.matching_pattern, self.__remove_tag, self.text)
+
 
 # Rendering
 render_bbcode = create(use_pygments=False, annotate_links=False, exclude=["img"])

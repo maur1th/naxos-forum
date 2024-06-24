@@ -1,0 +1,76 @@
+{# https://github.com/knadh/floatype.js/tree/master #}
+{% load static %}
+<style>
+.floatype {
+    position: absolute;
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 2px #eee;
+    text-align: left;
+    max-width: 200px;
+}
+.floatype-item {
+    padding-bottom: 5px;
+    padding: 3px 10px;
+    cursor: pointer;
+}
+.floatype-item:hover {
+    background: #f1f1f1;
+}
+.floatype-sel {
+    background: #f1f1f1;
+    font-weight: bold;
+}
+@media screen and (max-width: 900px) {
+    body {
+        font-size: 18px;
+        line-height: 22px;
+    }
+    .container {
+        margin-top: 5vh;
+    }
+}
+</style>
+<script type="module">
+    import { floatype } from '{% static 'js/floatype.min.js' %}';
+
+    // document.querySelector("textarea").value = "";
+
+    const USERS = [
+        "@all",
+        {% for user in users %}
+        "{{user}}",
+        {% endfor %}
+    ];
+
+    // Example 1.
+    // Simple string results.
+    function bind() {
+        return floatype(document.querySelector("textarea"), {
+            onQuery: async (val) => {
+                // This callback returns an array of search results.
+                // Typically, this will be a server side fetch() request.
+                // Example:
+                //      const resp = await fetch(`/search?q=${query}`);
+                //      const res = await response.json();
+                //      return res;
+
+                const q = val.trim().toLowerCase();
+                return USERS.filter(s => s.startsWith(q)).slice(0, 10);
+            }
+        });
+    }
+
+    window._fl = bind();
+
+    document.querySelector("button").onclick = (e) => {
+        if (window._fl) {
+            window._fl.unbind();
+            window._fl = null;
+        } else {
+            window._fl = bind();
+        }
+
+        document.querySelector("textarea").focus();
+    }
+</script>

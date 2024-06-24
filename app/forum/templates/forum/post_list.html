@@ -4,6 +4,7 @@
 {% load static %}
 {% with thread.category as category %}
 {% with thread.question as question %}
+{% include "user_autocomplete.html" %}
 {# Path #}
 <ol class="breadcrumb">
     {% include "forum/post_path.html" %}
@@ -184,7 +185,7 @@
         {% csrf_token %}
         <input type="hidden" name="recipient" id="id_recipient"> 
         <div class="modal-body">
-          <textarea cols="80" id="id_content_plain" class="textarea form-control" name="content_plain" rows="5" maxlength="100000"></textarea>
+          <textarea cols="80" id="pm_content" class="textarea form-control" name="content_plain" rows="5" maxlength="100000"></textarea>
         </div>
         <div class="modal-footer">
           <a id="full-editor-link" type="button" role="button" class="btn btn-default" href="{% url 'pm:new_conv' %}">Editeur complet</a>

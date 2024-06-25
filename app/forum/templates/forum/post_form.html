@@ -2,6 +2,7 @@
 {% block title %}Nouvelle réponse{% endblock title %}
 {% block content %}
 {% load crispy_forms_tags %}
+{% include "user_autocomplete.html" %}
 {# Path #}
 <ol class="breadcrumb">
     {% include "forum/post_path.html" %}

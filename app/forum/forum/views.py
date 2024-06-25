@@ -25,8 +25,7 @@ from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
 from utils.renderer import UserReferences
-from user.models import CategoryTimeStamp, Bookmark
-
+from user.models import Bookmark, CategoryTimeStamp, ForumUser
 
 THREADVIEW_PAGINATE_BY = 30
 POSTVIEW_PAGINATE_BY = 30
@@ -51,6 +50,13 @@ def get_post_page(post):
         return page_number
     else:
         return page_number + 1
+
+
+def get_all_users():
+    active_users = ForumUser.objects.exclude(is_active=False)\
+                     .extra(select={'username_lower': 'lower(username)'})\
+                     .order_by('username_lower')
+    return map(lambda u: f"@{u.username}", active_users)
 
 
 def update_category_timestamp(category, user):
@@ -233,6 +239,7 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
         """Add context data for template."""
         context = super().get_context_data(**kwargs)
         context['thread'] = self.thread
+        context['users'] = get_all_users()
         return context
 
 
@@ -257,6 +264,7 @@ class NewThread(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         context['static_url'] = settings.STATIC_URL
+        context['users'] = get_all_users()
         return context
 
     def get_form_kwargs(self):
@@ -303,6 +311,7 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         context['thread'] = self.thread
         context['history'] = Post.objects.filter(
             thread=self.thread).order_by('-pk')[:10]
+        context['users'] = get_all_users()
         return context
 
     def get_form_kwargs(self):
@@ -344,6 +353,12 @@ class QuotePost(NewPost):
         initial['content_plain'] = text
         return initial
 
+    def get_context_data(self, **kwargs):
+        "Pass category and thread from url to context"
+        context = super().get_context_data(**kwargs)
+        context['users'] = get_all_users()
+        return context
+
 
 class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     form_class = ThreadForm
@@ -373,6 +388,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
         context['thread'] = self.t
         context['post'] = self.p
         context['static_url'] = settings.STATIC_URL
+        context['users'] = get_all_users()
         return context
 
     def get_form_kwargs(self):
@@ -488,13 +504,14 @@ def NewPoll(request, category_slug):
                         kwargs={'category_slug': category_slug}))
 
     return render(request, 'forum/poll_form.html', {
-        'question_form': question_form,
-        'thread_form': thread_form,
+        'category': category,
+        'category_slug': category_slug,
         'choices_formset': choices_formset,
         'formset_helper': formset_helper,
-        'category_slug': category_slug,
-        'category': category,
+        'question_form': question_form,
         'static_url': settings.STATIC_URL,
+        'thread_form': thread_form,
+        'users': get_all_users(),
     })
 
 

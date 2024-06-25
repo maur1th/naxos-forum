@@ -2,6 +2,7 @@
 {% block title %}Nouveau sondage{% endblock title %}
 {% block content %}
 {% load crispy_forms_tags %}
+{% include "user_autocomplete.html" %}
 {# Path #}
 <ol class="breadcrumb">
     <li><a href="{% url 'forum:top' %}">Accueil</a></li>

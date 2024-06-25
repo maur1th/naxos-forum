@@ -53,15 +53,10 @@ def get_post_page(post):
 
 
 def get_all_users():
-    cache_key = 'users/all_usernames'
-    usernames = cache.get(cache_key)
-    if not usernames:
-        active_users = ForumUser.objects.exclude(is_active=False)\
-                         .extra(select={'username_lower': 'lower(username)'})\
-                         .order_by('username_lower')
-        usernames = map(lambda u: f"@{u.username}", active_users)
-        # cache.set(cache_key, usernames, None)
-    return usernames
+    active_users = ForumUser.objects.exclude(is_active=False)\
+                     .extra(select={'username_lower': 'lower(username)'})\
+                     .order_by('username_lower')
+    return map(lambda u: f"@{u.username}", active_users)
 
 
 def update_category_timestamp(category, user):

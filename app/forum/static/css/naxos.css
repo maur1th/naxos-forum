@@ -181,3 +181,7 @@ div.legend {
 .panel-title {
     font-size: inherit;
 }
+/* Video */
+video {
+    width: 100%;
+}

@@ -2,7 +2,7 @@
   "name": "naxos-node",
   "license": "Apache-2.0",
   "dependencies": {
-    "cookie": "^0.3",
+    "cookie": "^0.7",
     "request": "^2.88",
     "socket.io": "^3.0"
   }

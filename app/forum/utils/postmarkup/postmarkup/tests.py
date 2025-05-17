@@ -115,3 +115,11 @@ class TestPostmarkup(unittest.TestCase):
                  ("[img]fo[o[/img]", "")]
         for test, result in tests:
             self.assertEqual(markup(test), result)
+
+    def test_url_with_accented_characters(self):
+        """Test that URLs with accented characters are not over-encoded"""
+        markup = postmarkup.create(annotate_links=False)
+        # Wikipedia example with accented character
+        input_url = '[link]https://fr.wikipedia.org/wiki/Métonymie[/link]'
+        expected = '<a href="https://fr.wikipedia.org/wiki/Métonymie">https://fr.wikipedia.org/wiki/Métonymie</a>'
+        self.assertEqual(markup(input_url), expected)

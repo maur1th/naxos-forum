@@ -229,41 +229,47 @@ class LinkTag(TagBase):
         if ':' not in url:
             url = 'http://' + url
 
-        scheme, uri = url.split(':', 1)
-
-        if scheme not in ['http', 'https']:
-            return ''
-
+        # Parse the URL and only percent-encode the path, query, and fragment
         try:
-            domain_match = self._re_domain.search(uri.lower())
-            if domain_match is None:
-                return ''
-            domain = domain_match.group(1)
-        except IndexError:
+            from urllib.parse import urlparse, quote, urlunparse
+            parsed = urlparse(url)
+            scheme = parsed.scheme
+            netloc = parsed.netloc
+            path = parsed.path
+            params = parsed.params
+            query = parsed.query
+            fragment = parsed.fragment
+            if not scheme or not netloc:
+                # fallback for URLs like http://example.com
+                scheme, uri = url.split(':', 1)
+                if scheme not in ['http', 'https']:
+                    return ''
+                netloc = ''
+                path = uri
+                params = ''
+                query = ''
+                fragment = ''
+        except Exception:
             return ''
 
-        domain = domain.lower()
+        # Only percent-encode path, params, query, fragment
+        safe_path = quote(path, safe="/;")
+        safe_params = quote(params, safe="")
+        safe_query = quote(query, safe="=&?")
+        safe_fragment = quote(fragment, safe="")
+        url_fixed = urlunparse((scheme, netloc, safe_path, safe_params, safe_query, safe_fragment))
+
+        # Extract domain for annotation
+        domain = netloc.lower()
         if domain.startswith('www.'):
             domain = domain[4:]
-
-        def percent_encode(s):
-            safe_chars = self._safe_chars
-            def replace(c):
-                if c not in safe_chars:
-                    return "%%%02X" % ord(c)
-                else:
-                    return c
-            return "".join([replace(c) for c in s])
-
-        #self.url = percent_encode(url.encode(u'utf-8', u'replace'))
-        self.url = percent_encode(url)
         self.domain = domain
 
-        if not self.url:
+        if not url_fixed:
             return ""
 
         if self.domain:
-            return '<a href="%s">' % PostMarkup.standard_replace_no_break(self.url)
+            return '<a href="%s">' % PostMarkup.standard_replace_no_break(url_fixed)
         else:
             return ""
 

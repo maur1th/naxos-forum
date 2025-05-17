@@ -158,7 +158,8 @@ def rm_legacy_tags(text):
 
 class UserReferences:
 
-    matching_pattern = r"(?i)(^| |\n|\])@((?:(?![×Þß÷þø])[-'0-9a-zÀ-ÿ_-])+)"
+    # Allow any character except whitespace and BBCode-closing bracket in username
+    matching_pattern = r"(?i)(^| |\n|\])@([^\s\]]{1,30})"
     match_all = r"(^| |\n|\])@(all)"
 
     def __init__(self, text):

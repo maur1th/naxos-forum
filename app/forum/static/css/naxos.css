@@ -117,8 +117,7 @@ div.post {
 }
 .post blockquote {
     background-color: #f9f9f9;
-    margin: 10px 0 0px;
-    font-size: 14px;
+    margin: 10px 0 5px;
 }
 /* Search specific view */
 a.category {
@@ -181,4 +180,8 @@ div.legend {
 /* Panel title size */
 .panel-title {
     font-size: inherit;
+}
+/* Video */
+video {
+    width: 100%;
 }

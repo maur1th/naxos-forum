@@ -165,7 +165,7 @@ class CategoryView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['budget_total'] = BudgetRecord.objects.aggregate(Sum('amount'))['amount__sum']
+        context['budget_total'] = BudgetRecord.objects.aggregate(Sum('amount'))['amount__sum'] or 0
         # logger.warning(context['budget_total'])
         context['budget_status'] = 'danger' if context['budget_total'] < 0 else 'success'
         timestamps = CategoryTimeStamp.objects.filter(user=self.request.user)

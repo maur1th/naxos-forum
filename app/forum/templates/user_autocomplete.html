@@ -30,7 +30,7 @@
     const USERS = [
         "@all",
         {% for user in users %}
-        "{{user}}",
+        "{{user|safe}}",
         {% endfor %}
     ];
 

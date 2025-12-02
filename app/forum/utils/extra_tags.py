@@ -137,7 +137,7 @@ class VideoTag(TagBase):
         if self.domain in self.iframe_domains:
             return (''
                 '<div class="embed-responsive embed-responsive-16by9">'
-                '<iframe class="embed-responsive-item" src="{}" '
+                '<iframe class="embed-responsive-item" referrerpolicy="strict-origin-when-cross-origin" src="{}" '
                 'frameborder="0" allowfullscreen="true">'
             ).format(PostMarkup.standard_replace_no_break(self.url))
         elif self.domain:

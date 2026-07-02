@@ -1,0 +1,400 @@
+/* ============================================================
+   MODE SOMBRE
+   Activé lorsque <html> porte la classe "dark".
+   Porté depuis le userscript Tampermonkey "GeekAttitude — Mode Sombre".
+   Toutes les règles sont préfixées par `html.dark` afin de rester
+   totalement inertes tant que le thème sombre n'est pas activé.
+   ============================================================ */
+
+/* ============================================================
+   VARIABLES DE COULEURS
+   ============================================================ */
+html.dark {
+    --ga-bg:           #1a1d23;   /* fond principal */
+    --ga-bg-2:         #22262e;   /* fond secondaire (posts, tableaux) */
+    --ga-bg-3:         #2a2f3a;   /* fond tertiaire (hover, zebra) */
+    --ga-bg-4:         #313744;   /* fond quaternaire (post-author) */
+    --ga-border:       #3a4050;   /* bordures */
+    --ga-text:         #d4d8e0;   /* texte principal */
+    --ga-text-muted:   #8892a0;   /* texte secondaire */
+    --ga-accent:       #5171ae;   /* bleu accent (inchangé par rapport au site) */
+    --ga-accent-dark:  #3d5580;   /* bleu foncé pour gradients */
+    --ga-link:         #7eaadd;   /* liens */
+    --ga-link-hover:   #a8c8f0;   /* liens au survol */
+    --ga-navbar-bg:    #12151a;   /* fond navbar */
+    --ga-input-bg:     #2a2f3a;   /* fond inputs */
+    --ga-code-bg:      #1e2228;   /* fond code/pre */
+    --ga-blockquote-bg:#252930;   /* fond citations */
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+html.dark body {
+    background-color: var(--ga-bg) !important;
+    color: var(--ga-text) !important;
+}
+html.dark a {
+    color: var(--ga-link) !important;
+}
+html.dark a:hover, html.dark a:focus {
+    color: var(--ga-link-hover) !important;
+}
+html.dark hr {
+    border-top-color: var(--ga-border) !important;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+html.dark .navbar-default {
+    background-color: var(--ga-navbar-bg) !important;
+    border-color: var(--ga-border) !important;
+}
+html.dark .navbar-default .navbar-nav > li > a,
+html.dark .navbar-default .navbar-brand {
+    color: var(--ga-text) !important;
+}
+html.dark .navbar-default .navbar-nav > li > a:hover,
+html.dark .navbar-default .navbar-nav > li > a:focus {
+    color: var(--ga-link-hover) !important;
+    background-color: var(--ga-bg-3) !important;
+}
+html.dark .navbar-default .navbar-toggle {
+    border-color: var(--ga-border) !important;
+}
+html.dark .navbar-default .navbar-toggle .icon-bar {
+    background-color: var(--ga-text) !important;
+}
+html.dark .navbar-default .navbar-form .form-control {
+    background-color: var(--ga-input-bg) !important;
+    color: var(--ga-text) !important;
+    border-color: var(--ga-border) !important;
+}
+
+/* ============================================================
+   DROPDOWN MENUS
+   ============================================================ */
+html.dark .dropdown-menu {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+}
+html.dark .dropdown-menu > li > a {
+    color: var(--ga-text) !important;
+}
+html.dark .dropdown-menu > li > a:hover,
+html.dark .dropdown-menu > li > a:focus {
+    background-color: var(--ga-bg-3) !important;
+    color: var(--ga-link-hover) !important;
+}
+html.dark .dropdown-menu .divider {
+    background-color: var(--ga-border) !important;
+}
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+html.dark .breadcrumb {
+    background-color: var(--ga-bg-2) !important;
+    border: 1px solid var(--ga-border) !important;
+}
+html.dark .breadcrumb > li + li::before {
+    color: var(--ga-text-muted) !important;
+}
+html.dark .breadcrumb > .active {
+    color: var(--ga-text-muted) !important;
+}
+
+/* ============================================================
+   TABLE PRINCIPALE (#view) — accueil & liste topics
+   ============================================================ */
+html.dark table#view thead {
+    background: linear-gradient(var(--ga-accent-dark), var(--ga-accent)) !important;
+}
+html.dark table#view tbody td {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+html.dark table#view tbody td.importantData {
+    background-color: var(--ga-bg-3) !important;
+}
+html.dark table#view tbody tr:hover td {
+    background-color: var(--ga-bg-4) !important;
+}
+/* Bootstrap tables génériques */
+html.dark .table {
+    color: var(--ga-text) !important;
+}
+html.dark .table > thead > tr > th,
+html.dark .table > tbody > tr > th,
+html.dark .table > tbody > tr > td,
+html.dark .table > tfoot > tr > td {
+    border-color: var(--ga-border) !important;
+}
+html.dark .table-bordered {
+    border-color: var(--ga-border) !important;
+}
+html.dark .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--ga-bg-3) !important;
+}
+html.dark .table-hover > tbody > tr:hover {
+    background-color: var(--ga-bg-4) !important;
+}
+
+/* ============================================================
+   POSTS (page topic)
+   ============================================================ */
+html.dark div.post-header {
+    background: linear-gradient(var(--ga-accent-dark), var(--ga-accent)) !important;
+}
+html.dark div.post-author {
+    background-color: var(--ga-bg-4) !important;
+    color: var(--ga-text) !important;
+    border-right: 1px solid var(--ga-border) !important;
+}
+html.dark div.post {
+    background-color: var(--ga-bg-2) !important;
+    color: var(--ga-text) !important;
+}
+html.dark .post blockquote {
+    background-color: var(--ga-blockquote-bg) !important;
+    border-left-color: var(--ga-accent) !important;
+    color: var(--ga-text) !important;
+}
+/* Inline style post-author (border-right + background-color) */
+html.dark [style*="background-color: #f2f2f2"],
+html.dark [style*="background-color:#f2f2f2"] {
+    background-color: var(--ga-bg-4) !important;
+}
+
+/* ============================================================
+   AUTHOR LINKS
+   ============================================================ */
+html.dark .author {
+    color: var(--ga-link) !important;
+}
+html.dark .author:hover, html.dark .author:focus {
+    color: var(--ga-link-hover) !important;
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+}
+/* lastMessage links */
+html.dark a.lastMessage:link,
+html.dark a.lastMessage:visited {
+    color: var(--ga-text-muted) !important;
+}
+html.dark a.lastMessage:hover {
+    color: var(--ga-link-hover) !important;
+}
+
+/* ============================================================
+   FORMULAIRES & INPUTS
+   ============================================================ */
+html.dark .form-control,
+html.dark input[type="text"],
+html.dark input[type="email"],
+html.dark input[type="password"],
+html.dark input[type="search"],
+html.dark textarea,
+html.dark select {
+    background-color: var(--ga-input-bg) !important;
+    color: var(--ga-text) !important;
+    border-color: var(--ga-border) !important;
+}
+html.dark .form-control:focus,
+html.dark textarea:focus {
+    border-color: var(--ga-accent) !important;
+    box-shadow: 0 0 6px rgba(81, 113, 174, 0.4) !important;
+}
+html.dark .input-group-addon {
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+
+/* ============================================================
+   BOUTONS
+   ============================================================ */
+html.dark .btn-default {
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+html.dark .btn-default:hover, html.dark .btn-default:focus {
+    background-color: var(--ga-bg-4) !important;
+    color: var(--ga-link-hover) !important;
+}
+
+/* ============================================================
+   PANELS (Bootstrap)
+   ============================================================ */
+html.dark .panel {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+}
+html.dark .panel-default > .panel-heading {
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+html.dark .panel-footer {
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+html.dark .alert-info {
+    background-color: #1a2d40 !important;
+    border-color: #234a6a !important;
+    color: #8ec8f0 !important;
+}
+html.dark .alert-success {
+    background-color: #1a3028 !important;
+    border-color: #235a3a !important;
+    color: #6ecf8e !important;
+}
+html.dark .alert-warning {
+    background-color: #332a10 !important;
+    border-color: #5a4418 !important;
+    color: #e0c060 !important;
+}
+html.dark .alert-danger {
+    background-color: #331820 !important;
+    border-color: #5a2030 !important;
+    color: #e08090 !important;
+}
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+html.dark .pagination > li > a,
+html.dark .pagination > li > span {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-link) !important;
+}
+html.dark .pagination > li > a:hover,
+html.dark .pagination > li > span:hover {
+    background-color: var(--ga-bg-3) !important;
+    color: var(--ga-link-hover) !important;
+}
+html.dark .pagination > .active > a,
+html.dark .pagination > .active > span {
+    background-color: var(--ga-accent) !important;
+    border-color: var(--ga-accent) !important;
+    color: #fff !important;
+}
+html.dark .pagination > .disabled > a,
+html.dark .pagination > .disabled > span {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text-muted) !important;
+}
+
+/* ============================================================
+   BADGES & LABELS
+   ============================================================ */
+html.dark .badge {
+    background-color: var(--ga-accent) !important;
+}
+html.dark a.category {
+    background: var(--ga-accent) !important;
+    color: #fff !important;
+}
+html.dark a.category:hover {
+    background: var(--ga-bg-3) !important;
+    color: var(--ga-link-hover) !important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+html.dark .modal-content {
+    background-color: var(--ga-bg-2) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+html.dark .modal-header {
+    border-bottom-color: var(--ga-border) !important;
+}
+html.dark .modal-footer {
+    border-top-color: var(--ga-border) !important;
+}
+
+/* ============================================================
+   CODE & PRE
+   ============================================================ */
+html.dark code, html.dark pre, html.dark kbd, html.dark samp {
+    background-color: var(--ga-code-bg) !important;
+    color: #c5e3a0 !important;
+    border-color: var(--ga-border) !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+html.dark .footer {
+    background-color: var(--ga-navbar-bg) !important;
+    border-top: 1px solid var(--ga-border) !important;
+    color: var(--ga-text-muted) !important;
+}
+html.dark .footer a {
+    color: var(--ga-text-muted) !important;
+}
+html.dark .footer a:hover {
+    color: var(--ga-link-hover) !important;
+}
+
+/* ============================================================
+   TOOLTIPS
+   ============================================================ */
+html.dark .tooltip-inner {
+    background-color: var(--ga-bg-4) !important;
+    color: var(--ga-text) !important;
+}
+html.dark .tooltip.top .tooltip-arrow { border-top-color: var(--ga-bg-4) !important; }
+html.dark .tooltip.bottom .tooltip-arrow { border-bottom-color: var(--ga-bg-4) !important; }
+html.dark .tooltip.left .tooltip-arrow { border-left-color: var(--ga-bg-4) !important; }
+html.dark .tooltip.right .tooltip-arrow { border-right-color: var(--ga-bg-4) !important; }
+
+/* ============================================================
+   WELL
+   ============================================================ */
+html.dark .well {
+    background-color: var(--ga-bg-3) !important;
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+}
+
+/* ============================================================
+   DIVERS / OVERRIDES INLINE STYLES
+   ============================================================ */
+/* Texte "modifié le..." dans les posts */
+html.dark p[style*="color:#777777"],
+html.dark p[style*="color: #777777"] {
+    color: var(--ga-text-muted) !important;
+}
+/* user-tag (mentions @utilisateur) */
+html.dark .post-content u.user-tag {
+    border-bottom-color: var(--ga-text-muted) !important;
+    color: var(--ga-link) !important;
+}
+/* Scrollbar (navigateurs WebKit/Blink) */
+html.dark ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+html.dark ::-webkit-scrollbar-track {
+    background: var(--ga-bg) !important;
+}
+html.dark ::-webkit-scrollbar-thumb {
+    background: var(--ga-bg-4) !important;
+    border-radius: 5px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--ga-accent) !important;
+}

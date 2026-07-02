@@ -26,6 +26,16 @@ function scrollToPosition($textarea, caret) {
 
 // Document ready jquery
 $(document).ready(function (){
+  // Dark theme toggle: flip the `dark` class on <html> and remember the choice.
+  // The class is applied pre-paint by an inline script in base.html.
+  $('.theme-toggle').on('click', function (e) {
+    e.preventDefault();
+    var isDark = document.documentElement.classList.toggle('dark');
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch (err) {}
+  });
+
   // Post customization
   $('.panel-body .panel').remove();  // Remove inner spoiler tags
   $('blockquote blockquote').remove();

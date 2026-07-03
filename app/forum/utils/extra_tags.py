@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from .postmarkup.postmarkup import PostMarkup, TagBase, strip_bbcode
 
 
@@ -76,9 +76,55 @@ class VideoTag(TagBase):
 
     iframe_domains = ['youtube.com', 'player.vimeo.com', 'dailymotion.com']
 
+    _re_youtube_id = re.compile(r'^[A-Za-z0-9_-]{11}$')
+
     def __init__(self, name, annotate_links=False, **kwargs):
         super().__init__(name, inline=True)
         self.annotate_links = annotate_links
+
+    @classmethod
+    def _to_youtube_embed(cls, url):
+        """Rewrite a YouTube watch/short URL into its embeddable form.
+
+        Users can paste the URL from the address bar
+        (``https://www.youtube.com/watch?v=ID``) or the "share" button
+        (``https://youtu.be/ID``); both are turned into
+        ``https://www.youtube.com/embed/ID`` so the iframe works.
+
+        URLs already in the ``/embed/`` form (and any non-YouTube URL) are
+        returned unchanged, so videos posted before this change keep working.
+        """
+        try:
+            parts = urlparse(url)
+        except ValueError:
+            return url
+
+        host = parts.netloc.lower()
+        if host.startswith('www.'):
+            host = host[4:]
+
+        video_id = None
+        if host in ('youtube.com', 'm.youtube.com'):
+            if parts.path == '/watch':
+                video_id = (parse_qs(parts.query).get('v') or [None])[0]
+        elif host == 'youtu.be':
+            video_id = parts.path.lstrip('/').split('/')[0]
+
+        if not video_id or not cls._re_youtube_id.match(video_id):
+            return url
+
+        embed = 'https://www.youtube.com/embed/' + video_id
+        start = cls._youtube_start_seconds(parts.query)
+        if start:
+            embed += '?start=%d' % start
+        return embed
+
+    @staticmethod
+    def _youtube_start_seconds(query):
+        """Extract a start offset (in seconds) from a YouTube ``t`` param."""
+        values = parse_qs(query)
+        raw = (values.get('t') or values.get('start') or [''])[0].rstrip('s')
+        return int(raw) if raw.isdigit() else 0
 
     def render_open(self, parser, node_index):
 
@@ -105,6 +151,9 @@ class VideoTag(TagBase):
 
         if scheme not in [u'http', u'https']:
             return u''
+
+        url = self._to_youtube_embed(url)
+        scheme, uri = url.split(u':', 1)
 
         try:
             domain_match = self._re_domain.search(uri.lower())

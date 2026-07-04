@@ -70,4 +70,23 @@ jobs:
       - name: Install python dependencies
         run: pip install -r requirements.txt
       - name: Run tests
-        run: python manage.py test user.test_forms utils.test_extra_tags --verbosity 2
+        run: python manage.py test user.test_forms utils.test_extra_tags forum.test_models forum.test_util --verbosity 2
+
+  postmarkup:
+    name: postmarkup (vendored bbcode lib)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/forum/utils/postmarkup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      # The vendored suite exercises create() with syntax highlighting, which
+      # needs Pygments (the app itself runs with use_pygments=False, so it is
+      # only a test dependency here).
+      - name: Install test dependencies
+        run: pip install pygments
+      - name: Run tests
+        run: python -m unittest postmarkup.tests --verbose

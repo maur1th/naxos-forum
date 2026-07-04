@@ -79,7 +79,6 @@ INSTALLED_APPS = (
     "forum.apps.ForumConfig",
     "user.apps.UserConfig",
     "pm.apps.PMConfig",
-    "blog.apps.BlogConfig",
     "utils.apps.UtilsConfig",
 )
 

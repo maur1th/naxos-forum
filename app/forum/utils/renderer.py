@@ -5,7 +5,6 @@ from urllib.parse import quote
 
 import re
 import os
-import markdown
 
 from .postmarkup.postmarkup import create, SimpleTag
 from .extra_tags import CustomImgTag, SpoilerTag, VideoTag
@@ -211,5 +210,3 @@ def render(text, markup='bbcode'):
         text = rm_legacy_tags(text)  # TODO: make db migration instead
         text = UserReferences(text).render()
         return smilify(render_bbcode(text, cosmetic_replace=False))
-    elif markup == 'markdown':
-        return markdown.markdown(text, safe_mode='escape')

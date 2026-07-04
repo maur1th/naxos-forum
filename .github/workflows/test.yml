@@ -1,0 +1,24 @@
+name: test
+
+# Runs on PRs (to gate merges) and on pushes to master (post-merge).
+# Feature-branch pushes are covered by the pull_request event, avoiding
+# duplicate runs.
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  websocket:
+    name: websocket (node:test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/websocket
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # The lib tests only use Node built-ins, so no install step is needed.
+      - run: node --test

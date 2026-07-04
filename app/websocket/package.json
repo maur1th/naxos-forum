@@ -1,6 +1,9 @@
 {
   "name": "naxos-node",
   "license": "Apache-2.0",
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "cookie": "^0.7",
     "socket.io": "^4.8"

@@ -240,16 +240,23 @@ class LinkTag(TagBase):
             query = parsed.query
             fragment = parsed.fragment
             if not scheme or not netloc:
-                # fallback for URLs like http://example.com
+                # Fallback for odd inputs: treat everything after the scheme
+                # as the path.
                 scheme, uri = url.split(':', 1)
-                if scheme not in ['http', 'https']:
-                    return ''
                 netloc = ''
                 path = uri
                 params = ''
                 query = ''
                 fragment = ''
         except Exception:
+            return ''
+
+        # Only ever emit http(s) links. Reject javascript:, data:, vbscript:,
+        # etc. in every code path (schemes with a netloc, e.g.
+        # "javascript://%0aalert(1)", would otherwise slip through) to prevent
+        # XSS via the href attribute. urlparse lowercases the scheme, so this
+        # is case-insensitive.
+        if scheme not in ('http', 'https'):
             return ''
 
         # Percent-encode unsafe ASCII in the path, query and fragment, but

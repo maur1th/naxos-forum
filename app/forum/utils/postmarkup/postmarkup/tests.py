@@ -123,3 +123,27 @@ class TestPostmarkup(unittest.TestCase):
         input_url = '[link]https://fr.wikipedia.org/wiki/Métonymie[/link]'
         expected = '<a href="https://fr.wikipedia.org/wiki/Métonymie">https://fr.wikipedia.org/wiki/Métonymie</a>'
         self.assertEqual(markup(input_url), expected)
+
+    def test_dangerous_schemes_are_not_linked(self):
+        """[url] must never produce an href for non-http(s) schemes (XSS)."""
+        markup = postmarkup.create(annotate_links=False)
+        dangerous = [
+            "[url]javascript://%0aalert(1)[/url]",  # netloc form bypassed the old check
+            "[url]javascript:alert(1)[/url]",
+            "[url]JAVASCRIPT://alert(1)[/url]",     # scheme match is case-insensitive
+            "[url]vbscript://alert[/url]",
+            "[url]data:text/html,<script>alert(1)</script>[/url]",
+            "[url]ftp://example.com/file[/url]",
+        ]
+        for markup_text in dangerous:
+            rendered = markup(markup_text)
+            self.assertNotIn("<a ", rendered)
+            self.assertNotIn("href", rendered)
+
+    def test_http_and_https_urls_are_linked(self):
+        """Legitimate schemes still render as links."""
+        markup = postmarkup.create(annotate_links=False)
+        for url in ("http://example.com", "https://example.com/path?q=1"):
+            self.assertEqual(
+                markup("[url]%s[/url]" % url),
+                '<a href="%s">%s</a>' % (url, url))

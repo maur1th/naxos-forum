@@ -17,7 +17,6 @@ urlpatterns = [
     path('forum/', include('forum.urls')),
     path('user/', include('user.urls')),
     path('messages/', include('pm.urls')),
-    path('blog/', include('blog.urls')),
     path('admin/', admin.site.urls),
 ]
 

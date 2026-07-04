@@ -185,3 +185,21 @@ div.legend {
 video {
     width: 100%;
 }
+/* Fullscreen: neutralise Bootstrap's `.embed-responsive iframe { position:absolute }`
+   so an embedded video fills the screen instead of overflowing it on mobile.
+   Prefixed and unprefixed forms are split: a selector list is dropped whole if a
+   browser doesn't understand one of its selectors. */
+.embed-responsive-item:fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.embed-responsive-item:-webkit-full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

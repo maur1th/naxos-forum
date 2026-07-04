@@ -22,3 +22,52 @@ jobs:
           node-version: '20'
       # The lib tests only use Node built-ins, so no install step is needed.
       - run: node --test
+
+  forum:
+    name: forum (django test)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: crimson
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      memcached:
+        # ForumUser's post_save signal writes to the cache, so a backend must
+        # be reachable (settings use PyLibMCCache).
+        image: memcached:alpine
+        ports:
+          - 11211:11211
+    env:
+      LOCAL_ENV: '1'            # local static/media, no AWS, non-secure cookies
+      DB_HOST: localhost
+      DB_PORT: '5432'
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASSWORD: crimson
+      CACHE_LOCATION: localhost:11211
+    defaults:
+      run:
+        working-directory: app/forum
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'   # matches the forum Dockerfile
+          cache: pip
+          cache-dependency-path: app/forum/requirements.txt
+      # pylibmc is built from source and needs the libmemcached headers.
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libmemcached-dev libsasl2-dev
+      - name: Install python dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python manage.py test user.test_forms utils.test_extra_tags --verbosity 2

@@ -1,0 +1,54 @@
+version: 2
+updates:
+  # --- Python (Pipenv) ---
+  - package-ecosystem: "pip"
+    directory: "/app/forum"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      python-forum:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pip"
+    directory: "/util"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      python-util:
+        patterns:
+          - "*"
+
+  # --- Node (websocket server) ---
+  - package-ecosystem: "npm"
+    directory: "/app/websocket"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      websocket-npm:
+        patterns:
+          - "*"
+
+  # --- Docker images ---
+  - package-ecosystem: "docker"
+    directory: "/app/forum"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/app/websocket"
+    schedule:
+      interval: "weekly"
+
+  # --- GitHub Actions workflows ---
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

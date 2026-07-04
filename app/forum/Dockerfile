@@ -1,4 +1,4 @@
-FROM python:3.12-alpine AS builder
+FROM python:3.13-alpine AS builder
 ARG LOCAL_ENV
 RUN apk add --no-cache \
         build-base \
@@ -15,7 +15,7 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
         pip3 install -r requirements.txt --target /packages; \
     fi
 
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 LABEL maintainer="5855076+maur1th@users.noreply.github.com"
 ENV HOME=/app \
     PYTHONDONTWRITEBYTECODE=1 \

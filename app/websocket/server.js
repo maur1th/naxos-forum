@@ -1,7 +1,6 @@
 'use strict';
 const http = require('http');
 const cookie_reader = require('cookie');
-const request = require('request');
 
 const {PORT, DEBUG, FORUM_URI} = process.env;
 
@@ -9,6 +8,13 @@ const app = http.createServer().listen(PORT);
 const io = require('socket.io')(app);
 const connected_users = {};
 const url = `http://${FORUM_URI}/user/node_api`;
+
+// Fire-and-forget notification to django. Swallows errors to match the
+// previous `request` behaviour (no callback) and avoid unhandled rejections.
+const notifyForum = (user, status) => {
+  const params = new URLSearchParams({sessionid: user, status});
+  fetch(`${url}?${params}`).catch(err => console.error('node_api notify failed:', err.message));
+};
 
 io.use((socket, next) => {
   const handshakeData = socket.request;
@@ -25,7 +31,7 @@ const handleConnection = (socket, user) => {
     connected_users[user] = 1;
     console.log(user + ' connected');
     // Tell django the user has come online
-    request({url, qs: {sessionid: user, status: 'connected'}});
+    notifyForum(user, 'connected');
   }
 }
 
@@ -36,7 +42,7 @@ const handleDisconnection = (socket, user) => {
         delete connected_users[user];
         console.log(user + ' disconnected');
         // Tell django the user is now offline
-        request({url, qs: {sessionid: user, status: 'disconnected'}});
+        notifyForum(user, 'disconnected');
       } else {
         connected_users[user] -= 1;
       }

@@ -252,11 +252,18 @@ class LinkTag(TagBase):
         except Exception:
             return ''
 
-        # Only percent-encode path, params, query, fragment
-        safe_path = quote(path, safe="/;")
-        safe_params = quote(params, safe="")
-        safe_query = quote(query, safe="=&?")
-        safe_fragment = quote(fragment, safe="")
+        # Percent-encode unsafe ASCII in the path, query and fragment, but
+        # preserve non-ASCII characters (e.g. accented letters) so URLs stay
+        # human-readable, the way browsers display them. quote() would
+        # otherwise turn "é" into "%C3%A9".
+        def _enc(component, safe):
+            return ''.join(
+                c if ord(c) > 127 else quote(c, safe=safe) for c in component)
+
+        safe_path = _enc(path, "/;")
+        safe_params = _enc(params, "")
+        safe_query = _enc(query, "=&?")
+        safe_fragment = _enc(fragment, "")
         url_fixed = urlunparse((scheme, netloc, safe_path, safe_params, safe_query, safe_fragment))
 
         # Extract domain for annotation

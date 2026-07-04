@@ -32,12 +32,16 @@ else:
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
 
     STATICFILES_LOCATION = "static"
-    STATICFILES_STORAGE = "naxos.utils.storages.StaticStorage"
     STATIC_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
     MEDIAFILES_LOCATION = "media"
     MEDIA_URL = "https://{:s}/{:s}/".format(AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-    DEFAULT_FILE_STORAGE = "naxos.utils.storages.MediaStorage"
+
+    # Django 4.2+ storages API (replaces DEFAULT_FILE_STORAGE / STATICFILES_STORAGE)
+    STORAGES = {
+        "default": {"BACKEND": "naxos.utils.storages.MediaStorage"},
+        "staticfiles": {"BACKEND": "naxos.utils.storages.StaticStorage"},
+    }
 
 
 # Security
@@ -138,7 +142,7 @@ TEMPLATES = [
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", "postgres"),
         "USER": os.environ.get("DB_USER", "postgres"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "crimson"),

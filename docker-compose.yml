@@ -23,7 +23,7 @@ services:
   #   build: app/websocket
 
   db:
-    image: postgres:13-alpine
+    image: postgres:16-alpine
     volumes:
       - forum-db:/var/lib/postgresql/data
     environment:

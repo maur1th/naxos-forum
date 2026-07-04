@@ -10,14 +10,14 @@ django-crispy-forms = "<3"
 crispy-bootstrap3 = "2024.1"
 django-storages = "<2"
 django-uuslug = "<3"
-Django = "<5"
 gunicorn = "<24"
 markdown = "<3.2"
-Pillow = "<10"
 psycopg2-binary = "<3.0"
 pylibmc = "<1.7"
 pytz = "*"
 setproctitle = "*"
+django = "<5"
+pillow = "<12,>=10.2"
 
 [dev-packages]
 

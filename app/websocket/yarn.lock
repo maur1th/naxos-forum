@@ -46,10 +46,10 @@ base64id@2.0.0, base64id@~2.0.0:
   resolved "https://registry.yarnpkg.com/base64id/-/base64id-2.0.0.tgz#2770ac6bc47d312af97a8bf9a634342e0cd25cb6"
   integrity sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==
 
-cookie@^0.7:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.0.tgz#2148f68a77245d5c2c0005d264bc3e08cfa0655d"
-  integrity sha512-qCf+V4dtlNhSRXGAZatc1TasyFO6GjohcOul807YOb5ik3+kQSnb4d7iajeCL8QHaJ4uZEjCgiCJerKXwdRVlQ==
+cookie@^2.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-2.0.1.tgz#1fc7e9bddf38fa9567cd4d750820087cdb5d6e98"
+  integrity sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w==
 
 cookie@~0.7.2:
   version "0.7.2"

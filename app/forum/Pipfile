@@ -13,13 +13,12 @@ django-uuslug = "<3"
 gunicorn = "<24"
 psycopg2-binary = "<3.0"
 pylibmc = "<1.7"
-pytz = "*"
 setproctitle = "*"
-django = "<5"
+django = ">=5.2,<5.3"
 pillow = "<13,>=12.2"
 urllib3 = ">=2.7"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.13"

@@ -15,7 +15,7 @@ psycopg2-binary = "<3.0"
 pylibmc = "<1.7"
 pytz = "*"
 setproctitle = "*"
-django = "<5"
+django = "<6"
 pillow = "<13,>=12.2"
 urllib3 = ">=2.7"
 

@@ -17,7 +17,7 @@ pytz = "*"
 setproctitle = "*"
 django = "<5"
 pillow = "<13,>=12.2"
-urllib3 = ">=2.7"
+urllib3 = ">=2.8.0"
 
 [dev-packages]
 

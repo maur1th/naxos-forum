@@ -1,0 +1,12 @@
+{
+  "name": "naxos-forum-devtools",
+  "private": true,
+  "description": "Playwright helpers for looking at the forum in a browser during frontend development (not a test suite)",
+  "scripts": {
+    "seed": "./seed.sh",
+    "shot": "node screenshot.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.0"
+  }
+}

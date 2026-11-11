@@ -1,0 +1,58 @@
+name: images
+
+# Builds and pushes the production Docker images once the test workflow has
+# passed on a push to master. The production host is an arm64 (Graviton) EC2
+# instance, so the images are built natively on GitHub's arm64 runners.
+# Deploying them is a separate, manual step (see .claude/skills/deploy).
+on:
+  workflow_run:
+    workflows: [test]
+    types: [completed]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit on master to build (defaults to the tip of master)
+        required: false
+
+concurrency:
+  group: images-${{ github.event.workflow_run.head_sha || inputs.ref || github.sha }}
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    name: ${{ matrix.image }}
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        include:
+          - image: naxos-forum
+            context: app/forum
+          - image: naxos-websocket
+            context: app/websocket
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || inputs.ref || github.sha }}
+      - name: Resolve commit
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: maur1th
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          platforms: linux/arm64
+          push: true
+          build-args: VERSION=${{ steps.sha.outputs.sha }}
+          tags: |
+            maur1th/${{ matrix.image }}:${{ steps.sha.outputs.sha }}
+            maur1th/${{ matrix.image }}:latest
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

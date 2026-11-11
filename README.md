@@ -63,27 +63,31 @@ pipenv requirements > requirements.txt
 
 ### Docker image
 
-```bash
-docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-forum app/forum && \
-docker build --build-arg VERSION="$(git rev-parse HEAD)" --tag maur1th/naxos-websocket app/websocket && \
-docker tag maur1th/naxos-forum maur1th/naxos-forum:"$(git rev-parse HEAD)" && \
-docker tag maur1th/naxos-websocket maur1th/naxos-websocket:"$(git rev-parse HEAD)" && \
-docker push maur1th/naxos-forum && \
-docker push maur1th/naxos-forum:"$(git rev-parse HEAD)" && \
-docker push maur1th/naxos-websocket && \
-docker push maur1th/naxos-websocket:"$(git rev-parse HEAD)"
-```
+Images are built by CI: once the `test` workflow passes on master,
+`.github/workflows/images.yml` builds `maur1th/naxos-forum` and
+`maur1th/naxos-websocket` for `linux/arm64` (the production host is a Graviton
+instance) and pushes them to Docker Hub, tagged with the commit SHA and
+`latest`. To build an older commit, run the workflow by hand:
+`gh workflow run images.yml -f ref=<sha>`.
 
 ## Deployment
 
 ### Application
 
+The production host runs Amazon Linux 2 (Python 2.7 and 3.7 only), which
+ansible-core 2.17+ can't manage, so the playbook runs from a pinned container
+(`deployment/runner/Dockerfile`, ansible-core 2.16). It needs Docker, the SSH
+key at `~/.ssh/tmaurin-change` and the vault password at `~/.vault_pass`
+(override with `NAXOS_SSH_KEY` and `NAXOS_VAULT_PASS`).
+
 ```bash
-# Deploy latest Docker images
-$ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml
-# Deploy specific commit
-$ ansible-playbook -i hosts --vault-password-file=~/.vault_pass playbook.yml -e "app_version=<version>"
+# Deploy a specific commit (its images must have been pushed by CI)
+$ deployment/run-playbook.sh playbook.yml -e "app_version=<sha>"
+# Dry run
+$ deployment/run-playbook.sh playbook.yml --check -e "app_version=<sha>"
 ```
+
+With Claude Code, `/deploy [PR number or SHA]` does this end to end.
 
 ### Static files
 

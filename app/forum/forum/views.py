@@ -333,8 +333,11 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         return super().form_valid(form)
 
     def get_success_url(self):
+        # QuotePost also carries a `pk` kwarg, which the thread URL rejects.
+        thread_kwargs = {'category_slug': self.kwargs['category_slug'],
+                         'thread_slug': self.kwargs['thread_slug']}
         return '{}?page=last#{}'.format(
-            reverse_lazy('forum:thread', kwargs=self.kwargs),
+            reverse_lazy('forum:thread', kwargs=thread_kwargs),
             str(self.object.pk)
         )
 

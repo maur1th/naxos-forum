@@ -154,30 +154,34 @@ class DeleteMessage(LoginRequiredMixin, View):
 # Search form
 @login_required
 def GetConversation(request):
-    """Conversation search form"""
-    if request.method == 'POST':
-        u = ForumUser.objects.exclude(username=request.user)\
-            .filter(username__istartswith=request.POST['query'])
-        if u.count() == 1:
-            c = Conversation.objects.filter(participants=request.user)\
-                .filter(participants=u.get())
-            if c.count() == 1:
-                c = c.get()
-                tag = '#' + str(c.messages.latest().pk)
-                return HttpResponseRedirect(
-                    reverse_lazy('pm:msg', kwargs={'pk': c.pk}) + tag)
-            else:
-                messages.error(
-                    request,
-                    ("Il n'existe pas de conversation avec"
-                        " cet utilisateur : {:s}.".format(u.get().username))
-                )
-        elif u.count() > 1:
+    """Conversation search form (GET: a search is safe and idempotent)"""
+    query = request.GET.get('query', '').strip()
+    if not query:
+        messages.error(request, "Aucun utilisateur trouvé.")
+        return HttpResponseRedirect(reverse_lazy('pm:top'))
+
+    u = ForumUser.objects.exclude(username=request.user)\
+        .filter(username__istartswith=query)
+    if u.count() == 1:
+        c = Conversation.objects.filter(participants=request.user)\
+            .filter(participants=u.get())
+        if c.count() == 1:
+            c = c.get()
+            qs = '?page=last#' + str(c.messages.latest().pk)
+            return HttpResponseRedirect(
+                reverse_lazy('pm:msg', kwargs={'pk': c.pk}) + qs)
+        else:
             messages.error(
                 request,
-                "Plusieurs utilisateurs possibles : {:s}.".format(
-                    ", ".join([u.username for u in u]))
+                ("Il n'existe pas de conversation avec"
+                    " cet utilisateur : {:s}.".format(u.get().username))
             )
-        else:
-            messages.error(request, "Aucun utilisateur trouvé.")
+    elif u.count() > 1:
+        messages.error(
+            request,
+            "Plusieurs utilisateurs possibles : {:s}.".format(
+                ", ".join([user.username for user in u]))
+        )
+    else:
+        messages.error(request, "Aucun utilisateur trouvé.")
     return HttpResponseRedirect(reverse_lazy('pm:top'))

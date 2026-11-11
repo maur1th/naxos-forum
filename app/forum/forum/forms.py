@@ -117,10 +117,13 @@ class PostForm(forms.ModelForm):
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
 
     def clean(self):
-        if ((timezone.now() - self.user.posts.latest().created) <
-                datetime.timedelta(seconds=5)):
+        # A member with no post yet has nothing to flood-check against.
+        last = (self.user.posts.order_by('-created')
+                .values_list('created', flat=True).first())
+        if last and timezone.now() - last < datetime.timedelta(seconds=5):
             raise forms.ValidationError("Merci d'attendre au moins 5 secondes"
                                         " entre deux messages.")
+        return super().clean()
 
     class Meta:
         model = Post

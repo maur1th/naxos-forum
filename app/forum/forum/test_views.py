@@ -58,3 +58,9 @@ class ReplyFloodCheckTests(TestCase):
         r = self.client.post(self.reply_url(), {'content_plain': 'later'})
         self.assertEqual(r.status_code, 302)
         self.assertEqual(self.thread.posts.count(), 2)
+
+
+class SecurityHeadersTests(TestCase):
+    def test_pages_cannot_be_framed(self):
+        r = self.client.get(reverse('user:login'))
+        self.assertEqual(r['X-Frame-Options'], 'DENY')

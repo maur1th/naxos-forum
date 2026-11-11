@@ -69,6 +69,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libmemcached-dev libsasl2-dev
       - name: Install python dependencies
         run: pip install -r requirements.txt
+      - name: Check deployment settings
+        env:
+          LOCAL_ENV: '0'
+          AWS_STORAGE_BUCKET_NAME: example-bucket
+          HOSTNAME: example.org
+        run: python manage.py check --deploy --fail-level WARNING
       - name: Run tests
         run: python manage.py test user.test_forms utils.test_extra_tags forum.test_models forum.test_util forum.test_views pm.test_views --verbosity 2
 

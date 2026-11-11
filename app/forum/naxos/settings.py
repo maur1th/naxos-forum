@@ -50,6 +50,12 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 if os.environ["LOCAL_ENV"] != "1":
     SESSION_COOKIE_SECURE = True   # True for full HTTPS
     CSRF_COOKIE_SECURE = True      # True for full HTTPS
+    # Mirror the nginx headers so the app is safe whatever proxy fronts it.
+    SECURE_HSTS_SECONDS = 63072000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_REFERRER_POLICY = "no-referrer"
+X_FRAME_OPTIONS = "DENY"
 
 
 # Sessions
@@ -93,6 +99,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "naxos.urls"

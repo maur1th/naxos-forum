@@ -298,12 +298,19 @@ def update_post_count(created, instance, **kwargs):
 
 @receiver(post_save, sender=Post)
 def add_user_mentions(created, instance, **kwargs):
-    for user in UserReferences(instance.content_plain).get_users():
-        obj, created = UserMentions.objects.get_or_create(user=user, post=instance)
-        if created:
-            user.newMention = True
-            user.save()
-        # logger.warning(obj)
+    mentioned = set(UserReferences(instance.content_plain)
+                    .get_users().values_list('pk', flat=True))
+    if not mentioned:
+        return
+    already = set(UserMentions.objects.filter(
+        post=instance, user__in=mentioned).values_list('user_id', flat=True))
+    new_ids = mentioned - already
+    if not new_ids:
+        return
+    UserMentions.objects.bulk_create(
+        [UserMentions(user_id=pk, post=instance) for pk in new_ids],
+        ignore_conflicts=True)
+    ForumUser.objects.filter(pk__in=new_ids).update(newMention=True)
 
 
 @receiver(post_save, sender=Thread)

@@ -193,6 +193,11 @@ class Preview(models.Model):
     """Contains post previews. Should be empty."""
     content_plain = models.TextField()
     markup = models.TextField(default='bbcode')
+    # Nullable so rows created before this field existed stay valid;
+    # such rows are never served and get purged.
+    author = models.ForeignKey(ForumUser, null=True, blank=True,
+                               on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
 
     @property
     def html(self):

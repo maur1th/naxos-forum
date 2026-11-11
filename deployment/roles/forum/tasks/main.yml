@@ -105,4 +105,12 @@
     job: docker exec forum python3 manage.py clearsessions
     hour: "4"
     minute: "0"
+
+# Purge abandoned post previews
+- name: add purge_previews cron
+  cron:
+    name: django purge_previews
+    job: docker exec forum python3 manage.py purge_previews
+    hour: "4"
+    minute: "5"
 ...

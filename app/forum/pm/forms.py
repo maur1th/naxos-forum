@@ -18,6 +18,18 @@ def get_user_list(user_pk):
     return q
 
 
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ('content_plain',)
+
+    def clean_content_plain(self):
+        content = self.cleaned_data['content_plain'].strip()
+        if not content:
+            raise forms.ValidationError("Le message est vide.")
+        return content
+
+
 class ConversationForm(forms.ModelForm):
     recipient = forms.ModelChoiceField(label="Destinataire",
                                        queryset=ForumUser.objects.none(),

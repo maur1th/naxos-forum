@@ -1,22 +1,23 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import View, ListView, CreateView
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 from user.models import ForumUser
 from .models import Conversation, Message
-from .forms import ConversationForm
+from .forms import ConversationForm, MessageForm
 
 
 # Helper stuff
 def pm_counter(request, c):
     """Increment conversation recipient's pm counter"""
-    recipient = c.participants.exclude(username=request.user).get()
-    recipient.pmUnreadCount += 1
-    recipient.save()
+    for recipient in c.participants.exclude(pk=request.user.pk):
+        recipient.pmUnreadCount += 1
+        recipient.save()
 
 
 # PM views
@@ -39,18 +40,14 @@ class MessageView(LoginRequiredMixin, ListView):
     paginate_orphans = 2
 
     def get(self, request, *args, **kwargs):
-        self.c = get_object_or_404(Conversation, pk=kwargs['pk'])
-        # Handle forbidden user
-        if request.user not in self.c.participants.all():
-            return HttpResponseForbidden()
+        self.c = get_object_or_404(
+            Conversation, pk=kwargs['pk'], participants=request.user)
         # Handle user read caret
         m = self.c.messages.latest()
-        try:
-            caret = request.user.pmReadCaret.get(conversation=self.c)
-        except:
-            caret = False
+        caret = request.user.pmReadCaret.filter(conversation=self.c).first()
         if caret != m:
-            request.user.pmReadCaret.remove(caret)
+            if caret:
+                request.user.pmReadCaret.remove(caret)
             request.user.pmReadCaret.add(m)
         return super().get(request, *args, **kwargs)
 
@@ -61,7 +58,7 @@ class MessageView(LoginRequiredMixin, ListView):
         "Pass recipient to context"
         context = super().get_context_data(**kwargs)
         context['recipient'] = self.c.participants.exclude(
-            username=self.request.user).get()
+            pk=self.request.user.pk).first()
         context['conversation'] = self.c
         return context
 
@@ -69,13 +66,11 @@ class MessageView(LoginRequiredMixin, ListView):
 class SwitchConversationStatus(LoginRequiredMixin, View):
     """Mark message as unread."""
 
-    def get(self, request, *args, **kwargs):
-        self.c = get_object_or_404(Conversation, pk=kwargs['pk'])
+    def post(self, request, *args, **kwargs):
+        self.c = get_object_or_404(
+            Conversation, pk=kwargs['pk'], participants=request.user)
 
-        try:
-            caret = request.user.pmReadCaret.get(conversation=self.c)
-        except:
-            caret = False
+        caret = request.user.pmReadCaret.filter(conversation=self.c).first()
         if caret:
             request.user.pmReadCaret.remove(caret)
         else:
@@ -118,44 +113,42 @@ class NewConversation(LoginRequiredMixin, CreateView):
 
 
 @login_required
+@require_POST
 def NewMessage(request, pk):
-    if request.method == 'POST':
-        c = get_object_or_404(Conversation, pk=pk)
-        m = Message.objects.create(
-            conversation=c,
-            author=request.user,
-            content_plain=request.POST['content_plain'])
-        pm_counter(request, c)
-        qs = '?page=last#' + str(m.pk)
-        return HttpResponseRedirect(
-            reverse_lazy('pm:msg', kwargs={'pk': pk}) + qs)
-    else:
-        return HttpResponseRedirect(reverse_lazy('pm:top'))
+    c = get_object_or_404(Conversation, pk=pk, participants=request.user)
+    form = MessageForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Le message est vide ou trop long.")
+        return HttpResponseRedirect(reverse('pm:msg', kwargs={'pk': pk}))
+    m = Message.objects.create(
+        conversation=c,
+        author=request.user,
+        content_plain=form.cleaned_data['content_plain'])
+    pm_counter(request, c)
+    qs = '?page=last#' + str(m.pk)
+    return HttpResponseRedirect(
+        reverse_lazy('pm:msg', kwargs={'pk': pk}) + qs)
 
 
 class DeleteMessage(LoginRequiredMixin, View):
+    """Participants may delete messages of their conversation."""
 
     def post(self, request, *args, **kwargs):
-        m = get_object_or_404(Message, pk=kwargs['pk'])
+        m = get_object_or_404(
+            Message, pk=kwargs['pk'], conversation__participants=request.user)
         c = m.conversation
-        if m.author not in m.conversation.participants.all():
-            raise PermissionDenied
-        else:
-            m.shown = False
-            m.save()
-            # Set conversation modified timestamp again in case
-            # the latest message was the one deleted
-            latest_message_shown = c.messages.filter(shown=True)\
-                .order_by('created').last()
-            if latest_message_shown:
-                c.modified = latest_message_shown.created
-                c.save()
-                return HttpResponseRedirect(
-                    reverse('pm:msg', args=[m.conversation.pk]))
-            else:
-                # If no message is shown return to top
-                return HttpResponseRedirect(
-                    reverse('pm:top'))
+        m.shown = False
+        m.save()
+        # Set conversation modified timestamp again in case
+        # the latest message was the one deleted
+        latest_message_shown = c.messages.filter(shown=True)\
+            .order_by('created').last()
+        if latest_message_shown:
+            c.modified = latest_message_shown.created
+            c.save()
+            return HttpResponseRedirect(reverse('pm:msg', args=[c.pk]))
+        # If no message is shown return to top
+        return HttpResponseRedirect(reverse('pm:top'))
 
 
 # Search form

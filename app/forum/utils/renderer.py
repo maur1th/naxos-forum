@@ -164,31 +164,32 @@ class UserReferences:
     def __init__(self, text):
         self.text = text
 
-    def __render_tag(self, matchobj):
-        user = ForumUser.objects.filter(username=matchobj.group(2)).first()
-        if user or matchobj.group(2) == "all":
-            return matchobj.group(1) + "[user]@" + matchobj.group(2) + "[/user]"
-        else:
-            return matchobj.group(1) + "@" + matchobj.group(2)
+    code_block = re.compile(r"\[code(?:=[^\]]*)?\].*?\[/code\]",
+                            re.IGNORECASE | re.DOTALL)
+
+    def __names(self, text):
+        return {m.group(2) for m in re.finditer(self.matching_pattern, text)}
 
     def render(self):
-        return re.sub(self.matching_pattern, self.__render_tag, self.text)
+        names = self.__names(self.text)
+        existing = set(ForumUser.objects.filter(
+            username__in=names).values_list('username', flat=True))
+
+        def render_tag(matchobj):
+            name = matchobj.group(2)
+            if name in existing or name == "all":
+                return matchobj.group(1) + "[user]@" + name + "[/user]"
+            return matchobj.group(1) + "@" + name
+
+        return re.sub(self.matching_pattern, render_tag, self.text)
 
     def get_users(self):
-        if re.search(self.match_all, self.text):
-            for user in ForumUser.objects.all():
-                yield user
-            return
-        processed_names = []
-        match_iter = re.finditer(self.matching_pattern, self.text)
-        for matchobj in match_iter:
-            name = matchobj.group(2)
-            if name in processed_names:
-                continue
-            processed_names.append(name)
-            user = ForumUser.objects.filter(username=matchobj.group(2)).first()
-            if user:
-                yield user
+        "Return a queryset of active users mentioned outside [code] blocks."
+        text = self.code_block.sub("", self.text)
+        users = ForumUser.objects.filter(is_active=True)
+        if re.search(self.match_all, text):
+            return users
+        return users.filter(username__in=self.__names(text))
 
     def __remove_tag(self, matchobj):
         return matchobj.group(1) + matchobj.group(2)

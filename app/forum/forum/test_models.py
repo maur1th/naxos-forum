@@ -1,6 +1,8 @@
 import datetime
 
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 
 from user.models import ForumUser, Bookmark
@@ -120,6 +122,62 @@ class MentionSignalTests(ForumTestMixin, TestCase):
     def test_mentioning_an_unknown_user_is_ignored(self):
         post = Post.objects.create(
             content_plain='hey @nobody', author=self.author, thread=self.thread)
+        self.assertFalse(UserMentions.objects.filter(post=post).exists())
+
+
+class MentionAllTests(ForumTestMixin, TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.thread = self.make_thread()
+
+    def _users(self, n, **kw):
+        return [ForumUser.objects.create_user(
+            username=f'u{kw.get("prefix", "a")}{i}',
+            email=f'u{kw.get("prefix", "a")}{i}@test.com',
+            password='x', is_active=kw.get('is_active', True))
+            for i in range(n)]
+
+    def _create_all_post(self):
+        with CaptureQueriesContext(connection) as ctx:
+            Post.objects.create(content_plain='hi @all',
+                                author=self.author, thread=self.thread)
+        return len(ctx)
+
+    def test_at_all_query_count_is_independent_of_member_count(self):
+        self._users(3)
+        few = self._create_all_post()
+        self._users(20, prefix='b')
+        many = self._create_all_post()
+        self.assertEqual(few, many)
+
+    def test_at_all_skips_inactive_users(self):
+        active = self._users(2)
+        inactive = self._users(2, prefix='i', is_active=False)
+        post = Post.objects.create(content_plain='@all',
+                                   author=self.author, thread=self.thread)
+        self.assertTrue(UserMentions.objects.filter(
+            post=post, user=active[0]).exists())
+        self.assertFalse(UserMentions.objects.filter(
+            post=post, user=inactive[0]).exists())
+        inactive[0].refresh_from_db()
+        self.assertFalse(inactive[0].newMention)
+
+    def test_editing_does_not_renotify(self):
+        bob = self._users(1)[0]
+        post = Post.objects.create(content_plain='@ua0',
+                                   author=self.author, thread=self.thread)
+        ForumUser.objects.filter(pk=bob.pk).update(newMention=False)
+        post.content_plain = '@ua0 edited'
+        post.save()
+        bob.refresh_from_db()
+        self.assertFalse(bob.newMention)
+        self.assertEqual(UserMentions.objects.filter(post=post).count(), 1)
+
+    def test_mention_inside_code_is_ignored(self):
+        self._users(1)
+        post = Post.objects.create(content_plain='[code]\n@ua0[/code]',
+                                   author=self.author, thread=self.thread)
         self.assertFalse(UserMentions.objects.filter(post=post).exists())
 
 

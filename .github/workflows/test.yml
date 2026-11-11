@@ -70,7 +70,7 @@ jobs:
       - name: Install python dependencies
         run: pip install -r requirements.txt
       - name: Run tests
-        run: python manage.py test user.test_forms utils.test_extra_tags forum.test_models forum.test_util pm.test_views --verbosity 2
+        run: python manage.py test user.test_forms utils.test_extra_tags forum.test_models forum.test_util pm.test_views forum.test_views --verbosity 2
 
   postmarkup:
     name: postmarkup (vendored bbcode lib)

@@ -98,8 +98,9 @@ rerun it with changes to roles or inventory unless the user asks.
    `forum` and `websocket` should run the `:$SHA` images and be `Up`, not
    restarting.
 2. `SSH 'sudo docker exec forum printenv VERSION'` prints `$SHA`.
-3. `curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' https://geekattitude.org/`
-   gives `200`, or `302` to `/user/login/`. A `502` means nginx can't reach
+3. `curl -sSL -o /dev/null -w '%{http_code} %{url_effective}' https://geekattitude.org/`
+   ends on `200` at `/user/login/?next=/forum/` (`/` redirects to `/forum/`,
+   which redirects anonymous visitors to the login page). A `502` means nginx can't reach
    the forum: give it a minute, then check again.
 4. If any check fails, show `SSH 'sudo docker logs --tail 100 forum'`.
 

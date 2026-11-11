@@ -72,6 +72,7 @@ jobs:
       - name: Check deployment settings
         env:
           LOCAL_ENV: '0'
+          DEBUG: '0'
           AWS_STORAGE_BUCKET_NAME: example-bucket
           HOSTNAME: example.org
         run: python manage.py check --deploy --fail-level WARNING

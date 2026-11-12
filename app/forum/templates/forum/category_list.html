@@ -28,16 +28,16 @@
                     <strong><a href="{% url 'forum:category' category.slug %}">{{ category.title }}</a></strong><br>
                     <small class="hidden-xs">{{ category.subtitle }}</small>
                 </td>
-                <td class="text-center vert-align hidden-xs"><small>{{ category.threads.count }}</small></td>
+                <td class="text-center vert-align hidden-xs"><small>{{ category.thread_count }}</small></td>
                 <td class="text-center vert-align hidden-xs"><small>{{ category.post_count }}</small></td>
                 <td class="text-center vert-align">
-                    {% if category.threads.latest %}
-                    {% with category.threads.latest as latest_thread %}
+                    {% if category.latest_thread %}
+                    {% with category.latest_thread as latest_thread %}
                         <small>
-                        <a href="{% url 'forum:thread' category.slug latest_thread.slug %}?page=last#{{ latest_thread.latest_post.pk }}" class="lastMessage">
+                        <a href="{% url 'forum:thread' category.slug latest_thread.slug %}?page=last#{{ latest_thread.last_post.pk }}" class="lastMessage">
                         <span class="hidden-xs">{{ latest_thread.modified|date:'d/m/y H:i' }}<br></span>
                         <span class="visible-xs">{{ latest_thread.modified|date:'d/m H:i' }}</span>
-                        <strong>{{ latest_thread.latest_post.cached_author }}</strong>
+                        <strong>{{ latest_thread.last_post.author }}</strong>
                         </a>
                         </small>
                     {% endwith %}

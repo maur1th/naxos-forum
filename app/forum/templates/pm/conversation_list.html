@@ -41,13 +41,13 @@
     </thead>
     <tbody>
     {% for conv in object_list %}
-    {% if conv.latest_shown_message %}
+    {% if conv.latest_shown %}
         <tr>
           <td class="text-center vert-align" style="padding:0">
             <form method="post" action="{% url 'pm:switch_status' conv.pk %}" style="display:inline">
             {% csrf_token %}
             <button type="submit" style="background:none;border:0;padding:0">
-            {% if conv.messages.latest in user.pmReadCaret.all %}
+            {% if conv.is_read %}
               <img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
             {% else %}
               <img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
@@ -64,12 +64,12 @@
             {% endfor %}
             </a>
           </td>
-          <td class="text-center vert-align"><small>{{ conv.shown_message_count }}</small></td>
+          <td class="text-center vert-align"><small>{{ conv.shown_count }}</small></td>
           <td class="text-center vert-align importantData" style="line-height:100%">
             <small>
-            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_shown_message.pk }}" class="lastMessage">
-            {{ conv.latest_shown_message.created|date:'d/m/y H:i' }}
-            <br><strong>{{ conv.latest_shown_message.author }}</strong>
+            <a href="{% url 'pm:msg' conv.pk %}?page=last#{{ conv.latest_shown.pk }}" class="lastMessage">
+            {{ conv.latest_shown.created|date:'d/m/y H:i' }}
+            <br><strong>{{ conv.latest_shown.author }}</strong>
             </a>
             </small>
           </td>

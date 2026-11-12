@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, OuterRef, Q, Subquery
 
 from user.models import ForumUser
 from .models import Conversation, Message
@@ -29,7 +30,31 @@ class PMTopView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         self.request.user.pmUnreadCount = 0
         self.request.user.save()
-        return Conversation.objects.filter(participants=self.request.user)
+        messages = Message.objects.filter(conversation=OuterRef('pk'))\
+            .order_by('-created')
+        return Conversation.objects\
+            .filter(participants=self.request.user)\
+            .annotate(
+                shown_count=Count('messages',
+                                  filter=Q(messages__shown=True)),
+                latest_id=Subquery(messages.values('pk')[:1]),
+                latest_shown_id=Subquery(
+                    messages.filter(shown=True).values('pk')[:1]),
+            ).prefetch_related('participants')
+
+    def get_context_data(self, **kwargs):
+        """Attach latest shown message and read status to conversations."""
+        context = super().get_context_data(**kwargs)
+        conversations = context['object_list']
+        latest = Message.objects.select_related('author').in_bulk(
+            [c.latest_shown_id for c in conversations if c.latest_shown_id])
+        read = set(self.request.user.pmReadCaret.filter(
+            pk__in=[c.latest_id for c in conversations if c.latest_id],
+        ).values_list('pk', flat=True))
+        for c in conversations:
+            c.latest_shown = latest.get(c.latest_shown_id)
+            c.is_read = c.latest_id in read
+        return context
 
 
 class MessageView(LoginRequiredMixin, ListView):

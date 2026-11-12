@@ -17,7 +17,7 @@
 </ul>
 {# Content #}
 <div style="padding-top:20px">
-    <h3>Utilisateurs actifs ({{ active_users.count }})</h3>
+    <h3>Utilisateurs actifs ({{ active_users|length }})</h3>
     <table class="table table-condensed">
         <thead>
         <tr>
@@ -32,7 +32,7 @@
             <tr>
                 <td>
                     <strong>{{ member }}</strong>
-                    {% if member.is_online %}
+                    {% if member.online %}
                         <span class="glyphicon glyphicon-flash" style="color:#5cb85c"></span>
                     {% else %}
                         <span class="glyphicon glyphicon-flash" style="color:lightgray"></span>
@@ -40,7 +40,7 @@
                     {% if member.last_seen %}
                         <span style="color:gray">{{ member.last_seen|naturaltime }}</span>
                     {% else %}
-                        <span style="color:gray">dernier post le {{ member.posts.latest.created|date:'d/m/y' }}</span>
+                        <span style="color:gray">dernier post le {{ member.last_post|date:'d/m/y' }}</span>
                     {% endif %}
                 </td>
                 <td class="text-center">
@@ -62,7 +62,7 @@
     </table>
 </div>
 <div style="padding-top:20px">
-    <h3>Utilisateurs inactifs ({{ inactive_users.count }})</h3>
+    <h3>Utilisateurs inactifs ({{ inactive_users|length }})</h3>
     <table class="table table-condensed">
         <thead>
         <tr>
@@ -78,7 +78,7 @@
                 <td>
                     <strong>{{ member }}</strong>
                     <span class="glyphicon glyphicon-ban-circle" style="color:gray"></span>
-                    <span style="color:gray">dernier post le {{ member.posts.latest.created|date:'d/m/y' }}</span>
+                    <span style="color:gray">dernier post le {{ member.last_post|date:'d/m/y' }}</span>
                 </td>
                 <td class="text-center">
                     {{ member.date_joined|date:'d/m/Y' }}

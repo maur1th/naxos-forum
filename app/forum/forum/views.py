@@ -20,7 +20,7 @@ import re
 from urllib.parse import urlencode
 
 from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote, UserMentions
-from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
+from .forms import PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
 from utils.renderer import UserReferences
@@ -251,7 +251,7 @@ class PostDetailView(LoginRequiredMixin, DetailView):
 # Thread and Post creation and edit #
 class NewThread(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
                 CreateView):
-    form_class = ThreadForm
+    form_class = PostForm
     template_name = 'forum/thread_form.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -371,7 +371,7 @@ class QuotePost(NewPost):
 
 
 class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
-    form_class = ThreadForm
+    form_class = PostForm
     model = Post
     template_name_suffix = '_edit'
 

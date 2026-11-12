@@ -164,7 +164,8 @@ html.dark div.post-header {
     border-right-color: var(--ga-border) !important;
 }
 /* Inline style border-right:#f9f9f9 on author/header cells */
-html.dark [style*="border-right:1px solid #f9f9f9"] {
+html.dark [style*="border-right"],
+html.dark .row.equal-divs > [class*="col-"]:first-of-type {
     border-right-color: var(--ga-border) !important;
 }
 html.dark div.post-author {

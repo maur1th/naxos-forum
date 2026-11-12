@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
@@ -11,6 +11,8 @@ from forum.util import keygen
 import datetime
 
 FORUM_INIT = timezone.make_aware(datetime.datetime(2013, 1, 1))
+# Cached list of "@username" of active members (mention autocomplete)
+MENTION_USERS_KEY = 'mention_users'
 
 
 # Model classes
@@ -138,6 +140,20 @@ class TokenPool(models.Model):
 @receiver(post_save, sender=ForumUser)
 def update_user_cache(instance, **kwargs):
     cache.set('user/{}'.format(instance.pk), instance, None)
+
+
+@receiver(post_save, sender=ForumUser)
+def update_mention_users_cache(instance, created, **kwargs):
+    """Drop the mention list when a member joins, leaves or comes back."""
+    users = cache.get(MENTION_USERS_KEY)
+    if users is not None and \
+            (f"@{instance.username}" in users) != instance.is_active:
+        cache.delete(MENTION_USERS_KEY)
+
+
+@receiver(post_delete, sender=ForumUser)
+def delete_mention_users_cache(instance, **kwargs):
+    cache.delete(MENTION_USERS_KEY)
 
 
 @receiver(post_save, sender=Bookmark)

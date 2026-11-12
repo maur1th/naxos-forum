@@ -14,11 +14,12 @@ from django.utils import timezone
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.views.decorators.http import require_POST
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
+from django.db.models.functions import Lower
 
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm, BudgetRecordForm
 from .models import ForumUser
-from forum.models import BudgetRecord, Thread
+from forum.models import BudgetRecord, Post, Thread
 
 
 class Register(CreateView):
@@ -86,18 +87,19 @@ def UpdatePassword(request):
 class MemberList(LoginRequiredMixin, TemplateView):
     template_name = "user/members.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        qs = ForumUser.objects.extra(
-            select={'username_lower': 'lower(username)'})\
-            .order_by('username_lower')
-        self.active_users = qs.filter(is_active=True)
-        self.inactive_users = qs.filter(is_active=False)
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_users'] = self.active_users
-        context['inactive_users'] = self.inactive_users
+        latest_post = Post.objects.filter(author=OuterRef('pk'))\
+            .order_by('-created').values('created')[:1]
+        members = list(ForumUser.objects
+                       .annotate(last_post=Subquery(latest_post))
+                       .order_by(Lower('username')))
+        online = cache.get_many(
+            [f"user/{m.pk}/is_online" for m in members])
+        for m in members:
+            m.online = bool(online.get(f"user/{m.pk}/is_online"))
+        context['active_users'] = [m for m in members if m.is_active]
+        context['inactive_users'] = [m for m in members if not m.is_active]
         return context
 
 

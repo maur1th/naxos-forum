@@ -4,11 +4,11 @@ from django.views.generic import View, ListView, CreateView, UpdateView,\
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.db import transaction
-from django.db.models import F, Sum
+from django.db.models import Count, F, Min, OuterRef, Q, Subquery, Sum
+from django.db.models.functions import Coalesce, Lower
 from django.http import HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.conf import settings
 
+import math
 import re
 from urllib.parse import urlencode
 
@@ -24,38 +25,73 @@ from .forms import PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
 from utils.renderer import UserReferences
-from user.models import Bookmark, CategoryTimeStamp, ForumUser
+from user.models import Bookmark, CategoryTimeStamp, ForumUser, \
+    MENTION_USERS_KEY
 
 THREADVIEW_PAGINATE_BY = 30
 POSTVIEW_PAGINATE_BY = 30
 
 
 # Helpers #
+def page_for_index(index, count):
+    """
+    Return the PostView page holding the post at 0-based `index` in a thread
+    of `count` posts: the last page also takes up to `paginate_orphans`
+    trailing posts, as Django's Paginator does.
+    """
+    per_page = PostView.paginate_by
+    num_pages = max(1, math.ceil(
+        max(1, count - PostView.paginate_orphans) / per_page))
+    return min(index // per_page + 1, num_pages)
+
+
+def get_post_pages(post_ids):
+    """Return {post pk: page number} for these posts, in one query."""
+    if not post_ids:
+        return {}
+
+    def count_posts(**filters):
+        return Coalesce(Subquery(
+            Post.objects.filter(thread=OuterRef('thread'), **filters)
+            .order_by().values('thread').annotate(n=Count('pk'))
+            .values('n')), 0)
+
+    rows = Post.objects.filter(pk__in=post_ids).annotate(
+        index=count_posts(pk__lt=OuterRef('pk')),
+        total=count_posts(),
+    ).values_list('pk', 'index', 'total')
+    return {pk: page_for_index(index, total) for pk, index, total in rows}
+
+
+def add_post_pages(posts):
+    """Set `page` on each post."""
+    posts = list(posts)
+    pages = get_post_pages([p.pk for p in posts])
+    for post in posts:
+        post.page = pages[post.pk]
+
+
 def get_post_page(post):
-    """
-    Return page number the post is on.
-    Let's build a paginator object and check if our post is on the expected
-    page. If not (because of PostView.paginate_orphans), return next page.
-    """
-    queryset = Post.objects.filter(thread=post.thread)
-    page_size = PostView.paginate_by
-    paginator = Paginator(
-        queryset, page_size, orphans=PostView.paginate_orphans,
-        allow_empty_first_page=False)
-    index = queryset.filter(pk__lt=post.pk).count()
-    page_number = max(index // PostView.paginate_by, 1)
-    page = paginator.page(page_number)
-    if post in page.object_list:
-        return page_number
-    else:
-        return page_number + 1
+    """Return page number the post is on."""
+    return get_post_pages([post.pk])[post.pk]
 
 
 def get_all_users():
-    active_users = ForumUser.objects.exclude(is_active=False)\
-                     .extra(select={'username_lower': 'lower(username)'})\
-                     .order_by('username_lower')
-    return [f"@{u.username}" for u in active_users]
+    """Usernames of active members, for the mention autocomplete."""
+    users = cache.get(MENTION_USERS_KEY)
+    if users is None:
+        users = [f"@{username}" for username in ForumUser.objects
+                 .filter(is_active=True).order_by(Lower('username'))
+                 .values_list('username', flat=True)]
+        cache.set(MENTION_USERS_KEY, users, None)
+    return users
+
+
+def mark_category_read(user, category):
+    """Record the user's visit to the category (one query when it exists)."""
+    if not CategoryTimeStamp.objects.filter(user=user, category=category)\
+            .update(timestamp=timezone.now()):
+        CategoryTimeStamp.objects.get_or_create(user=user, category=category)
 
 
 # Mixins #
@@ -63,8 +99,7 @@ class CategoryReadMixin(object):
     """Mark category as read."""
 
     def render_to_response(self, context, **response_kwargs):
-        CategoryTimeStamp.objects.update_or_create(
-            user=self.request.user, category=self.category)
+        mark_category_read(self.request.user, self.category)
         return super().render_to_response(context, **response_kwargs)
 
 
@@ -72,61 +107,67 @@ class ThreadStatusMixin(object):
     """Populate thread status."""
 
     def get_context_data(self, **kwargs):
-
-        def get_bookmarked_post(thread, bookmark):
-            """Return latest read post and page from bookmark timestamp."""
-            post = Post.objects\
-                       .filter(thread=thread, created__gt=bookmark)\
-                       .only('id', 'pk').first()
-            if post:
-                page = get_post_page(post)
-                return post, page
-            else:
-                return post, None
-
-        user_id = self.request.user.id
+        user = self.request.user
         context = super().get_context_data(**kwargs)
-        bookmarks = self.request.user.cached_bookmarks
+        bookmarks = user.cached_bookmarks
+        stale = []  # (thread, bookmark timestamp, has unread posts)
         for t in context['object_list']:
             # get thread's bookmark and check if there are unread items
             b = bookmarks.get(t.pk, None)
             if b:
                 unread_items = t.modified > b
             else:
-                unread_items = (True if t.modified >
-                                self.request.user.resetDateTime else False)
+                unread_items = t.modified > user.resetDateTime
             key = make_template_fragment_key(
-                'thread_status',
-                [t.pk, self.request.user.pk, self.request.user.resetDateTime]
-            )
-            cached = cache.get('read_status/{}/{}'.format(user_id, t.id))
+                'thread_status', [t.pk, user.pk, user.resetDateTime])
+            cached = cache.get('read_status/{}/{}'.format(user.id, t.id))
             # check whether additional calculation is needed
-            if (key in cache and cached == 'unread' and unread_items) or \
-               (key in cache and cached == 'read' and not unread_items):
+            if key in cache and \
+                    cached == ('unread' if unread_items else 'read'):
                 continue
-            else:
-                cache.delete(key)
-            # add bookmark and page to thread object
-            if b:
-                t.bookmark, t.page = get_bookmarked_post(t, b)
-            else:
-                t.bookmark, t.page = True, 1
-            # now check if user is a contributor in this thread
-            is_contributor = (
-                True if t.contributors.filter(id=user_id) else False
-            )
+            cache.delete(key)
+            stale.append((t, b, unread_items))
+        if not stale:
+            return context
+
+        # Batch what the stale threads need: whether the user contributed,
+        # and for unread bookmarked threads the first unread post and page.
+        contributed = set(Thread.contributors.through.objects.filter(
+            forumuser_id=user.id,
+            thread_id__in=[t.pk for t, _, _ in stale],
+        ).values_list('thread_id', flat=True))
+        unread_since = Q()
+        for t, b, unread_items in stale:
+            if b and unread_items:
+                unread_since |= Q(thread_id=t.pk, created__gt=b)
+        first_unread = {}
+        if unread_since:
+            first_unread = dict(
+                Post.objects.filter(unread_since).order_by()
+                .values('thread_id').annotate(first=Min('pk'))
+                .values_list('thread_id', 'first'))
+        pages = get_post_pages(list(first_unread.values()))
+
+        for t, b, unread_items in stale:
+            is_contributor = t.pk in contributed
             # now we've got all the data we needed, let's choose the correct
             # status icon and behaviour
             if unread_items:
+                if b:
+                    post_id = first_unread.get(t.pk)
+                    t.bookmark = Post(pk=post_id) if post_id else None
+                    t.page = pages.get(post_id)
+                else:
+                    t.bookmark, t.page = True, 1
                 status = 'unread_contributor' if is_contributor else 'unread'
                 cache.set(
-                    'read_status/{}/{}'.format(user_id, t.id), 'unread', None
+                    'read_status/{}/{}'.format(user.id, t.id), 'unread', None
                 )
             else:
                 status = 'read_contributor' if is_contributor else 'read'
                 t.bookmark = None
                 cache.set(
-                    'read_status/{}/{}'.format(user_id, t.id), 'read', None
+                    'read_status/{}/{}'.format(user.id, t.id), 'read', None
                 )
             t.status = 'img/{}.png'.format(status)
         return context
@@ -155,20 +196,50 @@ class CategoryView(LoginRequiredMixin, ListView):
     model = Category
     context_object_name = 'categories'
 
+    def get_queryset(self):
+        latest = Thread.objects.filter(category=OuterRef('pk'), visible=True)\
+            .order_by('-modified')
+        return Category.objects.annotate(
+            thread_count=Count('threads'),
+            latest_thread_id=Subquery(latest.values('pk')[:1]),
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['budget_total'] = BudgetRecord.objects.aggregate(Sum('amount'))['amount__sum'] or 0
         context['budget_status'] = 'danger' if context['budget_total'] < 0 else 'success'
-        timestamps = CategoryTimeStamp.objects.filter(user=self.request.user)
-        for c in context['categories']:
-            # to avoid non existent timestamps
-            timestamp, created = timestamps.get_or_create(
-                category=c, user=self.request.user)
+        user = self.request.user
+        categories = context['categories']
+        timestamps = dict(CategoryTimeStamp.objects.filter(user=user)
+                          .values_list('category_id', 'timestamp'))
+        # to avoid non existent timestamps
+        now = timezone.now()
+        missing = [c.pk for c in categories if c.pk not in timestamps]
+        if missing:
+            CategoryTimeStamp.objects.bulk_create(
+                [CategoryTimeStamp(user=user, category_id=pk, timestamp=now)
+                 for pk in missing],
+                ignore_conflicts=True)
+            timestamps.update(dict.fromkeys(missing, now))
+        # latest visible thread of each category, with its latest post
+        latest_post = Post.objects.filter(thread=OuterRef('pk'))\
+            .order_by('-created')
+        threads = Thread.objects.filter(
+            pk__in=[c.latest_thread_id for c in categories
+                    if c.latest_thread_id],
+        ).annotate(latest_post_id=Subquery(latest_post.values('pk')[:1]))\
+            .in_bulk()
+        posts = Post.objects.select_related('author').in_bulk(
+            [t.latest_post_id for t in threads.values() if t.latest_post_id])
+        for c in categories:
+            c.latest_thread = threads.get(c.latest_thread_id)
+            if c.latest_thread:
+                c.latest_thread.last_post = posts.get(
+                    c.latest_thread.latest_post_id)
             # compute and add read/unread status to category object
-            latest = c.threads.filter(visible=True).order_by('-modified')\
-                .values_list('modified', flat=True).first()
+            latest = c.latest_thread and c.latest_thread.modified
             c.status = 'img/{}.png'.format(
-                "unread" if latest and latest > timestamp.timestamp
+                "unread" if latest and latest > timestamps[c.pk]
                 else "read")
         return context
 
@@ -185,7 +256,8 @@ class ThreadView(LoginRequiredMixin, ThreadStatusMixin, CategoryReadMixin,
 
     def get_queryset(self):
         """Get the threads to be displayed."""
-        return self.category.threads.filter(visible=True)
+        return self.category.threads.filter(visible=True)\
+            .select_related('author', 'question')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -363,12 +435,6 @@ class QuotePost(NewPost):
         initial['content_plain'] = text
         return initial
 
-    def get_context_data(self, **kwargs):
-        "Pass category and thread from url to context"
-        context = super().get_context_data(**kwargs)
-        context['users'] = get_all_users()
-        return context
-
 
 class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
     form_class = PostForm
@@ -510,8 +576,7 @@ def NewPoll(request, category_slug):
                 if choices_formset.is_valid():
                     choices_formset.save()
                     # Mark category as read
-                    CategoryTimeStamp.objects.update_or_create(
-                        category=category, user=request.user)
+                    mark_category_read(request.user, category)
                     return HttpResponseRedirect(reverse(
                         'forum:category',
                         kwargs={'category_slug': category_slug}))
@@ -588,9 +653,11 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         cls = self.cls
         results = cls.objects.filter(self.entry_query)
         if cls is Post:
-            results = results.filter(thread__visible=True)
+            results = results.filter(thread__visible=True)\
+                .select_related('author', 'thread__category')
         else:
-            results = results.filter(visible=True)
+            results = results.filter(visible=True)\
+                .select_related('author', 'category', 'question')
         self.results_count = results.count()
         if not self.results_count:
             messages.error(
@@ -611,8 +678,7 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
             context = super().get_context_data(**kwargs)
         else:
             context = ListView.get_context_data(self, **kwargs)
-            for post in context['object_list']:
-                post.page = get_post_page(post)
+            add_post_pages(context['object_list'])
         context['model'] = model
         context['query'] = self.query
         context['results_count'] = self.results_count
@@ -629,6 +695,7 @@ class UserMentionsView(LoginRequiredMixin, ListView):
         """Handle search parameters & process search computation."""
         results = Post.objects\
             .filter(mentions__user=self.request.user, thread__visible=True)\
+            .select_related('author', 'thread__category')\
             .order_by("-mentions__pk")
         self.request.user.newMention = False
         self.request.user.save()
@@ -636,6 +703,5 @@ class UserMentionsView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        for post in context['object_list']:
-            post.page = get_post_page(post)
+        add_post_pages(context['object_list'])
         return context

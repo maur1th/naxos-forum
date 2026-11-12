@@ -24,6 +24,9 @@ class CachedAuthorModel(models.Model):
 
     @property
     def cached_author(self):
+        # Reuse the author when the queryset already joined it
+        if type(self).author.is_cached(self):
+            return self.author
         author = cache.get('user/{}'.format(self.author_id))
         if not author:
             author = ForumUser.objects.get(pk=self.author_id)

@@ -14,14 +14,6 @@ class Conversation(models.Model):
     participants = models.ManyToManyField(ForumUser, blank=False)
     modified = models.DateTimeField(default=timezone.now)
 
-    @property
-    def latest_shown_message(self):
-        return self.messages.filter(shown=True).order_by('created').last()
-
-    @property
-    def shown_message_count(self):
-        return self.messages.filter(shown=True).count()
-
     class Meta:
         ordering = ["-modified"]
         get_latest_by = "modified"

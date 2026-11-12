@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.conf import settings
 
 import re
+from urllib.parse import urlencode
 
 from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
@@ -568,23 +569,24 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         """Return an error message if the query was empty."""
-        self.query = request.GET['q']
-        if not self.query:
+        self.query = request.GET.get('q', '').strip()
+        self.cls = Thread
+        if re.match(r'user:', self.query):
+            self.entry_query = get_query(self.query[5:], ['author__username'])
+        elif re.match(r'post:', self.query):
+            self.cls = Post
+            self.entry_query = get_query(self.query[5:], ['content_plain'])
+        else:
+            self.entry_query = get_query(self.query, ['title'])
+        if self.entry_query is None:
             messages.error(request, "Aucun terme précisé pour la recherche.")
             return HttpResponseRedirect(reverse('forum:top'))
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         """Handle search parameters & process search computation."""
-        cls = Thread
-        if re.findall(r'^user:', self.query):
-            entry_query = get_query(self.query[5:], ['author__username'])
-        elif re.findall(r'^post:', self.query):
-            cls = Post
-            entry_query = get_query(self.query[5:], ['content_plain'])
-        else:
-            entry_query = get_query(self.query, ['title'])
-        results = cls.objects.filter(entry_query)
+        cls = self.cls
+        results = cls.objects.filter(self.entry_query)
         if cls is Post:
             results = results.filter(thread__visible=True)
         else:
@@ -614,7 +616,7 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         context['model'] = model
         context['query'] = self.query
         context['results_count'] = self.results_count
-        context['query_url'] = 'q=' + self.query + '&'
+        context['query_url'] = urlencode({'q': self.query}) + '&'
         return context
 
 # UserMentionsView #

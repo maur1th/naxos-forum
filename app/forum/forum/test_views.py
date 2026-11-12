@@ -321,3 +321,29 @@ class PollSelectedChoiceTests(VotePollTests):
         r = self.client.get(page)
         self.assertIsNone(r.context['my_choice_id'])
         self.assertNotContains(r, '&#9656;')
+
+
+class SearchViewTests(TestCase):
+    def setUp(self):
+        user = ForumUser.objects.create_user('alice', 'a@example.com', 'pw')
+        cat = Category.objects.create(slug='general', title='General',
+                                      subtitle='x')
+        for i in range(40):
+            Thread.objects.create(title='R&D topic %d' % i, author=user,
+                                  category=cat)
+        self.client.force_login(user)
+        self.url = reverse('forum:search')
+
+    def test_missing_or_termless_query_redirects(self):
+        for params in ({}, {'q': '  '}, {'q': 'user:'}, {'q': 'post: '}):
+            r = self.client.get(self.url, params)
+            self.assertEqual(r.status_code, 302, params)
+            self.assertEqual(r.url, reverse('forum:top'), params)
+
+    def test_pagination_urlencodes_query(self):
+        r = self.client.get(self.url, {'q': 'R&D'})
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'q=R%26D&amp;page=2')
+        r = self.client.get(self.url, {'q': 'R&D', 'page': 2})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.context['object_list']), 10)

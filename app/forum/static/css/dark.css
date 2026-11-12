@@ -60,6 +60,20 @@ html.dark .navbar-default .navbar-nav > li > a:focus {
     color: var(--ga-link-hover) !important;
     background-color: var(--ga-bg-3) !important;
 }
+/* Cloche de mentions : nouvelle mention bien visible */
+html.dark .navbar-default .navbar-nav > li.alert-danger {
+    background-color: #e8590c !important;
+    border: 0 !important;
+}
+html.dark .navbar-default .navbar-nav > li.alert-danger > a,
+html.dark .navbar-default .navbar-nav > li.alert-danger > a:hover,
+html.dark .navbar-default .navbar-nav > li.alert-danger > a:focus {
+    color: #fff !important;
+    background-color: transparent !important;
+}
+html.dark .navbar-default .navbar-nav > li.alert-danger .glyphicon-bell {
+    text-shadow: 0 0 6px rgba(255,255,255,.8);
+}
 html.dark .navbar-default .navbar-toggle {
     border-color: var(--ga-border) !important;
 }

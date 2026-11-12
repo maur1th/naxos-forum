@@ -6,6 +6,8 @@ services:
       context: app/forum
       args:
         LOCAL_ENV: 1
+    # dev writes to the bind mount and the media volume, so keep root here
+    user: root
     environment:
       DEBUG: 1
       INTERNAL_IP: 172.18.0.1

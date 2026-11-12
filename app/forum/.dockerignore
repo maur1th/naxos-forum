@@ -1,1 +1,8 @@
 secret.txt
+Pipfile*
+fixtures.json
+**/test_*.py
+**/__pycache__
+media/
+static_root/
+.git

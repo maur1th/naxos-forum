@@ -16,8 +16,9 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
     fi
 
 FROM python:3.10-alpine
-MAINTAINER thomas@maurin.io
+LABEL maintainer="thomas@maurin.io"
 ENV HOME=/app \
+    PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/packages \
     WORKERS=2
 RUN apk add --no-cache \
@@ -28,10 +29,12 @@ COPY --from=builder /packages /packages
 COPY bin/gunicorn /usr/local/bin/gunicorn
 COPY . $HOME
 WORKDIR $HOME
+RUN adduser -D -H -u 10001 app
 
 ARG LOCAL_ENV
 ARG VERSION
 ENV VERSION=${VERSION:-dev} \
     LOCAL_ENV=${LOCAL_ENV:-0}
 EXPOSE 5000
+USER app
 ENTRYPOINT ["/bin/sh", "docker-entrypoint.sh"]

@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:13-alpine
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -77,7 +77,7 @@ jobs:
           HOSTNAME: example.org
         run: python manage.py check --deploy --fail-level WARNING
       - name: Run tests
-        run: python manage.py test user.test_forms utils.test_extra_tags forum.test_models forum.test_util forum.test_views pm.test_views --verbosity 2
+        run: python manage.py test -p "test_*.py" --verbosity 2
 
   postmarkup:
     name: postmarkup (vendored bbcode lib)
@@ -92,7 +92,7 @@ jobs:
           python-version: '3.10'
       # The vendored suite exercises create() with syntax highlighting, which
       # needs Pygments (the app itself runs with use_pygments=False, so it is
-      # only a test dependency here).
+      # only a test dependency, listed in requirements-dev.txt).
       - name: Install test dependencies
         run: pip install pygments
       - name: Run tests

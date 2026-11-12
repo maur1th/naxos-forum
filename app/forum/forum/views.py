@@ -202,7 +202,7 @@ class CategoryView(LoginRequiredMixin, ListView):
         return Category.objects.annotate(
             thread_count=Count('threads'),
             latest_thread_id=Subquery(latest.values('pk')[:1]),
-        )
+        ).order_by('pk')  # Meta.ordering is ignored once aggregated
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

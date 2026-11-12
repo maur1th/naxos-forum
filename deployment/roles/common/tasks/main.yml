@@ -9,6 +9,18 @@
       - htop
       - python2-pip
 
+# Keep the 8 GB root volume from filling up
+- name: cap systemd journal size
+  lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: '^#?SystemMaxUse='
+    line: SystemMaxUse=100M
+  notify: restart journald
+
+- name: clean yum package cache
+  command: yum clean all
+  changed_when: no
+
 # Timezone
 - name: set timezone to Europe/Paris
   timezone:

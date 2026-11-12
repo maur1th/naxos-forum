@@ -27,11 +27,12 @@
     #   prometheus_version: latest  # until they have a better taging policy
     #   cadvisor_version: latest    # ...
   tasks:
-    # Reclaim hard drive space
-    - name: clean outdated docker images & stopped containers
-      shell: >
-        docker system prune --force &&
-        docker rmi $(docker images --quiet --filter dangling=true)
-      failed_when: no
-      changed_when: no
+    # Reclaim hard drive space: the forum image is pulled under a new tag on
+    # every release, so old versions are tagged-but-unused and only `-a` removes
+    # them. Runs after all containers are (re)started, so in-use images are kept.
+    - name: prune unused docker images & stopped containers
+      command: docker system prune --all --force
+      register: docker_prune
+      changed_when: "'Total reclaimed space: 0B' not in docker_prune.stdout"
+
 ...

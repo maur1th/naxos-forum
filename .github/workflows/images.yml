@@ -31,8 +31,6 @@ jobs:
         include:
           - image: naxos-forum
             context: app/forum
-          - image: naxos-websocket
-            context: app/websocket
     steps:
       - uses: actions/checkout@v7
         with:

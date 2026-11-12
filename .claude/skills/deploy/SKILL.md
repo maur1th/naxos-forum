@@ -9,8 +9,8 @@ disable-model-invocation: true
 
 Production is a single arm64 EC2 host, `geekattitude.org` (`deployment/hosts`).
 Images are built by CI, not here: after the `test` workflow passes on main,
-`.github/workflows/images.yml` builds `maur1th/naxos-forum` and
-`maur1th/naxos-websocket` for `linux/arm64` and pushes them to Docker Hub,
+`.github/workflows/images.yml` builds `maur1th/naxos-forum` for
+`linux/arm64` and pushes it to Docker Hub,
 tagged with the full commit SHA and `latest`. A deploy runs the Ansible
 playbook pinned to that SHA and then checks what the server runs.
 
@@ -65,8 +65,8 @@ stop. Otherwise show what goes out with `git log --oneline <live>..$SHA`.
      existed), offer to start one with
      `gh workflow run images.yml -f ref="$SHA"`, then watch it.
 2. Confirm both tags exist on Docker Hub as arm64:
-   `docker buildx imagetools inspect maur1th/naxos-forum:"$SHA"` and the same
-   for `maur1th/naxos-websocket`. Each must list `linux/arm64`.
+   `docker buildx imagetools inspect maur1th/naxos-forum:"$SHA"`. It must list
+   `linux/arm64`.
 
 ## 4. Run the playbook
 
@@ -97,8 +97,7 @@ rerun it with changes to roles or inventory unless the user asks.
 ## 5. Verify
 
 1. `SSH 'sudo docker ps --format "{{.Names}} {{.Image}} {{.Status}}"'`:
-   `forum` and `websocket` should run the `:$SHA` images and be `Up`, not
-   restarting.
+   `forum` should run the `:$SHA` image and be `Up`, not restarting.
 2. `SSH 'sudo docker exec forum printenv VERSION'` prints `$SHA`.
    Then `SSH 'sudo docker exec forum python3 manage.py showmigrations --plan'`
    must show no unapplied (`[ ]`) migration.

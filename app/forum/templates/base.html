@@ -21,6 +21,7 @@
     <title>{% block title %}FoRuM{% endblock %}</title>
     <meta name="description" content="" />
     <meta name="author" content="Thomas Maurin" />
+    {% if user.is_authenticated %}<meta name="csrf-token" content="{{ csrf_token }}">{% endif %}
     <link href="{% static 'img/favicon.ico' %}" rel="shortcut icon">
     {# Favicon #}
     <link rel="apple-touch-icon" sizes="57x57" href="{% static 'img/icon/apple-touch-icon-57x57.png' %}">
@@ -55,8 +56,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bootstrap-colorpicker.min.js' %}"></script>  {# http://mjolnic.github.io/bootstrap-colorpicker/ #}
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="{% static 'js/naxos.js' %}?v=2"></script>
+    <script src="{% static 'js/naxos.js' %}?v=3"></script>
     {% get_media_prefix as media %}
   </head>
   <body>

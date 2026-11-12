@@ -21,25 +21,9 @@ updates:
         patterns:
           - "*"
 
-  # --- Node (websocket server) ---
-  - package-ecosystem: "npm"
-    directory: "/app/websocket"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    groups:
-      websocket-npm:
-        patterns:
-          - "*"
-
   # --- Docker images ---
   - package-ecosystem: "docker"
     directory: "/app/forum"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "docker"
-    directory: "/app/websocket"
     schedule:
       interval: "weekly"
 

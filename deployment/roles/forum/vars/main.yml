@@ -1,6 +1,5 @@
 ---
 forum_image: maur1th/naxos-forum
-websocket_image: maur1th/naxos-websocket
 
 email_host: "smtp.gmail.com"
 email_port: "587"

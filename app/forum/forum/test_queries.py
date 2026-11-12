@@ -88,6 +88,14 @@ class PMListTests(QueryCountTestCase):
         self.add_conversations(8)
         self.assertEqual(self.warm_count(self.url), 8)
 
+    def test_most_recent_conversation_first(self):
+        convs = [self.conversation() for _ in range(3)]
+        for c in [convs[1], convs[2], convs[0]]:
+            self.message(c, self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(list(response.context['object_list']),
+                         [convs[0], convs[2], convs[1]])
+
     def test_rows(self):
         read = self.conversation(self.other)
         self.message(read, self.other)
@@ -141,6 +149,15 @@ class CategoryListTests(QueryCountTestCase):
         self.assertEqual(self.warm_count(self.url), 6)
         self.add_categories(7)
         self.assertEqual(self.warm_count(self.url), 6)
+
+    def test_categories_keep_creation_order(self):
+        for slug in ['b', 'c', 'a']:
+            c = Category.objects.create(slug=slug, title=slug, subtitle='')
+            self.make_thread(c, 'topic')
+        response = self.client.get(self.url)
+        self.assertEqual(
+            [c.slug for c in response.context['categories']],
+            ['b', 'c', 'a'])
 
     def test_rows(self):
         news = Category.objects.create(slug='news', title='News', subtitle='')

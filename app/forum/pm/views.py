@@ -40,7 +40,8 @@ class PMTopView(LoginRequiredMixin, ListView):
                 latest_id=Subquery(messages.values('pk')[:1]),
                 latest_shown_id=Subquery(
                     messages.filter(shown=True).values('pk')[:1]),
-            ).prefetch_related('participants')
+            ).order_by('-modified')\
+            .prefetch_related('participants')  # Meta.ordering is ignored
 
     def get_context_data(self, **kwargs):
         """Attach latest shown message and read status to conversations."""

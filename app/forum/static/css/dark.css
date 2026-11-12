@@ -161,6 +161,11 @@ html.dark .table-hover > tbody > tr:hover {
    ============================================================ */
 html.dark div.post-header {
     background: linear-gradient(var(--ga-accent-dark), var(--ga-accent)) !important;
+    border-right-color: var(--ga-border) !important;
+}
+/* Inline style border-right:#f9f9f9 on author/header cells */
+html.dark [style*="border-right:1px solid #f9f9f9"] {
+    border-right-color: var(--ga-border) !important;
 }
 html.dark div.post-author {
     background-color: var(--ga-bg-4) !important;

@@ -65,6 +65,12 @@ class SecurityHeadersTests(TestCase):
         r = self.client.get(reverse('user:login'))
         self.assertEqual(r['X-Frame-Options'], 'DENY')
 
+    def test_referrer_sent_to_same_origin(self):
+        # no-referrer makes browsers send "Origin: null" on form posts,
+        # which fails Django's CSRF origin check.
+        r = self.client.get(reverse('user:login'))
+        self.assertEqual(r['Referrer-Policy'], 'same-origin')
+
 
 class DeletedThreadTests(TestCase):
     """A deleted ("invisible") thread must not leak through any entry point."""

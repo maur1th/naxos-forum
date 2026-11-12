@@ -22,17 +22,14 @@
     font-weight: bold;
 }
 </style>
+{{ users|json_script:"mention-users" }}
 <script type="module">
     import { floatype } from '{% static 'js/floatype.min.js' %}';
 
     // document.querySelector("textarea").value = "";
 
-    const USERS = [
-        "@all",
-        {% for user in users %}
-        "{{user|safe}}",
-        {% endfor %}
-    ];
+    const USERS = ["@all"].concat(
+        JSON.parse(document.getElementById("mention-users").textContent));
 
     // Example 1.
     // Simple string results.

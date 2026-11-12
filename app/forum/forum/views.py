@@ -56,7 +56,7 @@ def get_all_users():
     active_users = ForumUser.objects.exclude(is_active=False)\
                      .extra(select={'username_lower': 'lower(username)'})\
                      .order_by('username_lower')
-    return map(lambda u: f"@{u.username}", active_users)
+    return [f"@{u.username}" for u in active_users]
 
 
 def update_category_timestamp(category, user):
@@ -145,14 +145,14 @@ class PreviewPostMixin(object):
 
     def post(self, request, *args, **kwargs):
         if "preview" in request.POST:
-            return self.get_preview(request.POST['content_plain'])
+            return self.get_preview(request.POST['content_plain'], request.user)
         else:
             return super().post(request, *args, **kwargs)
 
     @staticmethod
-    def get_preview(content):
+    def get_preview(content, user):
         """Redirect to PreviewView."""
-        p = Preview.objects.create(content_plain=content)
+        p = Preview.objects.create(content_plain=content, author=user)
         return HttpResponseRedirect(
             reverse('forum:preview', kwargs={'pk': p.pk}))
 
@@ -174,9 +174,11 @@ class CategoryView(LoginRequiredMixin, ListView):
             timestamp, created = timestamps.get_or_create(
                 category=c, user=self.request.user)
             # compute and add read/unread status to category object
+            latest = c.threads.filter(visible=True).order_by('-modified')\
+                .values_list('modified', flat=True).first()
             c.status = 'img/{}.png'.format(
-                "unread" if c.threads.count() != 0 and
-                c.threads.latest().modified > timestamp.timestamp else "read")
+                "unread" if latest and latest > timestamp.timestamp
+                else "read")
         return context
 
 
@@ -208,10 +210,9 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
         self.thread = get_object_or_404(
             Thread,
             slug=kwargs['thread_slug'],
-            category__slug=kwargs['category_slug'])
+            category__slug=kwargs['category_slug'],
+            visible=True)
         self.category = self.thread.category
-        if not self.thread.visible:  # 403 if the thread has been removed
-            raise PermissionDenied
         # Decide whether Post.viewCount should be incremented
         bookmarks = request.user.cached_bookmarks
         b = bookmarks.get(self.thread.pk, None)
@@ -246,6 +247,9 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
 class PostDetailView(LoginRequiredMixin, DetailView):
     "Displays a single post"
     model = Post
+
+    def get_queryset(self):
+        return Post.objects.filter(thread__visible=True)
 
 
 # Thread and Post creation and edit #
@@ -300,7 +304,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
         self.thread = get_object_or_404(
             Thread,
             slug=kwargs['thread_slug'],
-            category__slug=kwargs['category_slug'])
+            category__slug=kwargs['category_slug'],
+            visible=True)
         self.category = self.thread.category
         return super().dispatch(request, *args, **kwargs)
 
@@ -341,7 +346,11 @@ class QuotePost(NewPost):
     """Quote the content of another post"""
 
     def dispatch(self, request, *args, **kwargs):
-        self.p = get_object_or_404(Post, pk=kwargs['pk'])
+        # The quoted post must be visible and belong to the thread in the URL
+        self.p = get_object_or_404(
+            Post, pk=kwargs['pk'], thread__visible=True,
+            thread__slug=kwargs['thread_slug'],
+            thread__category__slug=kwargs['category_slug'])
         self.t = self.p.thread
         return super().dispatch(request, *args, **kwargs)
 
@@ -370,7 +379,7 @@ class EditPost(LoginRequiredMixin, PreviewPostMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         "Get the right post and thread"
-        self.p = get_object_or_404(Post, pk=kwargs['pk'])
+        self.p = get_object_or_404(Post, pk=kwargs['pk'], thread__visible=True)
         if self.p.author != request.user:
             raise PermissionDenied
         self.t = self.p.thread
@@ -455,6 +464,9 @@ class DeleteThread(LoginRequiredMixin, View):
 class PreviewView(LoginRequiredMixin, DetailView):
     model = Preview
 
+    def get_queryset(self):
+        return Preview.objects.filter(author=self.request.user)
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
@@ -474,7 +486,7 @@ def NewPoll(request, category_slug):
     if request.method == 'POST':
         if "preview" in request.POST:
             return PreviewPostMixin.get_preview(
-                request.POST['thread-content_plain'])
+                request.POST['thread-content_plain'], request.user)
         else:
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")
@@ -522,7 +534,8 @@ def NewPoll(request, category_slug):
 def VotePoll(request, category_slug, thread_slug):
     thread = get_object_or_404(Thread,
                                slug=thread_slug,
-                               category__slug=category_slug)
+                               category__slug=category_slug,
+                               visible=True)
     question = thread.question
 
     if request.method == 'POST':
@@ -567,8 +580,10 @@ class SearchView(LoginRequiredMixin, ThreadStatusMixin, ListView):
         else:
             entry_query = get_query(self.query, ['title'])
         results = cls.objects.filter(entry_query)
-        if 'visible' in [field.name for field in cls._meta.fields]:
-            results = results.filter(visible="True")
+        if cls is Post:
+            results = results.filter(thread__visible=True)
+        else:
+            results = results.filter(visible=True)
         self.results_count = results.count()
         if not self.results_count:
             messages.error(

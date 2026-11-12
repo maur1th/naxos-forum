@@ -96,7 +96,7 @@ class Top10(LoginRequiredMixin, TemplateView):
     template_name = "user/top10.html"
 
     def dispatch(self, request, *args, **kwargs):
-        threads = Thread.objects.annotate(p_count=Count("posts"))
+        threads = Thread.objects.filter(visible=True).annotate(p_count=Count("posts"))
         self.top_views = threads.order_by("-viewCount")[:10]
         self.top_posts = threads.order_by("-p_count")[:10]
         return super().dispatch(request, *args, **kwargs)

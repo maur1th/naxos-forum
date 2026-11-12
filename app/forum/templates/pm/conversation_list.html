@@ -44,13 +44,16 @@
     {% if conv.latest_shown_message %}
         <tr>
           <td class="text-center vert-align" style="padding:0">
-            <a href="{% url 'pm:switch_status' conv.pk %}">
+            <form method="post" action="{% url 'pm:switch_status' conv.pk %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" style="background:none;border:0;padding:0">
             {% if conv.messages.latest in user.pmReadCaret.all %}
               <img src="{% static 'img/read.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
             {% else %}
               <img src="{% static 'img/unread.png' %}" style="vertical-align:middle;padding:0 0 3px 0;">
             {% endif %}
-            </a>
+            </button>
+            </form>
           </td>
           <td class="vert-align importantData">
             <a href="{% url 'pm:msg' conv.pk %}">

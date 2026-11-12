@@ -48,7 +48,7 @@ $(document).ready(function (){
   if ( !$postCrumb.parent().next().length ) {
     $postCrumb.parent().addClass('active');
     $postCrumb.replaceWith(function () {
-      return $(this).text();
+      return document.createTextNode($(this).text());
     });
   }
 

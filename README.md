@@ -90,6 +90,6 @@ With Claude Code, `/deploy [PR number or SHA]` does this end to end.
 
 ### Static files
 
-```bash
-docker-compose run -e LOCAL_ENV=0 -e AWS_STORAGE_BUCKET_NAME=geekattitude -e AWS_ACCESS_KEY_ID=foo -e AWS_SECRET_ACCESS_KEY=bar --entrypoint "python3 manage.py collectstatic --no-input" forum
-```
+Production serves static files from S3. The playbook publishes them itself
+(`collectstatic` runs inside the `forum` container right after it starts, using
+the host's instance role), so there is nothing to do by hand.

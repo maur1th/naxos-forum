@@ -1,8 +1,38 @@
+import io
+import os
+
+from PIL import Image
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import (InMemoryUploadedFile,
+                                            TemporaryUploadedFile)
 from django.test import TestCase
 
 from .models import ForumUser, TokenPool
-from .forms import RegisterForm
+from .forms import RegisterForm, UpdateUserForm
+
+
+def png_bytes(width, height, noise=False):
+    """PNG data; `noise` makes the file large, a solid colour keeps it small."""
+    if noise:
+        image = Image.frombytes('RGB', (width, height),
+                                os.urandom(width * height * 3))
+    else:
+        image = Image.new('RGB', (width, height))
+    buf = io.BytesIO()
+    image.save(buf, 'PNG')
+    return buf.getvalue()
+
+
+def upload(data, spooled):
+    """Build an upload the way Django does: spooled to disk or in memory."""
+    if spooled:
+        # FILE_UPLOAD_MAX_MEMORY_SIZE is exceeded: Django uses a temp file.
+        f = TemporaryUploadedFile('avatar.png', 'image/png', len(data), None)
+        f.write(data)
+        f.seek(0)
+        return f
+    return InMemoryUploadedFile(io.BytesIO(data), 'logo', 'avatar.png',
+                                'image/png', len(data), None)
 
 
 class RegistrationTest(TestCase):
@@ -63,3 +93,55 @@ class RegistrationTest(TestCase):
         form = RegisterForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['email'], ['Adresse déjà enregistrée.'])
+
+
+class AvatarLimitsTest(TestCase):
+
+    def setUp(self):
+        self.user = ForumUser.objects.create_user(
+            username='jacob', email='jacob@test.com', password='top_secret')
+
+    def submit(self, logo):
+        form = UpdateUserForm(data={'email': self.user.email},
+                              files={'logo': logo} if logo else {},
+                              instance=self.user, user=self.user)
+        return form, form.is_valid()
+
+    def assertRejected(self, data, spooled, message):
+        form, valid = self.submit(upload(data, spooled))
+        self.assertFalse(valid)
+        self.assertIn(message, form.errors['logo'][0])
+
+    def assertAccepted(self, data, spooled):
+        form, valid = self.submit(upload(data, spooled))
+        self.assertTrue(valid, form.errors.as_json())
+
+    def test_oversized_image_rejected_in_memory(self):
+        self.assertRejected(png_bytes(3000, 3000), False, 'Image trop grande')
+
+    def test_oversized_image_rejected_when_spooled_to_disk(self):
+        # Regression: uploads above FILE_UPLOAD_MAX_MEMORY_SIZE skipped checks
+        self.assertRejected(png_bytes(3000, 3000), True, 'Image trop grande')
+
+    def test_heavy_file_rejected_when_spooled_to_disk(self):
+        # 400x400 noise is ~480 KB: over the 100 KB limit
+        self.assertRejected(png_bytes(400, 400, noise=True), True,
+                            'Fichier trop volumineux')
+
+    def test_heavy_file_rejected_in_memory(self):
+        self.assertRejected(png_bytes(400, 400, noise=True), False,
+                            'Fichier trop volumineux')
+
+    def test_valid_avatar_accepted_in_memory_and_on_disk(self):
+        self.assertAccepted(png_bytes(120, 120), False)
+        self.assertAccepted(png_bytes(120, 120), True)
+
+    def test_unchanged_avatar_is_kept_on_save(self):
+        self.user.logo = 'logo/existing.png'
+        self.user.save()
+        form = UpdateUserForm(data={'email': 'new@test.com'},
+                              instance=self.user, user=self.user)
+        self.assertTrue(form.is_valid(), form.errors.as_json())
+        form.save()
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.logo.name, 'logo/existing.png')

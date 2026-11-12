@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.db import transaction
 from django.template.defaultfilters import filesizeformat
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.images import get_image_dimensions
+from django.core.files.uploadedfile import UploadedFile
 from django.urls import reverse
 
 # Fix ugettext error: https://stackoverflow.com/a/75347232
@@ -11,7 +12,6 @@ import django
 from django.utils.translation import gettext, gettext_lazy as _
 django.utils.translation.ugettext = gettext
 
-from PIL import Image
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, HTML, Submit
 
@@ -146,20 +146,24 @@ class UpdateUserForm(UniqueEmailMixin, forms.ModelForm):
     def clean_logo(self, *args, **kwargs):
         # Get image from form, return if no image was provided
         logo = self.cleaned_data['logo']
-        if type(logo) is not InMemoryUploadedFile:
+        # An unchanged avatar is a FieldFile, not an upload: nothing to check.
+        # Checks run for every upload, including TemporaryUploadedFile (what
+        # Django hands over above FILE_UPLOAD_MAX_MEMORY_SIZE).
+        if not isinstance(logo, UploadedFile):
             return logo
-        # Check image size (in pixels)
-        img = Image.open(logo)
-        for length in img.size:
-            if length > MAX_LENGTH:
-                raise forms.ValidationError(
-                    ("Image trop grande. La taille maximale autorisée est de "
-                     "{}x{} pixels.").format(MAX_LENGTH,MAX_LENGTH))
-        # Check image size (in ko)
+        # Check file size (in ko)
         if logo.size > MAX_UPLOAD_SIZE:
             raise forms.ValidationError(
                 ("Fichier trop volumineux. La taille maximale autorisée "
                  "est de {}.").format(filesizeformat(MAX_UPLOAD_SIZE)))
+        # Check image size (in pixels)
+        width, height = get_image_dimensions(logo)
+        if width is None or height is None:
+            raise forms.ValidationError("Image invalide.")
+        if width > MAX_LENGTH or height > MAX_LENGTH:
+            raise forms.ValidationError(
+                ("Image trop grande. La taille maximale autorisée est de "
+                 "{}x{} pixels.").format(MAX_LENGTH, MAX_LENGTH))
         return logo
 
     class Meta:
@@ -194,22 +198,6 @@ class CrispySetPasswordForm(SetPasswordForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Enregistrer'))
-
-
-class RestrictedImageField(forms.ImageField):
-    def __init__(self, *args, **kwargs):
-        self.max_upload_size = kwargs.pop('max_upload_size', None)
-        super().__init__(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        data = super().clean(*args, **kwargs)
-        try:
-            if data.size > self.max_upload_size:
-                raise forms.ValidationError(
-                    'La taille du fichier doit être inférieure à 100ko.')
-        except AttributeError:
-            pass
-        return data
 
 
 class BudgetRecordForm(forms.ModelForm):

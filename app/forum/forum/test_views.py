@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from user.models import ForumUser
 from .models import Category, Thread, Post, Preview, PollQuestion, \
-    PollChoice
+    PollChoice, PollVote
 
 
 class ReplyFloodCheckTests(TestCase):
@@ -270,3 +270,17 @@ class VotePollTests(TestCase):
         self.client.force_login(self.alice)
         self.client.post(self.url, {'choice': self.b.pk})
         self.assertEqual(self.totals(), (2, 2))
+
+
+class PollSelectedChoiceTests(VotePollTests):
+    def test_vote_records_choice_and_highlights_only_for_voter(self):
+        self.client.post(self.url, {'choice': self.b.pk})
+        self.assertEqual(PollVote.objects.get(user=self.bob).choice, self.b)
+        page = reverse('forum:thread', args=[self.cat.slug, self.thread.slug])
+        r = self.client.get(page)
+        self.assertEqual(r.context['my_choice_id'], self.b.pk)
+        self.assertContains(r, '&#9656; b')
+        self.client.force_login(self.alice)
+        r = self.client.get(page)
+        self.assertIsNone(r.context['my_choice_id'])
+        self.assertNotContains(r, '&#9656;')

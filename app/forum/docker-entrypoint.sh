@@ -3,8 +3,7 @@ set -ex
 if [ $LOCAL_ENV -eq 1 ]; then
     sleep 5
     python3 manage.py migrate
-    python3 manage.py loaddata fixtures.json
-    if [ $? -ne 0 ]; then
+    if ! python3 manage.py loaddata fixtures.json; then
         python3 manage.py flush --noinput
         python3 manage.py loaddata fixtures.json
     fi

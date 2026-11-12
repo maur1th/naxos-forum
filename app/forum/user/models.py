@@ -20,12 +20,6 @@ class ForumUser(AbstractUser):
     emailVisible = models.BooleanField(
         default=False,
         verbose_name='E-mail visible')
-    subscribeToEmails = models.BooleanField(
-        default=True,
-        verbose_name='Mailing-list')
-    mpEmailNotif = models.BooleanField(
-        default=False,
-        verbose_name='Notification des MP par e-mail')
     showSmileys = models.BooleanField(
         default=False,
         verbose_name='Affichage des smileys par defaut')

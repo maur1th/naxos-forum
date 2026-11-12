@@ -13,7 +13,6 @@ class Conversation(models.Model):
 
     participants = models.ManyToManyField(ForumUser, blank=False)
     modified = models.DateTimeField(default=timezone.now)
-    isRemoved = models.BooleanField(default=False)
 
     @property
     def latest_shown_message(self):

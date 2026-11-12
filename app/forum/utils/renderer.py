@@ -41,10 +41,6 @@ class HTMLFilter(HTMLParser):
     def handle_charref(self, name):
         self.html += '&#{:s};'.format(name)
 
-    def unescape(self, s):
-        # we don't need unescape data (without this possible XSS-attack)
-        return s
-
     def __html_attrs(self, attrs):
         "Handle tag attributes"
         _attrs = ''
@@ -82,7 +78,7 @@ class ExcludeTagsHTMLFilter(HTMLFilter):
 
 
 # Smiley stuff
-def compile_smileys():
+def _compile_smileys():
 
     special_smileys = [
         (r":-?\)", "special-smile"),
@@ -99,9 +95,9 @@ def compile_smileys():
 
     def get_smileys(path):
         "Get all smileys"
-        from subprocess import getoutput
-        smileys = getoutput("ls " + path + "/img/smileys/")
-        return [smiley[:-len(".gif")] for smiley in smileys.split("\n")]
+        return sorted(f[:-len(".gif")] for f in
+                      os.listdir(os.path.join(path, "img", "smileys"))
+                      if f.endswith(".gif"))
 
     smileys = get_smileys(settings.STATICFILES_DIRS[0])
     double_colon = filter(lambda s: not s.startswith("special-"), smileys)
@@ -114,8 +110,11 @@ def compile_smileys():
     return [(re.compile(smiley), name) for smiley, name in all_smileys]
 
 
+SMILEYS = _compile_smileys()
+
+
 def _smiley_replacer(text):
-    for smiley, name in compile_smileys():
+    for smiley, name in SMILEYS:
         tag = "<img class=\"smiley\" src=\"{:s}img/smileys/{:s}.gif\">"\
                     .format(settings.STATIC_URL, quote(name))
         text = smiley.sub(tag, text)

@@ -347,3 +347,53 @@ class SearchViewTests(TestCase):
         r = self.client.get(self.url, {'q': 'R&D', 'page': 2})
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context['object_list']), 10)
+
+
+class PostFormModeTests(TestCase):
+    """The single PostForm in its new thread, reply and edit modes."""
+
+    def setUp(self):
+        from .forms import PostForm
+        self.PostForm = PostForm
+        self.author = ForumUser.objects.create_user(
+            username='alice', email='alice@test.com', password='pw')
+        self.category = Category.objects.create(
+            slug='general', title='General', subtitle='General chat')
+        self.thread = Thread.objects.create(
+            title='Hello', author=self.author, category=self.category)
+        self.first = Post.objects.create(
+            thread=self.thread, author=self.author, content_plain='one')
+        self.second = Post.objects.create(
+            thread=self.thread, author=self.author, content_plain='two')
+
+    def test_new_thread_mode(self):
+        form = self.PostForm(category_slug='general')
+        self.assertEqual(set(form.fields),
+                         {'title', 'icon', 'content_plain', 'personal'})
+        self.assertEqual(form.helper.form_action,
+                         reverse('forum:new_thread', args=['general']))
+
+    def test_reply_mode(self):
+        form = self.PostForm({'content_plain': 'hi'}, category_slug='general',
+                             thread=self.thread, user=ForumUser.objects.create_user(
+                                 username='bob', email='b@test.com',
+                                 password='pw'))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertNotIn('icon', form.fields)
+        self.assertEqual(form.helper.form_action,
+                         reverse('forum:new_post',
+                                 args=['general', self.thread.slug]))
+
+    def test_edit_first_post_mode(self):
+        form = self.PostForm(category_slug='general', thread=self.thread,
+                             post=self.first)
+        self.assertEqual(form.helper.form_action,
+                         reverse('forum:edit', args=[
+                             'general', self.thread.slug, self.first.pk]))
+        self.assertTrue(form.fields['title'].required)
+
+    def test_edit_later_post_mode(self):
+        form = self.PostForm(category_slug='general', thread=self.thread,
+                             post=self.second)
+        self.assertFalse(form.fields['title'].required)
+        self.assertFalse(form.fields['icon'].required)

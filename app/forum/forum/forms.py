@@ -40,23 +40,25 @@ class GenericThreadForm(forms.ModelForm):
 
 
 # Basic thread stuff
-class ThreadForm(GenericThreadForm):
-    """Create and/or edit Thread & Posts: .views.NewThread & EditPost"""
+class PostForm(GenericThreadForm):
+    """The one form for new thread, reply/quote and edit.
+
+    The mode follows from the kwargs: no `thread` is a new thread, a
+    `thread` alone is a reply (or quote) and `thread` + `post` is an edit.
+    Used by .views.NewThread, NewPost, QuotePost & EditPost.
+    """
 
     def __init__(self, *args, **kwargs):
         c_slug = kwargs.pop('category_slug')
-        # If editing an existing thread
-        try:
-            thread = kwargs.pop('thread')
-            post = kwargs.pop('post')
-            new = False
-        except:
-            new = True
+        self.thread = kwargs.pop('thread', None)
+        post = kwargs.pop('post', None)
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Publier', accesskey="s"))
         self.helper.add_input(Submit('preview', 'Prévisualiser',))
-        if new:  # This is a new thread
+        thread = self.thread
+        if thread is None:  # New thread
             self.helper.form_action = reverse(
                 'forum:new_thread', kwargs={'category_slug': c_slug})
             self.helper.layout = Layout(Field('title'),
@@ -64,7 +66,19 @@ class ThreadForm(GenericThreadForm):
                                         HTML(toolbar),
                                         Field('content_plain'),
                                         Field('personal'))
-        else:  # This is an edit - used by .views.EditPost
+        elif post is None:  # Reply or quote
+            self.fields['title'].required = False
+            del self.fields['icon']
+            del self.fields['personal']
+            self.helper.inputs[0].value = 'Répondre'
+            self.helper.form_action = reverse(
+                'forum:new_post', kwargs={'category_slug': c_slug,
+                                          'thread_slug': thread.slug})
+            self.helper.layout = Layout(
+                Field('title', value=thread.title, disabled=''),
+                HTML(toolbar),
+                Field('content_plain'))
+        else:  # Edit
             if post == thread.posts.first():
                 self.helper.layout = Layout(Field('title'),
                                             InlineRadios('icon'),
@@ -95,39 +109,17 @@ class ThreadForm(GenericThreadForm):
                                       'thread_slug': thread.slug,
                                       'pk': post.pk})
 
-
-class PostForm(forms.ModelForm):
-    """PostForm as used by .views.NewPost"""
-    title = forms.CharField(max_length=140, label='Titre', required=False)
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        self.c_slug = kwargs.pop('category_slug')
-        self.t = kwargs.pop('thread')
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_action = reverse(
-            'forum:new_post', kwargs={'category_slug': self.c_slug,
-                                      'thread_slug': self.t.slug})
-        self.helper.layout = Layout(
-            Field('title', value=self.t.title, disabled=''),
-            HTML(toolbar),
-            Field('content_plain'))
-        self.helper.add_input(Submit('submit', 'Répondre', accesskey="s"))
-        self.helper.add_input(Submit('preview', 'Prévisualiser',))
-
     def clean(self):
-        # A member with no post yet has nothing to flood-check against.
-        last = (self.user.posts.order_by('-created')
-                .values_list('created', flat=True).first())
-        if last and timezone.now() - last < datetime.timedelta(seconds=5):
-            raise forms.ValidationError("Merci d'attendre au moins 5 secondes"
-                                        " entre deux messages.")
+        # Replies only. A member with no post yet has nothing to flood-check
+        # against.
+        if self.user is not None:
+            last = (self.user.posts.order_by('-created')
+                    .values_list('created', flat=True).first())
+            if last and timezone.now() - last < datetime.timedelta(seconds=5):
+                raise forms.ValidationError(
+                    "Merci d'attendre au moins 5 secondes entre deux "
+                    "messages.")
         return super().clean()
-
-    class Meta:
-        model = Post
-        fields = ('content_plain',)
 
 
 # Polls stuff

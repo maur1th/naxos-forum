@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.http import HttpResponse, HttpResponseRedirect, \
     HttpResponseServerError
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, \
+    ValidationError
 from django.shortcuts import render
 from django.contrib import messages
 from django.utils import timezone
@@ -24,6 +25,14 @@ class Register(CreateView):
     form_class = RegisterForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('user:login')
+
+    def form_valid(self, form):
+        # RegisterForm.save() raises if the key was consumed after validation
+        try:
+            return super().form_valid(form)
+        except ValidationError as e:
+            form.add_error('token', e)
+            return self.form_invalid(form)
 
 
 class UpdateUser(LoginRequiredMixin, UpdateView):

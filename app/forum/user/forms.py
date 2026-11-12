@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, \
     AuthenticationForm, PasswordResetForm, SetPasswordForm
+from django.db import transaction
 from django.template.defaultfilters import filesizeformat
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.urls import reverse
@@ -33,7 +34,7 @@ class UniqueEmailMixin(object):
                 username = self.user
             except:  # Handle when Registration username is incorrect
                 return email
-        if email and ForumUser.objects.filter(email=email).exclude(
+        if email and ForumUser.objects.filter(email__iexact=email).exclude(
                 username=username).count():
             raise forms.ValidationError('Adresse déjà enregistrée.')
         return email
@@ -77,11 +78,28 @@ class RegisterForm(UniqueEmailMixin, UserCreationForm):
         )
 
     def clean_token(self):
-        token = TokenPool.objects.filter(token=self.cleaned_data["token"])
-        if not token.exists():
+        token = self.cleaned_data["token"]
+        if not TokenPool.objects.filter(token=token).exists():
             raise forms.ValidationError("Cette clé n'existe pas.")
-        else:
-            token.delete()
+        return token
+
+    def save(self, commit=True):
+        """
+        Consume the invitation key and create the user in one transaction.
+
+        The key is only deleted here, so a submission that fails validation
+        leaves it usable. The DELETE's row count is what makes the key
+        single-use: if a concurrent request already consumed it, nothing is
+        deleted and the registration is refused.
+        """
+        if not commit:
+            return super().save(commit=False)
+        with transaction.atomic():
+            deleted, _ = TokenPool.objects.filter(
+                token=self.cleaned_data["token"]).delete()
+            if not deleted:
+                raise forms.ValidationError("Cette clé n'existe pas.")
+            return super().save(commit=True)
 
 
 class CrispyLoginForm(AuthenticationForm):

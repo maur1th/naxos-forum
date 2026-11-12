@@ -1,11 +1,11 @@
 name: test
 
-# Runs on PRs (to gate merges) and on pushes to master (post-merge).
+# Runs on PRs (to gate merges) and on pushes to main (post-merge).
 # Feature-branch pushes are covered by the pull_request event, avoiding
 # duplicate runs.
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
 
 jobs:

@@ -1,18 +1,18 @@
 name: images
 
 # Builds and pushes the production Docker images once the test workflow has
-# passed on a push to master. The production host is an arm64 (Graviton) EC2
+# passed on a push to main. The production host is an arm64 (Graviton) EC2
 # instance, so the images are built natively on GitHub's arm64 runners.
 # Deploying them is a separate, manual step (see .claude/skills/deploy).
 on:
   workflow_run:
     workflows: [test]
     types: [completed]
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
     inputs:
       ref:
-        description: Commit on master to build (defaults to the tip of master)
+        description: Commit on main to build (defaults to the tip of main)
         required: false
 
 concurrency:

@@ -1,14 +1,14 @@
 ---
 name: deploy
-description: Deploy a new version of naxos-forum to production (geekattitude.org) after a PR is merged to master. Waits for the images workflow to push that commit's Docker images, runs the Ansible playbook pinned to it, then checks the running containers. Use when the user asks to deploy, ship or release, or to put a merged PR live.
-argument-hint: "[PR number or commit SHA — defaults to the tip of origin/master]"
+description: Deploy a new version of naxos-forum to production (geekattitude.org) after a PR is merged to main. Waits for the images workflow to push that commit's Docker images, runs the Ansible playbook pinned to it, then checks the running containers. Use when the user asks to deploy, ship or release, or to put a merged PR live.
+argument-hint: "[PR number or commit SHA — defaults to the tip of origin/main]"
 disable-model-invocation: true
 ---
 
 # Deploy naxos-forum
 
 Production is a single arm64 EC2 host, `geekattitude.org` (`deployment/hosts`).
-Images are built by CI, not here: after the `test` workflow passes on master,
+Images are built by CI, not here: after the `test` workflow passes on main,
 `.github/workflows/images.yml` builds `maur1th/naxos-forum` and
 `maur1th/naxos-websocket` for `linux/arm64` and pushes them to Docker Hub,
 tagged with the full commit SHA and `latest`. A deploy runs the Ansible
@@ -16,7 +16,7 @@ playbook pinned to that SHA and then checks what the server runs.
 
 This changes the live forum, so **ask the user to confirm before step 4**, and
 stop at the first step that fails. Never deploy a commit that is not on
-`origin/master`.
+`origin/main`.
 
 SSH to the host uses the key `~/.ssh/tmaurin-change` as `ec2-user`. Below,
 `SSH` means:
@@ -27,12 +27,12 @@ ssh -i ~/.ssh/tmaurin-change -o IdentitiesOnly=yes -o BatchMode=yes ec2-user@gee
 
 ## 1. Find the commit
 
-1. `git fetch origin master`.
+1. `git fetch origin main`.
 2. Find the commit to deploy:
-   - No argument: `origin/master`.
+   - No argument: `origin/main`.
    - PR number: `gh pr view <n> --json state,mergeCommit,title`. If `state` is
      not `MERGED`, stop and tell the user. Use `mergeCommit.oid`.
-   - SHA: use it, after checking `git merge-base --is-ancestor <sha> origin/master`.
+   - SHA: use it, after checking `git merge-base --is-ancestor <sha> origin/main`.
 3. Set `SHA` to the full 40-character hash (`git rev-parse <ref>`).
 
 ## 2. Check the tools and what is live

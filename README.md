@@ -63,7 +63,7 @@ pipenv requirements > requirements.txt
 
 ### Docker image
 
-Images are built by CI: once the `test` workflow passes on master,
+Images are built by CI: once the `test` workflow passes on main,
 `.github/workflows/images.yml` builds `maur1th/naxos-forum` and
 `maur1th/naxos-websocket` for `linux/arm64` (the production host is a Graviton
 instance) and pushes them to Docker Hub, tagged with the commit SHA and

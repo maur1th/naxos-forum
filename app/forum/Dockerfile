@@ -16,7 +16,7 @@ RUN if [ $LOCAL_ENV -eq 1 ]; then \
     fi
 
 FROM python:3.10-alpine
-LABEL maintainer="https://github.com/maur1th"
+LABEL maintainer="5855076+maur1th@users.noreply.github.com"
 ENV HOME=/app \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/packages \

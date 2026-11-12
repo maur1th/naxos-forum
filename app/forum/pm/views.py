@@ -43,9 +43,9 @@ class MessageView(LoginRequiredMixin, ListView):
         self.c = get_object_or_404(
             Conversation, pk=kwargs['pk'], participants=request.user)
         # Handle user read caret
-        m = self.c.messages.latest()
+        m = self.c.messages.last()
         caret = request.user.pmReadCaret.filter(conversation=self.c).first()
-        if caret != m:
+        if m and caret != m:
             if caret:
                 request.user.pmReadCaret.remove(caret)
             request.user.pmReadCaret.add(m)
@@ -74,8 +74,9 @@ class SwitchConversationStatus(LoginRequiredMixin, View):
         if caret:
             request.user.pmReadCaret.remove(caret)
         else:
-            m = self.c.messages.latest()
-            request.user.pmReadCaret.add(m)
+            m = self.c.messages.last()
+            if m:
+                request.user.pmReadCaret.add(m)
         return HttpResponseRedirect(reverse('pm:top'))
 
 
@@ -118,7 +119,7 @@ def NewMessage(request, pk):
     c = get_object_or_404(Conversation, pk=pk, participants=request.user)
     form = MessageForm(request.POST)
     if not form.is_valid():
-        messages.error(request, "Le message est vide ou trop long.")
+        messages.error(request, "Le message est vide.")
         return HttpResponseRedirect(reverse('pm:msg', kwargs={'pk': pk}))
     m = Message.objects.create(
         conversation=c,
@@ -131,11 +132,12 @@ def NewMessage(request, pk):
 
 
 class DeleteMessage(LoginRequiredMixin, View):
-    """Participants may delete messages of their conversation."""
+    """Authors may delete their own messages."""
 
     def post(self, request, *args, **kwargs):
         m = get_object_or_404(
-            Message, pk=kwargs['pk'], conversation__participants=request.user)
+            Message, pk=kwargs['pk'], author=request.user,
+            conversation__participants=request.user)
         c = m.conversation
         m.shown = False
         m.save()

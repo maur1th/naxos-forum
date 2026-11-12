@@ -44,7 +44,7 @@
   <div class="col-sm-10 post">
     <span class="hidden-lg hidden-md hidden-sm" style="display:inline"><strong>{{ msg.author }}</strong> | </span>
     <small>
-      Posté le {{ msg.created|date:"j F Y à H:i:s" }} | <a href="#" data-toggle='modal' data-target='#deleteModal-{{ msg.pk }}'>Supprimer</a>
+      Posté le {{ msg.created|date:"j F Y à H:i:s" }}{% if msg.author == user %} | <a href="#" data-toggle='modal' data-target='#deleteModal-{{ msg.pk }}'>Supprimer</a>{% endif %}
     </small>
     <hr style="margin:5px; border-top: 1px solid #ccc">
     <div class="post-content">

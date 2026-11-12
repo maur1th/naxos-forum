@@ -109,6 +109,21 @@ class PMAccessTests(TestCase):
         self.assertEqual(self.conv.messages.count(), 2)
         self.assertEqual(self.client.get(
             reverse('pm:msg', args=[self.conv.pk])).status_code, 200)
+        # Bob cannot delete Alice's message
+        r = self.client.post(reverse('pm:delete_msg', args=[self.msg.pk]))
+        self.assertEqual(r.status_code, 404)
+        self.msg.refresh_from_db()
+        self.assertTrue(self.msg.shown)
+        self.client.force_login(self.alice)
         self.client.post(reverse('pm:delete_msg', args=[self.msg.pk]))
         self.msg.refresh_from_db()
         self.assertFalse(self.msg.shown)
+
+    def test_empty_conversation_does_not_error(self):
+        empty = Conversation.objects.create()
+        empty.participants.add(self.alice, self.bob)
+        self.client.force_login(self.alice)
+        self.assertEqual(self.client.get(
+            reverse('pm:msg', args=[empty.pk])).status_code, 200)
+        self.assertEqual(self.client.post(
+            reverse('pm:switch_status', args=[empty.pk])).status_code, 302)

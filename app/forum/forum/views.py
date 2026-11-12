@@ -174,10 +174,11 @@ class CategoryView(LoginRequiredMixin, ListView):
             timestamp, created = timestamps.get_or_create(
                 category=c, user=self.request.user)
             # compute and add read/unread status to category object
+            latest = c.threads.filter(visible=True).order_by('-modified')\
+                .values_list('modified', flat=True).first()
             c.status = 'img/{}.png'.format(
-                "unread" if c.threads.filter(visible=True).exists() and
-                c.threads.filter(visible=True).latest().modified >
-                timestamp.timestamp else "read")
+                "unread" if latest and latest > timestamp.timestamp
+                else "read")
         return context
 
 
@@ -209,10 +210,9 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
         self.thread = get_object_or_404(
             Thread,
             slug=kwargs['thread_slug'],
-            category__slug=kwargs['category_slug'])
+            category__slug=kwargs['category_slug'],
+            visible=True)
         self.category = self.thread.category
-        if not self.thread.visible:  # 403 if the thread has been removed
-            raise PermissionDenied
         # Decide whether Post.viewCount should be incremented
         bookmarks = request.user.cached_bookmarks
         b = bookmarks.get(self.thread.pk, None)
@@ -486,7 +486,7 @@ def NewPoll(request, category_slug):
     if request.method == 'POST':
         if "preview" in request.POST:
             return PreviewPostMixin.get_preview(
-                request.POST['thread-content_plain'])
+                request.POST['thread-content_plain'], request.user)
         else:
             thread_form = PollThreadForm(request.POST, prefix="thread")
             question_form = QuestionForm(request.POST, prefix="question")

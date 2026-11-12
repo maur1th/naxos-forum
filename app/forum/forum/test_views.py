@@ -157,9 +157,11 @@ class DeletedThreadTests(TestCase):
         Thread.objects.filter(pk=self.open.pk).update(
             modified=self.hidden.modified.replace(year=2000))
         self.client.get(reverse('forum:top'))  # creates timestamps
-        self.hidden.save()  # bump modified
+        Thread.objects.filter(pk=self.hidden.pk).update(
+            modified=timezone.now() + datetime.timedelta(days=1))
         r = self.client.get(reverse('forum:top'))
-        self.assertEqual(r.status_code, 200)
+        status = {c.pk: c.status for c in r.context['categories']}
+        self.assertEqual(status[self.cat.pk], 'img/read.png')
 
 
 class PreviewOwnershipTests(TestCase):
@@ -181,6 +183,17 @@ class PreviewOwnershipTests(TestCase):
         url = reverse('forum:preview', args=[self.preview.pk])
         self.assertContains(self.client.get(url), 'draft text')
         self.assertFalse(Preview.objects.filter(pk=self.preview.pk).exists())
+
+    def test_poll_preview_belongs_to_author(self):
+        cat = Category.objects.create(slug='polls', title='Polls',
+                                      subtitle='x')
+        self.client.force_login(self.alice)
+        r = self.client.post(
+            reverse('forum:new_poll', args=[cat.slug]),
+            {'preview': '1', 'thread-content_plain': 'poll draft'})
+        self.assertEqual(r.status_code, 302)
+        self.assertTrue(Preview.objects.filter(
+            author=self.alice, content_plain='poll draft').exists())
 
     def test_legacy_preview_without_author_is_not_served(self):
         legacy = Preview.objects.create(content_plain='old')

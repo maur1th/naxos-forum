@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.10'   # matches the forum Dockerfile
+          python-version: '3.12'   # matches the forum Dockerfile
           cache: pip
           cache-dependency-path: app/forum/requirements.txt
       # pylibmc is built from source and needs the libmemcached headers.
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       # The vendored suite exercises create() with syntax highlighting, which
       # needs Pygments (the app itself runs with use_pygments=False, so it is
       # only a test dependency, listed in requirements-dev.txt).

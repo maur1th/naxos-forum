@@ -23,7 +23,7 @@ docker-compose logs -f forum  # Read forum component logs
 docker-compose exec forum sh  # Execute an interactive shell on the forum container
 ```
 
-The development server is accessible at: <http://localhost:8080>.
+The development server is accessible at: <http://localhost:8081>.
 
 ### Stopping a development environment
 

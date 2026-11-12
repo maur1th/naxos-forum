@@ -61,12 +61,16 @@
 {# Header #}
 {% include "pagination.html" %}
 {# Top reply button #}
+{% if thread.isLocked and not user.is_staff %}
+<div class="row" style="padding: 5px 0"><span class="label label-default">Sujet verrouillé</span></div>
+{% else %}
 <div class="row hidden-xs" style="padding: 5px 0"> {# large display #}
     <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
 </div>
 <div class="row visible-xs" style="padding: 5px 2px"> {# small display #}
     <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-default pull-left">Répondre</button></a>
 </div>
+{% endif %}
 {# Thread's title #}
 <hr style="margin:6px; border-top:0">
 <div class="row">
@@ -123,7 +127,7 @@
             {% if post.cached_author == user %}
                  | <a href="{% url 'forum:edit' category.slug thread.slug post.pk %}">Modifier</a>
             {% endif %}
-            | <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>
+            {% if not thread.isLocked or user.is_staff %}| <a href="{% url 'forum:quote' category.slug thread.slug post.pk %}">Citer</a>{% endif %}
             | <a href="{% url 'forum:post' post.pk %}"><small><span class="glyphicon glyphicon-link"></span></small></a>
         </small>
         <hr style="margin:5px 0 8px 0; border-top: 1px solid #ccc">
@@ -139,15 +143,18 @@
 <hr style="margin:6px; border-top:0">
 {% endfor %}
 {# Bottom reply button #}
+{% if not thread.isLocked or user.is_staff %}
 <div class="row hidden-xs" style="padding: 5px 0"> {# large display #}
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>
 </div>
 <div class="row visible-xs" style="padding: 5px 2px"> {# small display #}
         <a href="{% url 'forum:new_post' category.slug thread.slug %}"><button class="btn btn-primary pull-left">Répondre</button></a>
 </div>
+{% endif %}
 {% include "pagination.html" %}
 <hr style="margin:20px; border-top: 1px solid #ccc">
 {# Quick reply #}
+{% if not thread.isLocked or user.is_staff %}
 <div class="row">
     <div class="col-lg-10 col-lg-offset-1">
         {% include "toolbar.html" %}
@@ -168,6 +175,7 @@
         </script>
     </div>
 </div>
+{% endif %}
 {# Path #}
 <br><br>
 <ol class="breadcrumb">

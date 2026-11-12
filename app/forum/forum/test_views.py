@@ -272,6 +272,43 @@ class VotePollTests(TestCase):
         self.assertEqual(self.totals(), (2, 2))
 
 
+class LockedThreadTests(TestCase):
+    """Replies to a locked thread are refused, except for staff."""
+
+    def setUp(self):
+        self.author = ForumUser.objects.create_user(
+            username='alice', email='alice@test.com', password='pw')
+        self.staff = ForumUser.objects.create_user(
+            username='mod', email='mod@test.com', password='pw',
+            is_staff=True)
+        self.category = Category.objects.create(
+            slug='general', title='General', subtitle='General chat')
+        self.thread = Thread.objects.create(
+            title='Locked', author=self.author, category=self.category,
+            isLocked=True)
+        self.url = reverse('forum:new_post',
+                           args=[self.category.slug, self.thread.slug])
+
+    def test_non_staff_reply_is_refused(self):
+        self.client.force_login(self.author)
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+        r = self.client.post(self.url, {'content_plain': 'hello'})
+        self.assertEqual(r.status_code, 403)
+        self.assertEqual(self.thread.posts.count(), 0)
+
+    def test_staff_can_still_reply(self):
+        self.client.force_login(self.staff)
+        r = self.client.post(self.url, {'content_plain': 'hello'})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.thread.posts.count(), 1)
+
+    def test_reply_button_hidden(self):
+        self.client.force_login(self.author)
+        r = self.client.get(reverse(
+            'forum:thread', args=[self.category.slug, self.thread.slug]))
+        self.assertNotContains(r, self.url)
+
+
 class PollSelectedChoiceTests(VotePollTests):
     def test_vote_records_choice_and_highlights_only_for_voter(self):
         self.client.post(self.url, {'choice': self.b.pk})

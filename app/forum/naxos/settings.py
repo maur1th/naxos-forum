@@ -117,8 +117,6 @@ AUTH_USER_MODEL = "user.ForumUser"
 LOGIN_URL = "user:login"
 LOGIN_REDIRECT_URL = "forum:top"
 
-CRISPY_TEMPLATE_PACK = "bootstrap3"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -152,9 +150,9 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD", "crimson"),
         "HOST": os.environ.get("DB_HOST", "db"),
         "PORT": os.environ.get("DB_PORT", 5432),
+        "CONN_MAX_AGE": None,
     }
 }
-CONN_MAX_AGE = None
 
 
 # Cache

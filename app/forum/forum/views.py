@@ -18,10 +18,6 @@ from django.conf import settings
 
 import re
 
-# import logging
-
-# logger = logging.getLogger(__name__)
-
 from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
@@ -59,13 +55,6 @@ def get_all_users():
                      .extra(select={'username_lower': 'lower(username)'})\
                      .order_by('username_lower')
     return [f"@{u.username}" for u in active_users]
-
-
-def update_category_timestamp(category, user):
-    """Update CategoryTimeStamp so category doesn't display unread status"""
-    timestamp, created = CategoryTimeStamp.objects.get_or_create(
-        category=category, user=user)
-    timestamp.save()
 
 
 # Mixins #
@@ -168,7 +157,6 @@ class CategoryView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['budget_total'] = BudgetRecord.objects.aggregate(Sum('amount'))['amount__sum'] or 0
-        # logger.warning(context['budget_total'])
         context['budget_status'] = 'danger' if context['budget_total'] < 0 else 'success'
         timestamps = CategoryTimeStamp.objects.filter(user=self.request.user)
         for c in context['categories']:
@@ -313,6 +301,8 @@ class NewPost(LoginRequiredMixin, PreviewPostMixin, CategoryReadMixin,
             slug=kwargs['thread_slug'],
             category__slug=kwargs['category_slug'],
             visible=True)
+        if self.thread.isLocked and not request.user.is_staff:
+            raise PermissionDenied
         self.category = self.thread.category
         return super().dispatch(request, *args, **kwargs)
 
@@ -640,12 +630,10 @@ class UserMentionsView(LoginRequiredMixin, ListView):
             .order_by("-mentions__pk")
         self.request.user.newMention = False
         self.request.user.save()
-        # logger.warning(results)
         return results
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         for post in context['object_list']:
             post.page = get_post_page(post)
-            # logger.warning(post.page)
         return context

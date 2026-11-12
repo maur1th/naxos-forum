@@ -77,7 +77,6 @@ class Thread(CachedAuthorModel):
         verbose_name='Icône')
     isSticky = models.BooleanField(default=False)
     isLocked = models.BooleanField(default=False)
-    isRemoved = models.BooleanField(default=False)
     viewCount = models.IntegerField(default=0)
     modified = models.DateTimeField(default=timezone.now)
     personal = models.BooleanField(default=False)
@@ -292,7 +291,7 @@ def update_post_cache(created, instance, **kwargs):
 
 
 @receiver(post_save, sender=Post)
-def update_thread_cache(created, instance, **kwargs):
+def update_post_thread_cache(created, instance, **kwargs):
     cache.delete(make_template_fragment_key('thread', [instance.thread.pk]))
 
 

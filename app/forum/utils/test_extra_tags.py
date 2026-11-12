@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 
 from .extra_tags import VideoTag
+from .renderer import render_bbcode
 
 
 class YouTubeEmbedTests(SimpleTestCase):
@@ -52,3 +53,42 @@ class YouTubeEmbedTests(SimpleTestCase):
         # Not a valid 11-char id: don't build a broken embed URL.
         url = 'https://www.youtube.com/watch?v=not-a-real-id-too-long'
         self.assertEqual(VideoTag._to_youtube_embed(url), url)
+
+
+class VideoWidthTests(SimpleTestCase):
+    """Optional ``w`` width option of the [video] tag (#62)."""
+
+    URL = 'https://www.youtube.com/embed/xvFZjo5PgG0'
+    DEFAULT = '<div class="embed-responsive embed-responsive-16by9">'
+
+    def render(self, text):
+        return render_bbcode(text)
+
+    def test_default_is_unchanged(self):
+        html = self.render('[video]%s[/video]' % self.URL)
+        self.assertIn(self.DEFAULT, html)
+        self.assertNotIn('max-width', html)
+
+    def test_width_option(self):
+        html = self.render('[video w=640]%s[/video]' % self.URL)
+        self.assertIn(
+            '<div class="embed-responsive embed-responsive-16by9" '
+            'style="max-width: 640px">', html)
+        self.assertIn('src="%s"' % self.URL, html)
+
+    def test_width_option_with_inline_url(self):
+        html = self.render('[video w=640 %s][/video]' % self.URL)
+        self.assertIn('max-width: 640px', html)
+        self.assertIn('src="%s"' % self.URL, html)
+
+    def test_range_bounds_accepted(self):
+        for w in (200, 1920):
+            html = self.render('[video w=%d]%s[/video]' % (w, self.URL))
+            self.assertIn('max-width: %dpx' % w, html)
+
+    def test_invalid_width_falls_back(self):
+        for w in ('abc', '199', '1921', '0', '-5', '640px', '6.4', '<x>'):
+            html = self.render('[video w=%s]%s[/video]' % (w, self.URL))
+            self.assertIn(self.DEFAULT, html, w)
+            self.assertNotIn('max-width', html, w)
+            self.assertIn('src="%s"' % self.URL, html, w)

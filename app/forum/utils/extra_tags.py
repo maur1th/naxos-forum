@@ -78,6 +78,12 @@ class VideoTag(TagBase):
 
     _re_youtube_id = re.compile(r'^[A-Za-z0-9_-]{11}$')
 
+    # ``[video w=640]URL[/video]`` (or ``[video w=640 URL]``): optional width.
+    _re_width_option = re.compile(r'^w=(\S*)\s*(.*)$', re.DOTALL)
+
+    min_width = 200
+    max_width = 1920
+
     def __init__(self, name, annotate_links=False, **kwargs):
         super().__init__(name, inline=True)
         self.annotate_links = annotate_links
@@ -119,6 +125,20 @@ class VideoTag(TagBase):
             embed += '?start=%d' % start
         return embed
 
+    @classmethod
+    def _parse_width(cls, raw):
+        """Return ``raw`` as an int if it is within the allowed range.
+
+        Anything else (non-numeric, too small or too large) returns None so
+        the video falls back to the default full-width rendering.
+        """
+        if not raw.isascii() or not raw.isdigit():
+            return None
+        width = int(raw)
+        if cls.min_width <= width <= cls.max_width:
+            return width
+        return None
+
     @staticmethod
     def _youtube_start_seconds(query):
         """Extract a start offset (in seconds) from a YouTube ``t`` param."""
@@ -136,8 +156,15 @@ class VideoTag(TagBase):
         if nest_level > 1:
             return u""
 
-        if self.params:
-            url = self.params.strip()
+        self.width = None
+        params = self.params.strip() if self.params else u''
+        option = self._re_width_option.match(params)
+        if option:
+            self.width = self._parse_width(option.group(1))
+            params = option.group(2).strip()
+
+        if params:
+            url = params
         else:
             url = self.get_contents_text(parser).strip()
             url = PostMarkup.standard_unreplace(url)
@@ -184,8 +211,11 @@ class VideoTag(TagBase):
             return ""
 
         if self.domain in self.iframe_domains:
+            style = (
+                ' style="max-width: %dpx"' % self.width if self.width else ''
+            )
             return (''
-                '<div class="embed-responsive embed-responsive-16by9">'
+                '<div class="embed-responsive embed-responsive-16by9"' + style + '>'
                 '<iframe class="embed-responsive-item" referrerpolicy="strict-origin-when-cross-origin" src="{}" '
                 'frameborder="0" allowfullscreen="true">'
             ).format(PostMarkup.standard_replace_no_break(self.url))

@@ -1,0 +1,104 @@
+---
+##
+## Major-version upgrade, phase 1: dump the old cluster and move its data
+## directory aside.
+##
+## Included from main.yml when the data volume was initialised by an older
+## PostgreSQL major. The forum is stopped so nothing writes during the dump;
+## the forum role starts it again later in the play.
+##
+## Leaves behind:
+##   - {{pg_upgrade_pending}}: the full pg_dumpall, which also marks the
+##     restore as pending (see upgrade_restore.yml);
+##   - the {{volume}}-pg<old major> volume: an untouched copy of the old data
+##     directory, for rollback;
+##   - an empty {{volume}} volume for the new major to initialise.
+##
+
+- name: refuse to downgrade postgres
+  fail:
+    msg: >
+      Volume {{volume}} holds PostgreSQL {{pg_old_major}} data; refusing to
+      run PostgreSQL {{pg_new_major}} on it.
+  when: pg_old_major | int > pg_new_major | int
+
+- name: set upgrade backup volume name
+  set_fact:
+    pg_backup_volume: "{{volume}}-pg{{pg_old_major}}"
+
+- name: stop forum container (upgrade)
+  docker_container:
+    name: forum
+    state: absent
+
+- name: stop postgres container (upgrade)
+  docker_container:
+    name: postgres
+    state: absent
+
+- name: start temporary PostgreSQL {{pg_old_major}} on the old data
+  docker_container:
+    name: postgres-upgrade
+    image: postgres:{{pg_old_major}}
+    pull: yes
+    state: started
+    env:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - "{{volume}}:/var/lib/postgresql/data"
+
+- name: wait for temporary PostgreSQL {{pg_old_major}}
+  command: docker exec postgres-upgrade pg_isready -h 127.0.0.1 -U postgres
+  register: ready
+  until: ready.rc == 0
+  retries: 30
+  delay: 2
+  changed_when: no
+
+- name: dump PostgreSQL {{pg_old_major}} cluster
+  shell: >
+    docker exec postgres-upgrade pg_dumpall -U postgres
+    > {{pg_upgrade_pending}}.partial
+
+# pg_dumpall writes this trailer last: its presence means a complete dump.
+- name: check the dump is complete
+  command: tail -n 3 {{pg_upgrade_pending}}.partial
+  register: dump_tail
+  changed_when: no
+  failed_when: "'PostgreSQL database cluster dump complete' not in dump_tail.stdout"
+
+- name: stop temporary PostgreSQL {{pg_old_major}}
+  docker_container:
+    name: postgres-upgrade
+    state: absent
+
+- name: mark the restore as pending
+  command: mv {{pg_upgrade_pending}}.partial {{pg_upgrade_pending}}
+
+# A backup volume left by an earlier attempt that failed before the data
+# directory was emptied is stale: {{volume}} still holds the original data.
+- name: remove stale backup volume ({{pg_backup_volume}})
+  command: docker volume rm --force {{pg_backup_volume}}
+
+- name: create backup volume ({{pg_backup_volume}})
+  command: docker volume create {{pg_backup_volume}}
+
+- name: copy old data directory to {{pg_backup_volume}}
+  command: >
+    docker run --rm --entrypoint cp
+    --volume {{volume}}:/from:ro
+    --volume {{pg_backup_volume}}:/to
+    postgres:{{pg_old_major}} -a /from/. /to/
+
+- name: check the backup copy
+  command: >
+    docker run --rm --entrypoint cat
+    --volume {{pg_backup_volume}}:/data:ro
+    postgres:{{pg_old_major}} /data/PG_VERSION
+  register: backup_version
+  changed_when: no
+  failed_when: backup_version.stdout | trim != pg_old_major
+
+# upgrade_restore.yml recreates {{volume}} empty before PostgreSQL
+# {{pg_new_major}} starts on it.
+...

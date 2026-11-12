@@ -12,11 +12,10 @@
         - nginx
         - "{{project_name}}"
     - name: postgres
-      # Django 5.2 requires PostgreSQL 14+. Bumping this major version on an
-      # existing host is NOT a plain redeploy: the postgres role starts the new
-      # image on the existing data volume, and PG16 will refuse a PG13 data dir.
-      # A one-time data migration (pg_dumpall on 13 -> restore on 16, or
-      # pg_upgrade) must be performed in a maintenance window before/at deploy.
+      # Django 5.2 requires PostgreSQL 14+. Changing the major version makes
+      # the role dump the old cluster, keep its data directory in a
+      # postgres-data-pg<old> volume and restore into a fresh cluster; the
+      # forum is down meanwhile (see roles/postgres/tasks/upgrade_*.yml).
       version: "16"
     - name: memcached
       version: "1.6"

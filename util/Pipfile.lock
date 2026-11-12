@@ -18,20 +18,20 @@
     "default": {
         "boto3": {
             "hashes": [
-                "sha256:c34a36c9181998dd9b663095b0b0f5f5bc97f3b6846d6a63b31529462091047a",
-                "sha256:f5a7fa503fd902dbd305d52a4571971149acb2c19f02508188f283e244e121e4"
+                "sha256:47f87f89b10e62f5191bd98674beb0dd52ed368c19fcdfef2ef38ead31126f49",
+                "sha256:b5417e81d439b35ccf3a1eb51fa06cf9c97167c9a6beaa1929175ee9840d505a"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==1.43.42"
+            "version": "==1.43.127"
         },
         "botocore": {
             "hashes": [
-                "sha256:62aa017eb5bb9791b1bc655571fa1548611e508f35e13e636d3939e1be3745f0",
-                "sha256:d813d5d5707db5f1c73b5d65f6b172c49f38375b23b30c593966fef56f8b5e40"
+                "sha256:93bae360fb3a6f1b8e36593faa8bbbfa05b19866f7a37e9606a98f13394156f8",
+                "sha256:aa0e3188679a2164a2098a14ea9b59520520cb573aaee9999d852480691e134a"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==1.43.42"
+            "version": "==1.43.127"
         },
         "jmespath": {
             "hashes": [
@@ -51,11 +51,11 @@
         },
         "s3transfer": {
             "hashes": [
-                "sha256:777cc2415536f1debadb5c2ef7779275d0fc0fe0e042411cdd6caebeb2685262",
-                "sha256:ce436931687addc4c1712d52d40b32f53e88315723f107ffa20ba82b05a0f685"
+                "sha256:24eb7535804306355e31c952a90022bf5b2f9d760f9a11062c7493a217c08553",
+                "sha256:8326acc3d056d7f7b8a37110c7d2aea41f67e83f6ae79cd3b5fbcca34c726406"
             ],
             "markers": "python_version >= '3.10'",
-            "version": "==0.19.0"
+            "version": "==0.19.3"
         },
         "six": {
             "hashes": [
@@ -70,7 +70,6 @@
                 "sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3",
                 "sha256:63bf2ead4c879426ebf22ef2a781eeb4aa3b4ae798a0435506f8687fd5bb9b63"
             ],
-            "index": "pypi",
             "markers": "python_version >= '3.10'",
             "version": "==2.8.0"
         }

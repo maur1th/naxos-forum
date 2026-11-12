@@ -20,20 +20,27 @@
       - "{{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro"
       - "/etc/letsencrypt:/etc/letsencrypt"
       - "/var/lib/letsencrypt:/var/lib/letsencrypt"
-    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf -d {{' -d '.join(domains)}} -m {{email_address}} --non-interactive --agree-tos --expand
+    command: certonly --dns-ovh --dns-ovh-credentials /ovh.conf --dns-ovh-propagation-seconds 120 -d {{' -d '.join(domains)}} -m {{email_address}} --non-interactive --agree-tos --expand
     detach: no
     cleanup: yes
   when: domain_path.stat.isdir is not defined
 
+# No `-it`: cron has no TTY, so `docker run -it` fails before certbot starts.
+# Without a TTY certbot also sleeps up to ~8 min before renewing, so skip that
+# and reload nginx right after a successful renew (the separate 04:10 reload in
+# the nginx role is only a fallback). OVH DNS is slow to propagate, hence the
+# 120s wait (default 30s failed Let's Encrypt's secondary validation).
 - name: Add Certbot renew cron job
   cron:
     name: "certbot renew"
     minute: "0"
     hour: "4"
     job: >
-      docker run -it --rm --name certbot-cron
+      docker run --rm --name certbot-cron
       -v {{ansible_env.HOME}}/ovh.conf:/ovh.conf:ro
       -v /etc/letsencrypt:/etc/letsencrypt
       -v /var/lib/letsencrypt:/var/lib/letsencrypt
-      certbot/dns-ovh:arm64v8-latest renew
+      certbot/dns-ovh:arm64v8-latest renew --no-random-sleep-on-renew
+      --dns-ovh-propagation-seconds 120
+      && docker kill --signal=SIGHUP nginx
 ...

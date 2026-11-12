@@ -1,26 +1,20 @@
 'use strict';
 const http = require('http');
 const cookie_reader = require('cookie');
-const {makeNotifier, makeConnectionTracker} = require('./lib');
+const {hashUser, makeAuthMiddleware, makeNotifier, makeConnectionTracker} = require('./lib');
 
-const {PORT, DEBUG, FORUM_URI} = process.env;
+const {PORT, DEBUG, FORUM_URI, NODE_API_SECRET} = process.env;
 
 const app = http.createServer().listen(PORT);
 const io = require('socket.io')(app);
-const notifyForum = makeNotifier(`http://${FORUM_URI}/user/node_api`);
+const notifyForum = makeNotifier(`http://${FORUM_URI}/user/node_api/`, NODE_API_SECRET);
 const tracker = makeConnectionTracker();
 
-io.use((socket, next) => {
-  const handshakeData = socket.request;
-  if(handshakeData.headers.cookie){
-    next();
-  }
-  next(new Error('not authorized'));
-});
+io.use(makeAuthMiddleware(cookie_reader.parse));
 
 const handleConnection = (socket, user) => {
   if (tracker.connect(user)) {
-    console.log(user + ' connected');
+    console.log(hashUser(user) + ' connected');
     // Tell django the user has come online
     notifyForum(user, 'connected');
   }
@@ -30,7 +24,7 @@ const handleDisconnection = (socket, user) => {
   socket.on('disconnect', () => {
     setTimeout(() => {
       if (tracker.disconnect(user)) {
-        console.log(user + ' disconnected');
+        console.log(hashUser(user) + ' disconnected');
         // Tell django the user is now offline
         notifyForum(user, 'disconnected');
       }

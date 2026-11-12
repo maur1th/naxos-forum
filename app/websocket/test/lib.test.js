@@ -2,38 +2,62 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
-const {buildNotifyUrl, makeNotifier, makeConnectionTracker} = require('../lib');
+const {hashUser, makeAuthMiddleware, makeNotifier, makeConnectionTracker} = require('../lib');
 
-const BASE = 'http://forum:5000/user/node_api';
+const URL_ = 'http://forum:5000/user/node_api/';
 
-test('buildNotifyUrl builds the expected query string', () => {
-  assert.equal(
-    buildNotifyUrl(BASE, 'sess-abc123', 'connected'),
-    'http://forum:5000/user/node_api?sessionid=sess-abc123&status=connected'
-  );
+test('hashUser is a short hex tag that does not contain the session id', () => {
+  const tag = hashUser('sess-abc123');
+  assert.match(tag, /^[0-9a-f]{8}$/);
+  assert.ok(!tag.includes('sess'));
+  assert.equal(hashUser('sess-abc123'), tag);
+  assert.notEqual(hashUser('other'), tag);
 });
 
-test('buildNotifyUrl url-encodes special characters in the session id', () => {
-  assert.equal(
-    buildNotifyUrl(BASE, 'sess xyz&weird=1', 'disconnected'),
-    'http://forum:5000/user/node_api?sessionid=sess+xyz%26weird%3D1&status=disconnected'
-  );
-});
-
-test('makeNotifier calls fetch with the built url', async () => {
+const parse = h => Object.fromEntries(h.split(';').map(p => p.trim().split('=')));
+const run = headers => {
   const calls = [];
-  const notify = makeNotifier(BASE, {fetchImpl: url => (calls.push(url), Promise.resolve())});
+  makeAuthMiddleware(parse)({request: {headers}}, (...a) => calls.push(a));
+  return calls;
+};
+
+test('auth middleware calls next() once, without error, for a sessionid cookie', () => {
+  const calls = run({cookie: 'sessionid=abc'});
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].length, 0);
+});
+
+test('auth middleware rejects (once) a cookie header without sessionid', () => {
+  const calls = run({cookie: 'foo=bar'});
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0][0].message, 'not authorized');
+});
+
+test('auth middleware rejects a missing cookie header', () => {
+  const calls = run({});
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0][0].message, 'not authorized');
+});
+
+test('makeNotifier POSTs the session id in the body with the secret header', async () => {
+  const calls = [];
+  const notify = makeNotifier(URL_, 's3cret', {fetchImpl: (...a) => (calls.push(a), Promise.resolve())});
   await notify('u1', 'connected');
-  assert.deepEqual(calls, [`${BASE}?sessionid=u1&status=connected`]);
+  assert.equal(calls.length, 1);
+  const [url, opts] = calls[0];
+  assert.equal(url, URL_);
+  assert.ok(!url.includes('u1'));
+  assert.equal(opts.method, 'POST');
+  assert.equal(opts.headers['X-Node-Secret'], 's3cret');
+  assert.equal(opts.body, 'sessionid=u1&status=connected');
 });
 
 test('makeNotifier swallows fetch failures (fire-and-forget)', async () => {
   const errors = [];
-  const notify = makeNotifier(BASE, {
+  const notify = makeNotifier(URL_, 's', {
     fetchImpl: () => Promise.reject(new Error('boom')),
     onError: err => errors.push(err.message),
   });
-  // Must not reject even though the underlying fetch rejected.
   await assert.doesNotReject(notify('u1', 'connected'));
   assert.deepEqual(errors, ['boom']);
 });
@@ -41,16 +65,20 @@ test('makeNotifier swallows fetch failures (fire-and-forget)', async () => {
 test('makeNotifier works end-to-end against a real server with global fetch', async () => {
   const received = [];
   const server = http.createServer((req, res) => {
-    received.push(req.url);
-    res.writeHead(200);
-    res.end('ok');
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      received.push([req.method, req.url, req.headers['x-node-secret'], body]);
+      res.writeHead(200);
+      res.end('ok');
+    });
   });
   await new Promise(resolve => server.listen(0, resolve));
   try {
     const {port} = server.address();
-    const notify = makeNotifier(`http://127.0.0.1:${port}/user/node_api`);
+    const notify = makeNotifier(`http://127.0.0.1:${port}/user/node_api/`, 'k');
     await notify('real-user', 'connected');
-    assert.deepEqual(received, ['/user/node_api?sessionid=real-user&status=connected']);
+    assert.deepEqual(received, [['POST', '/user/node_api/', 'k', 'sessionid=real-user&status=connected']]);
   } finally {
     await new Promise(resolve => server.close(resolve));
   }

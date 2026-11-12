@@ -1,9 +1,12 @@
+import hmac
+
+from django.conf import settings
 from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
-from django.http import HttpResponse, HttpResponseRedirect, \
+from django.http import HttpResponseBadRequest, HttpResponseNotAllowed, HttpResponse, HttpResponseRedirect, \
     HttpResponseServerError
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.shortcuts import render
@@ -137,23 +140,30 @@ class NewBudgetRecord(LoginRequiredMixin, CreateView):
         return reverse_lazy('user:budget')
 
 
-# Set disconnection timestamp
+# Online-presence notifications from the websocket service. Internal only:
+# POST + shared-secret header, and blocked at the public nginx.
 @csrf_exempt
 def node_api(request):
-    if request.method != 'GET':
+    secret = settings.NODE_API_SECRET
+    provided = request.headers.get('X-Node-Secret', '')
+    if not secret or not hmac.compare_digest(provided.encode(), secret.encode()):
         raise PermissionDenied
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    status = request.POST.get('status')
+    if status not in ('connected', 'disconnected'):
+        return HttpResponseBadRequest()
     try:
-        session = Session.objects.get(session_key=request.GET.get('sessionid'))
+        session = Session.objects.get(session_key=request.POST.get('sessionid'))
         user_id = session.get_decoded().get('_auth_user_id')
-        status = request.GET['status']
         user = ForumUser.objects.get(pk=user_id)
-    except (ObjectDoesNotExist, NameError):
+    except (ObjectDoesNotExist, ValueError):
         raise PermissionDenied
     key = f"user/{user.pk}/is_online"
     if status == 'connected':
         cache.set(key, True, None)
-    elif status == 'disconnected':
+    else:
         cache.delete(key)
     user.last_seen = timezone.now()
     user.save()
-    return HttpResponse()  # So we don't log a 500 error
+    return HttpResponse()

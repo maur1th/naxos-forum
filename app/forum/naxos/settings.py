@@ -207,6 +207,9 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_SUBJECT_PREFIX = os.environ.get("EMAIL_SERVER_PREFIX", "")
 
+# Shared secret authenticating the websocket service's node_api calls
+NODE_API_SECRET = os.environ.get("NODE_API_SECRET")
+
 # Debug
 if DEBUG == True and os.environ["LOCAL_ENV"] == "1":
     INTERNAL_IPS = [os.environ.get("INTERNAL_IP")]

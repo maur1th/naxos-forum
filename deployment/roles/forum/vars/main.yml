@@ -10,4 +10,5 @@ email_server_prefix: "[FoRuM] "
 
 admin_name: "{{vault_admin_name}}"
 admin_email: "{{vault_admin_email}}"
+node_api_secret: "{{vault_node_api_secret}}"
 ...

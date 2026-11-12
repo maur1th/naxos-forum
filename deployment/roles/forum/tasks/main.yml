@@ -69,6 +69,7 @@
       EMAIL_SERVER_PREFIX: "{{email_server_prefix}}"
       ADMIN_NAME: "{{admin_name}}"
       ADMIN_EMAIL: "{{admin_email}}"
+      NODE_API_SECRET: "{{node_api_secret}}"
     volumes:
       - "{{ansible_env.HOME}}/secrets:/app/secrets/"
       - "{{ansible_env.HOME}}/html:/app/templates/ads/:ro"
@@ -89,6 +90,8 @@
     image: "{{websocket_image}}:{{app_version}}"
     pull: yes
     state: started
+    env:
+      NODE_API_SECRET: "{{node_api_secret}}"
     restart_policy: unless-stopped
     networks:
       - name: "{{network}}"

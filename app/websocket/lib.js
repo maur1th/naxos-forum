@@ -1,18 +1,42 @@
 'use strict';
 
-// Build the node_api notification URL for a user status change.
-const buildNotifyUrl = (baseUrl, user, status) =>
-  `${baseUrl}?${new URLSearchParams({sessionid: user, status})}`;
+const crypto = require('crypto');
 
-// Create a fire-and-forget notifier for the django node_api endpoint.
+// Short, non-reversible tag for logging a session without exposing the
+// session ID itself (which is a long-lived login credential).
+const hashUser = user =>
+  crypto.createHash('sha256').update(String(user)).digest('hex').slice(0, 8);
+
+// socket.io middleware factory: accept only handshakes carrying a cookie
+// header with a non-empty `sessionid`. `parseCookie` is injected (the
+// `cookie` package's `parse`).
+const makeAuthMiddleware = parseCookie => (socket, next) => {
+  const header = socket.request.headers.cookie;
+  const sessionid = header ? parseCookie(header).sessionid : undefined;
+  if (!sessionid) {
+    return next(new Error('not authorized'));
+  }
+  return next();
+};
+
+// Create a fire-and-forget notifier for the django node_api endpoint. The
+// session ID travels in a POST body (never in the URL) and the request is
+// authenticated with a shared secret header.
 // `fetchImpl` and `onError` are injectable so the notifier can be unit tested
 // without a real network. Errors are swallowed (logged) to avoid unhandled
-// rejections, matching the previous `request` (no callback) behaviour.
-const makeNotifier = (baseUrl, {
+// rejections.
+const makeNotifier = (url, secret, {
   fetchImpl = fetch,
   onError = err => console.error('node_api notify failed:', err.message),
 } = {}) => (user, status) =>
-  fetchImpl(buildNotifyUrl(baseUrl, user, status)).catch(onError);
+  fetchImpl(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Node-Secret': secret || '',
+    },
+    body: new URLSearchParams({sessionid: user, status}).toString(),
+  }).catch(onError);
 
 // Reference-count a user's open sockets (e.g. multiple browser tabs) so django
 // is told "connected" only on the first socket and "disconnected" only on the
@@ -44,4 +68,4 @@ const makeConnectionTracker = () => {
   };
 };
 
-module.exports = {buildNotifyUrl, makeNotifier, makeConnectionTracker};
+module.exports = {hashUser, makeAuthMiddleware, makeNotifier, makeConnectionTracker};

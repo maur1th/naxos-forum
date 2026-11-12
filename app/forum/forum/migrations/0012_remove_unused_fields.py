@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forum', '0010_preview_author_created'),
+        ('forum', '0011_pollvote'),
     ]
 
     operations = [

@@ -54,7 +54,6 @@ if os.environ["LOCAL_ENV"] != "1":
     SECURE_HSTS_SECONDS = 63072000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_REFERRER_POLICY = "no-referrer"
 X_FRAME_OPTIONS = "DENY"
 # nginx redirects HTTP to HTTPS, so Django does not need to.
 SILENCED_SYSTEM_CHECKS = ["security.W008"]

@@ -73,6 +73,16 @@
       - "{{ansible_env.HOME}}/secrets:/app/secrets/"
       - "{{ansible_env.HOME}}/html:/app/templates/ads/:ro"
 
+# Static files are served from S3, not by the container: publish this
+# release's JS/CSS (the container writes with the host's instance role).
+- name: publish static files to S3
+  command: docker exec forum python3 manage.py collectstatic --no-input
+  register: collectstatic
+  until: collectstatic is succeeded
+  retries: 5
+  delay: 5
+  changed_when: "'0 static files copied' not in collectstatic.stdout"
+
 # The websocket service was replaced by a Django heartbeat
 - name: remove legacy websocket container
   docker_container:

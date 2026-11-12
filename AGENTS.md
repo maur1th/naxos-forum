@@ -35,6 +35,3 @@ cd devtools && npm install
 ./seed.sh                                   # creates login e2e / e2e-password
 node screenshot.mjs /user/login/ out.png [--mobile] [--login]
 ```
-
-The `/socket.io/socket.io.js` console error is expected: the websocket
-service is not part of the dev compose stack.

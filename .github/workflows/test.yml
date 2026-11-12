@@ -9,20 +9,6 @@ on:
   pull_request:
 
 jobs:
-  websocket:
-    name: websocket (node:test)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app/websocket
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-      # The lib tests only use Node built-ins, so no install step is needed.
-      - run: node --test
-
   forum:
     name: forum (django test)
     runs-on: ubuntu-latest

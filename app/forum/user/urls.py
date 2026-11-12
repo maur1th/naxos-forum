@@ -31,5 +31,5 @@ urlpatterns = [
             name='password_reset_confirm'),
     path('password_reset/password_reset_complete', auth_views.PasswordResetCompleteView.as_view(),
          name='password_reset_complete'),
-    path('node_api/', views.node_api, name='node_api'),
+    path('ping/', views.ping, name='ping'),
 ]

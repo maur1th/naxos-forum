@@ -1,4 +1,8 @@
-from django.test import TestCase
+from datetime import timedelta
+
+from django.core.cache import cache
+from django.test import Client, TestCase, override_settings
+from django.utils import timezone
 from django.urls import reverse
 
 from forum.models import Category, Thread
@@ -74,13 +78,43 @@ class MemberPagesTests(TestCase):
         self.assertNotContains(response, 'Secret thread')
 
 
-class NodeApiTests(TestCase):
+@override_settings(CACHES={'default': {
+    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+class PingTests(TestCase):
 
-    def test_post_is_refused(self):
-        response = self.client.post(reverse('user:node_api'))
-        self.assertEqual(response.status_code, 403)
+    def setUp(self):
+        cache.clear()
+        self.member = ForumUser.objects.create_user(
+            username='pinger', password='pw')
 
-    def test_unknown_session_is_refused(self):
-        response = self.client.get(
-            reverse('user:node_api'), {'sessionid': 'nope', 'status': 'x'})
+    def test_anonymous_is_refused(self):
+        response = self.client.post(reverse('user:ping'))
+        self.assertIn(response.status_code, (302, 403))
+        self.assertFalse(ForumUser.objects.get(pk=self.member.pk).is_online)
+
+    def test_get_is_refused(self):
+        self.client.force_login(self.member)
+        response = self.client.get(reverse('user:ping'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_post_marks_user_online_and_sets_last_seen(self):
+        self.client.force_login(self.member)
+        response = self.client.post(reverse('user:ping'))
+        self.assertEqual(response.status_code, 204)
+        member = ForumUser.objects.get(pk=self.member.pk)
+        self.assertTrue(member.is_online)
+        self.assertIsNotNone(member.last_seen)
+
+    def test_last_seen_is_not_rewritten_on_every_ping(self):
+        recent = timezone.now() - timedelta(minutes=1)
+        ForumUser.objects.filter(pk=self.member.pk).update(last_seen=recent)
+        self.client.force_login(self.member)
+        self.client.post(reverse('user:ping'))
+        member = ForumUser.objects.get(pk=self.member.pk)
+        self.assertEqual(member.last_seen, recent)
+
+    def test_csrf_is_enforced(self):
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(self.member)
+        response = client.post(reverse('user:ping'))
         self.assertEqual(response.status_code, 403)

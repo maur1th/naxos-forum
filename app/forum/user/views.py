@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,15 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.http import HttpResponse, HttpResponseRedirect, \
     HttpResponseServerError
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, \
-    ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import render
 from django.contrib import messages
 from django.utils import timezone
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.contrib.sessions.models import Session
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.db.models import Count
 
 from .forms import RegisterForm, UpdateUserForm, CrispyPasswordForm, BudgetRecordForm
@@ -146,23 +146,17 @@ class NewBudgetRecord(LoginRequiredMixin, CreateView):
         return reverse_lazy('user:budget')
 
 
-# Set disconnection timestamp
-@csrf_exempt
-def node_api(request):
-    if request.method != 'GET':
-        raise PermissionDenied
-    try:
-        session = Session.objects.get(session_key=request.GET.get('sessionid'))
-        user_id = session.get_decoded().get('_auth_user_id')
-        status = request.GET['status']
-        user = ForumUser.objects.get(pk=user_id)
-    except (ObjectDoesNotExist, NameError):
-        raise PermissionDenied
-    key = f"user/{user.pk}/is_online"
-    if status == 'connected':
-        cache.set(key, True, None)
-    elif status == 'disconnected':
-        cache.delete(key)
-    user.last_seen = timezone.now()
-    user.save()
-    return HttpResponse()  # So we don't log a 500 error
+# Online presence heartbeat, sent periodically by naxos.js
+ONLINE_TIMEOUT = 90  # seconds without a ping before a user shows as offline
+LAST_SEEN_REFRESH = timedelta(minutes=5)
+
+
+@login_required
+@require_POST
+def ping(request):
+    user = request.user
+    cache.set(f"user/{user.pk}/is_online", True, ONLINE_TIMEOUT)
+    now = timezone.now()
+    if user.last_seen is None or now - user.last_seen > LAST_SEEN_REFRESH:
+        ForumUser.objects.filter(pk=user.pk).update(last_seen=now)
+    return HttpResponse(status=204)

@@ -73,30 +73,11 @@
       - "{{ansible_env.HOME}}/secrets:/app/secrets/"
       - "{{ansible_env.HOME}}/html:/app/templates/ads/:ro"
 
-# Websocket server
-- name: stop websocket container
+# The websocket service was replaced by a Django heartbeat
+- name: remove legacy websocket container
   docker_container:
     name: websocket
     state: absent
-  ignore_errors: yes
-  register: container_stop
-  until: not container_stop.get("failed")
-  retries: 5
-  delay: 10
-- name: launch websocket container
-  docker_container:
-    name: websocket
-    image: "{{websocket_image}}:{{app_version}}"
-    pull: yes
-    state: started
-    restart_policy: unless-stopped
-    networks:
-      - name: "{{network}}"
-        aliases:
-          - websocket
-      - name: nginx
-        aliases:
-          - websocket
 
 # Purge expired sessions from db
 - name: add clearsessions cron

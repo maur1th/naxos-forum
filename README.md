@@ -4,7 +4,7 @@
 
 Bulletin board project created to replace a [CoolForum](https://github.com/dsoriano/coolforum) solution. (Including DB migration script.) Comes with a light community blog.
 
-Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Frontend in BootStrap + JQuery. Node.js + Socket.io for some realtime capabilities. Deploys with Docker & Ansible.
+Made in Python 3. Backend mostly based on Django, PostgreSQL and memcached. Frontend in BootStrap + JQuery. Online presence uses a small heartbeat endpoint (`/user/ping/`). Deploys with Docker & Ansible.
 
 ## Getting started
 
@@ -64,9 +64,8 @@ pipenv requirements > requirements.txt
 ### Docker image
 
 Images are built by CI: once the `test` workflow passes on main,
-`.github/workflows/images.yml` builds `maur1th/naxos-forum` and
-`maur1th/naxos-websocket` for `linux/arm64` (the production host is a Graviton
-instance) and pushes them to Docker Hub, tagged with the commit SHA and
+`.github/workflows/images.yml` builds `maur1th/naxos-forum` for
+`linux/arm64` (the production host is a Graviton instance) and pushes it to Docker Hub, tagged with the commit SHA and
 `latest`. To build an older commit, run the workflow by hand:
 `gh workflow run images.yml -f ref=<sha>`.
 

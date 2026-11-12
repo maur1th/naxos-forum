@@ -123,7 +123,20 @@ $(document).ready(function (){
   });
 });
 
-var socket = io.connect();
-window.addEventListener('unload', function () {
-  socket.close();
-});
+// Online presence heartbeat
+(function () {
+  var PING_INTERVAL = 30000;
+  var csrf = document.querySelector('meta[name="csrf-token"]');
+  if (!csrf) return;
+  function ping() {
+    if (document.hidden) return;
+    fetch('/user/ping/', {
+      method: 'POST',
+      headers: {'X-CSRFToken': csrf.content},
+      credentials: 'same-origin'
+    }).catch(function () {});
+  }
+  ping();
+  setInterval(ping, PING_INTERVAL);
+  document.addEventListener('visibilitychange', ping);
+})();

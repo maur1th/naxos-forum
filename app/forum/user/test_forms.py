@@ -62,6 +62,16 @@ class RegistrationTest(TestCase):
         form = RegisterForm(data=self.valid_form_data)
         self.assertTrue(form.is_valid(), form.errors.as_json())
 
+    def test_weak_passwords_rejected(self):
+        for weak in ('1', 'password', 'test', '12345678', 'short'):
+            form_data = {**self.valid_form_data,
+                         'password1': weak, 'password2': weak}
+            form = RegisterForm(data=form_data)
+            self.assertFalse(form.is_valid(), weak)
+            self.assertIn('password2', form.errors, weak)
+        # Rejected submissions must not consume the token
+        self.assertTrue(TokenPool.objects.filter(token=self.token).exists())
+
     def test_failed_submission_keeps_token(self):
         form_data = {**self.valid_form_data, 'password2': 'typo'}
         form = RegisterForm(data=form_data)

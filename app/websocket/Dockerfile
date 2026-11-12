@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-LABEL maintainer="thomas@maurin.io"
+LABEL maintainer="https://github.com/maur1th"
 ENV HOME=/app \
     PORT=5001 \
     FORUM_URI=forum:5000 \

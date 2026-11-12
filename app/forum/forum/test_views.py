@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from user.models import ForumUser
-from .models import Category, Thread, Post, Preview
+from .models import Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote
 
 
 class ReplyFloodCheckTests(TestCase):
@@ -206,3 +206,31 @@ class PreviewOwnershipTests(TestCase):
         self.client.force_login(self.alice)
         r = self.client.get(reverse('forum:preview', args=[legacy.pk]))
         self.assertEqual(r.status_code, 404)
+
+
+class PollSelectedChoiceTests(TestCase):
+    def setUp(self):
+        self.alice = ForumUser.objects.create_user('alice', 'a@example.org', 'pw')
+        self.bob = ForumUser.objects.create_user('bob', 'b@example.org', 'pw')
+        cat = Category.objects.create(slug='c', title='C')
+        self.thread = Thread.objects.create(
+            title='Poll', slug='poll', category=cat, author=self.alice)
+        Post.objects.create(thread=self.thread, author=self.alice,
+                            content_plain='x')
+        self.q = PollQuestion.objects.create(question_text='Q', thread=self.thread)
+        self.a = PollChoice.objects.create(question=self.q, choice_text='a')
+        self.b = PollChoice.objects.create(question=self.q, choice_text='b')
+
+    def test_vote_records_choice_and_highlights_only_for_voter(self):
+        self.client.force_login(self.alice)
+        self.client.post(
+            reverse('forum:vote', args=['c', 'poll']), {'choice_text': 'b'})
+        self.assertEqual(PollVote.objects.get(user=self.alice).choice, self.b)
+        url = reverse('forum:thread', args=['c', 'poll'])
+        r = self.client.get(url)
+        self.assertEqual(r.context['my_choice_id'], self.b.pk)
+        self.assertContains(r, '&#9656; b')
+        self.client.force_login(self.bob)
+        r = self.client.get(url)
+        self.assertIsNone(r.context['my_choice_id'])
+        self.assertNotContains(r, '&#9656;')

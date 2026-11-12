@@ -256,6 +256,19 @@ class PollChoice(models.Model):
         return self.choice_text
 
 
+class PollVote(models.Model):
+    """Which choice a member picked (absent for votes cast before this model)."""
+    question = models.ForeignKey(
+        PollQuestion, related_name='poll_votes', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        ForumUser, related_name='poll_votes', on_delete=models.CASCADE)
+    choice = models.ForeignKey(
+        PollChoice, related_name='poll_votes', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("question", "user")
+
+
 # Budget
 class BudgetRecord(models.Model):
     date = models.DateTimeField(default=timezone.now)

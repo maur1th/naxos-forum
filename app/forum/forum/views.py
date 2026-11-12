@@ -20,7 +20,7 @@ import re
 
 # logger = logging.getLogger(__name__)
 
-from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, UserMentions
+from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollVote, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -241,6 +241,11 @@ class PostView(LoginRequiredMixin, CategoryReadMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['thread'] = self.thread
         context['users'] = get_all_users()
+        question = getattr(self.thread, 'question', None)
+        if question:
+            context['my_choice_id'] = PollVote.objects.filter(
+                question=question, user=self.request.user
+            ).values_list('choice_id', flat=True).first()
         return context
 
 
@@ -544,6 +549,9 @@ def VotePoll(request, category_slug, thread_slug):
             choice = question.choices.get(choice_text=choice_text)
             choice.votes += 1
             question.voters.add(request.user)
+            PollVote.objects.get_or_create(
+                question=question, user=request.user,
+                defaults={'choice': choice})
             choice.save()
             question.save()
         elif not choice_text:

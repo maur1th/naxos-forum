@@ -1,6 +1,6 @@
-FROM alpine:latest
+FROM alpine:3.20
 
-MAINTAINER thomas@maurin.io
+LABEL maintainer="5855076+maur1th@users.noreply.github.com"
 ENV HOME=/app \
     PORT=5001 \
     FORUM_URI=forum:5000 \
@@ -9,7 +9,8 @@ ENV HOME=/app \
 RUN set -ex \
         && apk add --no-cache \
             nodejs \
-            yarn
+            yarn \
+        && adduser -D -H -u 10001 node
 
 COPY . $HOME
 WORKDIR $HOME
@@ -17,4 +18,5 @@ WORKDIR $HOME
 RUN yarn --ignore-optional --pure-lockfile --production=true
 
 EXPOSE $PORT
-CMD node server.js
+USER node
+CMD ["node", "server.js"]

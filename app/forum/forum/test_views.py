@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from user.models import ForumUser
-from .models import Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote
+from .models import Category, Thread, Post, Preview, PollQuestion, \
+    PollChoice, PollVote
 
 
 class ReplyFloodCheckTests(TestCase):
@@ -150,7 +151,7 @@ class DeletedThreadTests(TestCase):
 
     def test_vote_poll(self):
         r = self.client.post(
-            reverse('forum:vote', args=self.args()), {'choice_text': 'a'})
+            reverse('forum:vote', args=self.args()), {'choice': '1'})
         self.assertEqual(r.status_code, 404)
 
     def test_top10(self):
@@ -208,29 +209,78 @@ class PreviewOwnershipTests(TestCase):
         self.assertEqual(r.status_code, 404)
 
 
-class PollSelectedChoiceTests(TestCase):
+class VotePollTests(TestCase):
     def setUp(self):
-        self.alice = ForumUser.objects.create_user('alice', 'a@example.org', 'pw')
-        self.bob = ForumUser.objects.create_user('bob', 'b@example.org', 'pw')
-        cat = Category.objects.create(slug='c', title='C')
+        self.alice = ForumUser.objects.create_user(
+            username='alice', email='alice@test.com', password='pw')
+        self.bob = ForumUser.objects.create_user(
+            username='bob', email='bob@test.com', password='pw')
+        self.cat = Category.objects.create(
+            slug='general', title='General', subtitle='x')
         self.thread = Thread.objects.create(
-            title='Poll', slug='poll', category=cat, author=self.alice)
-        Post.objects.create(thread=self.thread, author=self.alice,
-                            content_plain='x')
-        self.q = PollQuestion.objects.create(question_text='Q', thread=self.thread)
-        self.a = PollChoice.objects.create(question=self.q, choice_text='a')
-        self.b = PollChoice.objects.create(question=self.q, choice_text='b')
+            title='Poll', author=self.alice, category=self.cat)
+        self.question = PollQuestion.objects.create(
+            question_text='q', thread=self.thread)
+        self.a = PollChoice.objects.create(question=self.question,
+                                           choice_text='a')
+        self.b = PollChoice.objects.create(question=self.question,
+                                           choice_text='b')
+        self.plain = Thread.objects.create(
+            title='Plain', author=self.alice, category=self.cat)
+        self.url = reverse('forum:vote', args=[self.cat.slug,
+                                               self.thread.slug])
+        self.client.force_login(self.bob)
 
-    def test_vote_records_choice_and_highlights_only_for_voter(self):
+    def totals(self):
+        votes = sum(PollChoice.objects.values_list('votes', flat=True))
+        return votes, self.question.voters.count()
+
+    def test_get_is_not_allowed(self):
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_thread_without_poll(self):
+        url = reverse('forum:vote', args=[self.cat.slug, self.plain.slug])
+        self.assertEqual(
+            self.client.post(url, {'choice': self.a.pk}).status_code, 404)
+
+    def test_unknown_or_foreign_choice(self):
+        other = PollQuestion.objects.create(
+            question_text='o', thread=self.plain)
+        foreign = PollChoice.objects.create(question=other, choice_text='z')
+        for value in ('nope', '', '999999', str(foreign.pk)):
+            r = self.client.post(self.url, {'choice': value})
+            self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.totals(), (0, 0))
+        self.assertEqual(PollChoice.objects.get(pk=foreign.pk).votes, 0)
+
+    def test_hidden_thread_refuses_votes(self):
+        Thread.objects.filter(pk=self.thread.pk).update(visible=False)
+        r = self.client.post(self.url, {'choice': self.a.pk})
+        self.assertEqual(r.status_code, 404)
+        self.assertEqual(self.totals(), (0, 0))
+
+    def test_double_vote_counts_once(self):
+        self.client.post(self.url, {'choice': self.a.pk})
+        self.client.post(self.url, {'choice': self.b.pk})
+        self.assertEqual(self.totals(), (1, 1))
+        self.assertEqual(PollChoice.objects.get(pk=self.a.pk).votes, 1)
+
+    def test_votes_match_voters(self):
+        self.client.post(self.url, {'choice': self.a.pk})
         self.client.force_login(self.alice)
-        self.client.post(
-            reverse('forum:vote', args=['c', 'poll']), {'choice_text': 'b'})
-        self.assertEqual(PollVote.objects.get(user=self.alice).choice, self.b)
-        url = reverse('forum:thread', args=['c', 'poll'])
-        r = self.client.get(url)
+        self.client.post(self.url, {'choice': self.b.pk})
+        self.assertEqual(self.totals(), (2, 2))
+
+
+class PollSelectedChoiceTests(VotePollTests):
+    def test_vote_records_choice_and_highlights_only_for_voter(self):
+        self.client.post(self.url, {'choice': self.b.pk})
+        self.assertEqual(PollVote.objects.get(user=self.bob).choice, self.b)
+        page = reverse('forum:thread', args=[self.cat.slug, self.thread.slug])
+        r = self.client.get(page)
         self.assertEqual(r.context['my_choice_id'], self.b.pk)
         self.assertContains(r, '&#9656; b')
-        self.client.force_login(self.bob)
-        r = self.client.get(url)
+        self.client.force_login(self.alice)
+        r = self.client.get(page)
         self.assertIsNone(r.context['my_choice_id'])
         self.assertNotContains(r, '&#9656;')

@@ -87,7 +87,9 @@ it reports what would change without touching the host.
 This runs the whole playbook (Docker, Postgres, memcached, forum, certbot,
 nginx), which is how the project has always deployed. It stops and recreates
 every container, Postgres and nginx included, so the site is down briefly.
-The forum container runs migrations on start (`docker-entrypoint.sh`).
+The forum container runs `manage.py migrate` before starting gunicorn
+(`docker-entrypoint.sh`); if a migration fails, the container exits and
+restarts instead of serving.
 
 If the playbook fails, show the failing task and its error, and stop. Don't
 rerun it with changes to roles or inventory unless the user asks.
@@ -98,6 +100,8 @@ rerun it with changes to roles or inventory unless the user asks.
    `forum` and `websocket` should run the `:$SHA` images and be `Up`, not
    restarting.
 2. `SSH 'sudo docker exec forum printenv VERSION'` prints `$SHA`.
+   Then `SSH 'sudo docker exec forum python3 manage.py showmigrations --plan'`
+   must show no unapplied (`[ ]`) migration.
 3. `curl -sSL -o /dev/null -w '%{http_code} %{url_effective}' https://geekattitude.org/`
    ends on `200` at `/user/login/?next=/forum/` (`/` redirects to `/forum/`,
    which redirects anonymous visitors to the login page). A `502` means nginx can't reach

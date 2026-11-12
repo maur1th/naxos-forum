@@ -7,8 +7,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.db.models import Sum
+from django.db import transaction
+from django.db.models import F, Sum
 from django.http import HttpResponseRedirect
+from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib import messages
 from django.utils import timezone
@@ -20,7 +22,7 @@ import re
 
 # logger = logging.getLogger(__name__)
 
-from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollVote, UserMentions
+from .models import BudgetRecord, Category, Thread, Post, Preview, PollQuestion, PollChoice, PollVote, UserMentions
 from .forms import ThreadForm, PostForm, PollThreadForm, QuestionForm, \
     ChoicesFormSet, FormSetHelper
 from .util import get_query
@@ -536,31 +538,36 @@ def NewPoll(request, category_slug):
 
 
 @login_required
+@require_POST
 def VotePoll(request, category_slug, thread_slug):
     thread = get_object_or_404(Thread,
                                slug=thread_slug,
                                category__slug=category_slug,
                                visible=True)
-    question = thread.question
+    question = get_object_or_404(PollQuestion, thread=thread)
 
-    if request.method == 'POST':
-        choice_text = request.POST.get('choice_text')
-        if request.user not in question.voters.all() and choice_text:
-            choice = question.choices.get(choice_text=choice_text)
-            choice.votes += 1
-            question.voters.add(request.user)
-            PollVote.objects.get_or_create(
-                question=question, user=request.user,
-                defaults={'choice': choice})
-            choice.save()
-            question.save()
-        elif not choice_text:
+    try:
+        choice_pk = int(request.POST.get('choice', ''))
+    except ValueError:
+        choice_pk = None
+
+    with transaction.atomic():
+        # Serialise votes on this poll: re-check voters inside the lock
+        question = PollQuestion.objects.select_for_update().get(pk=question.pk)
+        if choice_pk is None or \
+                not question.choices.filter(pk=choice_pk).exists():
             messages.error(request, "Aucun choix sélectionné.")
-        else:
+        elif question.voters.filter(pk=request.user.pk).exists():
             messages.error(request, "Vous avez déjà voté.")
-        return HttpResponseRedirect(reverse(
-            'forum:thread', kwargs={'category_slug': category_slug,
-                                    'thread_slug': thread_slug}))
+        else:
+            PollChoice.objects.filter(pk=choice_pk).update(
+                votes=F('votes') + 1)
+            question.voters.add(request.user)
+            PollVote.objects.create(
+                question=question, user=request.user, choice_id=choice_pk)
+    return HttpResponseRedirect(reverse(
+        'forum:thread', kwargs={'category_slug': category_slug,
+                                'thread_slug': thread_slug}))
 
 
 # Search View #

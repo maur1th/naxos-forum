@@ -29,7 +29,7 @@
                 <td style="width:20%;border:none;padding:0;word-wrap: break-word">
                     <label style="float:left">
                     {% if user not in question.voters.all %}
-                        <input type="radio" name="choice_text" value="{{ choice }}">
+                        <input type="radio" name="choice" value="{{ choice.pk }}">
                     {% endif %}
                         <span style="font-weight:{% if choice.pk == my_choice_id %}bold{% else %}normal{% endif %}">{% if choice.pk == my_choice_id %}&#9656; {% endif %}{{ choice }} – {{ choice.votes }} vote(s)</span>
                     </label>

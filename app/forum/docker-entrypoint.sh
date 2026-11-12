@@ -11,6 +11,7 @@ if [ $LOCAL_ENV -eq 1 ]; then
     python3 manage.py collectstatic --no-input
     python3 -Wall manage.py runserver 0.0.0.0:8080
 else
+    python3 manage.py migrate --noinput
     exec gunicorn naxos.wsgi:application \
         --workers $WORKERS \
         --bind :5000

@@ -186,6 +186,11 @@ class Post(CachedAuthorModel):
         ordering = ["pk"]
         # Permit thread.posts.latest in template
         get_latest_by = "created"
+        indexes = [
+            # Latest post per author (members list)
+            models.Index(fields=['author', '-created'],
+                         name='forum_post_author_created_idx'),
+        ]
 
     def __str__(self):
         return "{:s}: {:d}".format(self.author.username, self.pk)

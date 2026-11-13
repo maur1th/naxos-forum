@@ -12,6 +12,38 @@
   command: docker volume create {{volume}}
   when: result is failed
 
+- name: create host scripts_dir folder
+  file:
+    state: directory
+    path: "{{scripts_dir}}"
+
+##
+## Major-version upgrade (e.g. 13 -> 16)
+##
+## A new major refuses a data directory initialised by an older one, so the
+## cluster is dumped with the old server, the data directory is moved to a
+## backup volume, and the dump is restored into a fresh cluster. See
+## upgrade_dump.yml and upgrade_restore.yml.
+##
+
+- name: read the data directory's major version ({{volume}})
+  command: >
+    docker run --rm --entrypoint sh
+    --volume {{volume}}:/var/lib/postgresql/data:ro
+    postgres:{{version}} -c 'cat /var/lib/postgresql/data/PG_VERSION 2>/dev/null || true'
+  register: pg_data_version
+  changed_when: no
+
+- name: set postgres upgrade facts
+  set_fact:
+    pg_old_major: "{{ pg_data_version.stdout | trim }}"
+    pg_new_major: "{{ version | string | regex_replace('\\..*$', '') }}"
+    pg_upgrade_pending: "{{scripts_dir}}/pg-upgrade-pending.sql"
+
+- name: dump the old cluster for the upgrade
+  include_tasks: upgrade_dump.yml
+  when: pg_old_major != "" and pg_old_major != pg_new_major
+
 ##
 ## Run Postgres container
 ##
@@ -25,30 +57,24 @@
   until: not container_stop.get("failed")
   retries: 5
   delay: 10
+
+- name: check for a pending upgrade restore
+  stat:
+    path: "{{pg_upgrade_pending}}"
+  register: pending_restore
+
+- name: restore the dump into the new cluster
+  include_tasks: upgrade_restore.yml
+  when: pending_restore.stat.exists
+
 - name: start postgres container
-  docker_container:
-    name: postgres
-    image: postgres:{{version}}
-    pull: yes
-    state: started
-    restart_policy: unless-stopped
-    networks:
-      - name: "{{network}}"
-        aliases:
-          - db
-    env:
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - "{{volume}}:/var/lib/postgresql/data"
+  include_tasks: start.yml
+  when: not pending_restore.stat.exists
 
 ##
 ## Add automated backup mechanism
 ##
 
-- name: create host scripts_dir folder
-  file:
-    state: directory
-    path: "{{scripts_dir}}"
 - name: install backup entrypoint script
   template:
     src: entrypoint.sh

@@ -1,0 +1,52 @@
+---
+##
+## Major-version upgrade, phase 2: restore the dump into the new major.
+##
+## Runs whenever {{pg_upgrade_pending}} exists, so a play that failed
+## anywhere after the dump resumes here on the next run. The restore always
+## goes into a freshly initialised cluster: a half-applied restore from an
+## earlier attempt is thrown away first.
+##
+## Expects the postgres container to be absent and the forum stopped.
+##
+
+- name: stop forum container (restore)
+  docker_container:
+    name: forum
+    state: absent
+
+- name: recreate empty data volume ({{volume}})
+  shell: >
+    docker volume rm --force {{volume}} &&
+    docker volume create {{volume}}
+
+- name: start postgres container (restore)
+  include_tasks: start.yml
+
+- name: wait for postgres to finish initialising
+  command: docker exec postgres pg_isready -h 127.0.0.1 -U postgres
+  register: ready
+  until: ready.rc == 0
+  retries: 30
+  delay: 2
+  changed_when: no
+
+# The new cluster already has the postgres superuser, so CREATE ROLE postgres
+# is the one error that is expected. Any other error fails the deploy and
+# leaves the dump pending, so the next run retries from a clean cluster.
+- name: restore dump into PostgreSQL {{version}}
+  shell: >
+    docker exec -i postgres psql -X -q -U postgres -d postgres
+    < {{pg_upgrade_pending}} > /dev/null 2> {{scripts_dir}}/pg-upgrade-restore.log
+    || exit 1;
+    if grep -E 'ERROR|FATAL' {{scripts_dir}}/pg-upgrade-restore.log
+    | grep -v 'role "postgres" already exists'; then exit 1; fi
+
+- name: refresh planner statistics after the restore
+  command: docker exec postgres vacuumdb -U postgres --all --analyze-in-stages
+
+- name: mark the restore as done
+  command: >
+    mv {{pg_upgrade_pending}}
+    {{scripts_dir}}/pg-upgrade-restored-{{ansible_date_time.iso8601_basic_short}}.sql
+...
